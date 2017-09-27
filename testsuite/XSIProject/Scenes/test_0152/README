@@ -1,0 +1,5 @@
+Fixing "UV wrapping issues with same shaders, different objects"
+	
+(trac #1324)
+
+author: sjannuz

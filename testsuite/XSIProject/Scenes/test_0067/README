@@ -1,0 +1,6 @@
+map_lookup_scalar shader implementation
+
+Test the map_lookup_scalar shader implementation and that it doesn't clamp
+a value bigger than 1.0 (trac #982)
+
+author: sjannuz

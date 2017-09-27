@@ -1,0 +1,5 @@
+Fixing "Selective lights do not work for pointclouds"
+	
+(trac #1210)
+
+author: sjannuz

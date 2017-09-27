@@ -1,0 +1,5 @@
+Fixing "ICE strand to respect motion step". Softimage >= 2012 only
+	
+(trac #1002)
+
+author: sjannuz

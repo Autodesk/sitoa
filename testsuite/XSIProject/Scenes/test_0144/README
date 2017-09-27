@@ -1,0 +1,5 @@
+Fixing "Texture map lookup breaks when passed through a shader compound"
+	
+(trac #1332)
+
+author: sjannuz

@@ -1,0 +1,5 @@
+Fixing "Attributes in ICE Crowds are not always evaluated" (Softimage >= 2013 only)
+	
+(trac #1337)
+
+author: sjannuz

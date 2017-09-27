@@ -1,0 +1,6 @@
+Implement TimeSource from ImageClip
+
+ImageClips have a TimeSource parameter that points to a variable evaluated in
+ICE to use different images of a sequence in particles. Ticket #756
+
+author: luis.armengol

@@ -1,0 +1,6 @@
+Textures out of [0,1] space fail to display
+
+Textures are ignored outside of the [0,1] space. Ie. setting to wrap
+in U and V is ignored by arnold. See trac#265.
+
+author: Jules Stevenson

@@ -1,0 +1,8 @@
+A camera named RightCamera, doesn't render with the correct position
+
+When a camera is named RightCamera, it doesn't render with the correct positioning.
+It happens the same with the names FrontCamera, TopCamera.
+The reasoning behind this is that there is some hardcoded code that was repositioning cameras with that name
+to avoid a glitch related to ticket #493
+
+author: Francois Lord

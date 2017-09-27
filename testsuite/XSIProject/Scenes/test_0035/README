@@ -1,0 +1,7 @@
+Evaluation of animation parameters of a render tree compound shader
+
+For an animated paremeter of a render tree compound, Softimage is returning the 
+original parameter with a FCurve in its source instead the parameter of the 
+compound and it doesn't return the correct value when doing an evaluate 
+
+author: megavotch

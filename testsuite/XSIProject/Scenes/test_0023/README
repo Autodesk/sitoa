@@ -1,0 +1,5 @@
+Instances in Point Clouds under a hierarchy don't inherit the transformation
+
+Instances in Point Clouds under a hierarchy don't inherit the transformation matrix. Ticket #532
+
+author: Daniel Alejo

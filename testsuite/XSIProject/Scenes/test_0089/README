@@ -1,0 +1,5 @@
+Hair objects not correctly instanced by ICE
+
+(trac #354)
+
+author: sjannuz

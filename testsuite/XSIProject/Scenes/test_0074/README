@@ -1,0 +1,5 @@
+sib_scalar_passthrough, sib_integer_passthrough, sib_boolean_passthrough, sib_vector_passthrough shaders implementation
+
+(trac #1007)
+
+author: sjannuz

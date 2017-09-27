@@ -1,0 +1,5 @@
+Crash when we instance an object with Arnold Properties set
+
+See trac#412.
+
+author: Andreas Bystrom

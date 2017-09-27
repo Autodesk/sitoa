@@ -1,0 +1,5 @@
+Fixing "A shader compound under a shared material crashes Softimage"
+	
+(trac #1309)
+
+author: sjannuz

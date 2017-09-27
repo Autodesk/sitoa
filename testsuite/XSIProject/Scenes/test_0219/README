@@ -1,0 +1,5 @@
+Fixig "Partition visibility overrides not respected"
+	
+(trac #608)
+
+author: sjannuz

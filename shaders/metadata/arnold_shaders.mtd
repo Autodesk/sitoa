@@ -1,0 +1,2985 @@
+#####################################################################################################################################
+# Copyright 2017 Autodesk, Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. 
+# You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, 
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+# See the License for the specific language governing permissions and limitations under the License.
+#####################################################################################################################################
+
+##############################################################################
+[node abs]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "Input to calculate the absolute value of."
+
+##############################################################################
+[node add]
+soft.category STRING "Math"
+
+[attr input1]
+desc STRING "First parameter to be added."
+soft.label STRING "Input 1"
+
+[attr input2]
+desc STRING "Second parameter to be added."
+soft.label STRING "Input 2"
+
+##############################################################################
+[node ambient_occlusion]
+soft.category STRING "Surface"
+soft.order STRING "white black samples spread near_clip far_clip falloff self_only invert_normals normal"
+
+[attr white]
+desc STRING "The output color when the ratio of the ray hits/total rays is zero (fully unoccluded)."
+
+[attr black]
+desc STRING "The output color when the ratio of the ray hits/total rays is one (fully occluded)."
+
+[attr normal]
+desc STRING "Alters the opacity of the ambient occlusion effect, thereby changing the opacity of the object. Lower values increase the opacity. It is possible to drive the opacity of the ambient occlusion effect with a shading network. You must ensure that Opaque is switched off for the geometry."
+
+[attr samples]
+desc STRING "Controls the number of rays that will be fired to compute the ray hits/total ratio. Increasing the number of samples will reduce noise and give a better quality result."
+linkable BOOL false
+min INT 0
+softmin INT 0
+softmax INT 10
+
+[attr spread]
+desc STRING "Angular spread around the normal vector N, in the range [0,1], where 1 maps to 90 degrees (the full hemisphere). 1.0 is the most common value. Other values may produce results that are not useful."
+softmin FLOAT 0
+softmax FLOAT 180
+
+[attr near_clip]
+desc STRING "Minimum occlusion distance that is sampled."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 100
+
+[attr far_clip]
+desc STRING "Maximum occlusion distance that is sampled."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 2000
+
+[attr falloff]
+desc STRING "An exponential falloff rate for the occlusion along the ray distance. It is not compatible with semi-opaque surfaces hit by the occlusion rays."
+min     FLOAT   0
+softmin FLOAT   0
+softmax FLOAT   100
+
+[attr invert_normals]
+desc STRING "This attribute changes the direction of the rays being traced. When it is off the rays are traced outside of the surface. When it is on the rays are traced inside the surface. The most common use for this is to simulate dirt or erosion, as corners and cracks will get darker."
+
+[attr self_only]
+desc STRING "Gather occlusion against the shaded object only."
+
+##############################################################################
+[node aov_write_float]
+soft.label STRING "AOV Write Float"
+soft.category STRING "AOV"
+
+[attr aov_input]
+soft.label STRING "AOV Input"
+
+[attr aov_name]
+desc STRING "Name of float type AOV to be written."
+soft.label STRING "AOV Name"
+
+##############################################################################
+[node aov_write_int]
+soft.label STRING "AOV Write Int"
+soft.category STRING "AOV"
+
+[attr aov_input]
+soft.label STRING "AOV Input"
+
+[attr aov_name]
+desc STRING "Name of int type AOV to be written."
+soft.label STRING "AOV Name"
+
+##############################################################################
+[node aov_write_rgb]
+soft.label STRING "AOV Write RGB"
+soft.category STRING "AOV"
+
+[attr aov_input]
+soft.label STRING "AOV Input"
+
+[attr aov_name]
+desc STRING "Name of RGB type AOV to be written."
+soft.label STRING "AOV Name"
+
+##############################################################################
+[node atan]
+soft.category STRING "Math"
+
+[attr y]
+desc STRING "Y input to calculate arctangent of y/x"
+
+[attr x]
+desc STRING "X input to calculate arctangent of y/x"
+
+[attr units]
+desc STRING "The units of the result."
+
+##############################################################################
+[node atmosphere_volume]
+soft.label STRING "Atmosphere Volume"
+soft.category STRING "Atmosphere"
+soft.order STRING "rgb_density density rgb_attenuation attenuation eccentricity samples affect_camera affect_diffuse affect_specular"
+
+[attr density]
+desc STRING "Controls the thickness of the atmosphere."
+
+[attr samples]
+desc STRING "Controls the number of samples used during atmospheric scattering. Increase this value if you are getting too much noise."
+min     INT 1
+max     INT 100
+softmin INT 1 
+softmax INT 64 
+linkable BOOL false
+
+[attr eccentricity]
+desc STRING "This control alters the directional bias, or anisotropy, of the scattering. A value of zero (the default) gives isotropic scattering (the light is scattered evenly in all directions, giving a uniform effect). Positive values bias the scattering effect forwards, in the direction of the light, while negative values bias the scattering backwards, toward the light."
+min FLOAT -1
+max FLOAT 1
+
+[attr attenuation]
+desc STRING "The attenuation parameter sets the rate at which the rays of light traveling through the scattering medium are extinguished. A high value means that light will only travel a short distance through the volume, while a low value means that light will travel a long distance through the volume."
+
+[attr affect_camera]
+desc STRING "Controls the degree to which atmospheric scattering affects camera rays."
+
+[attr affect_diffuse]
+desc STRING "Controls the degree to which atmospheric scattering affects diffuse GI rays."
+
+[attr affect_specular]
+desc STRING "Controls the degree to which atmospheric scattering affects glossy rays."
+
+[attr rgb_density]
+desc STRING "RGB multiplier for the density parameter."
+soft.label STRING "Density Color"
+
+[attr rgb_attenuation]
+desc STRING "RGB multiplier for the attenuation parameter."
+soft.label STRING "Attenuation Color"
+
+##############################################################################
+[node blackbody]
+soft.category STRING "Utility"
+soft.order STRING "temperature intensity normalize"
+
+[attr temperature]
+desc STRING "The temperature corresponding to an input value of 1. "
+"For example, if this parameter is 6500 (the default 6500K, is considered as the \"daylight\" white point), "
+"then an input value of 1 means a temperature of 6500 degrees Kelvin. "
+"The color ranges from red, through to white and then to blue. Values above 6500 will give a cool color, whilst values below will show a warm color."
+min     FLOAT   0
+softmin FLOAT   0
+softmax FLOAT   12000
+
+[attr intensity]
+desc STRING "Control the intensity of the blackbody emission. For physically correct results intensity 1 must be used."
+min     FLOAT   0
+softmin FLOAT   0
+softmax FLOAT   1
+
+[attr normalize]
+desc STRING "By enabling normalize, the intensity is discarded and normalized color is output instead. "
+"This can be used to control the intensity separately from the color."
+
+##############################################################################
+[node bump2d]
+soft.label STRING "Bump 2D"
+soft.category STRING "Bump"
+
+[attr bump_map]
+desc STRING "The input used to compute the normal perturbation, provided as a float value representing the height (for example by using a node to isolate a particular channel of a texture map) or directly as an RGB texture map, in which case the mean average of the R,G,B channels will be used."
+
+[attr bump_height]
+desc STRING "Scales the height of the bump map output."
+min     FLOAT   0
+softmin FLOAT   0
+softmax FLOAT   1
+
+[attr normal]
+desc STRING "The shader to be evaluated after the normal perturbation has been completed. Then, the perturbed normals are restored.\nIf this method is used the bump2d node should be connected to the surface parameter of the output node and not bump."
+
+##############################################################################
+[node bump3d]
+soft.label STRING "Bump 3D"
+soft.category STRING "Bump"
+
+[attr bump_map]
+desc STRING "The input used to compute the normal perturbation, provided as a float value representing the height (such as noise), or directly as an RGB texture map, in which case the mean average of the R,G,B channels will be used."
+
+[attr bump_height]
+desc STRING "Allows you to scale the height of the bump map output."
+min     FLOAT   0
+softmin FLOAT   0
+softmax FLOAT   1
+
+[attr epsilon]
+desc STRING "Epsilon is used to remove noisy shading artifacts caused by insufficient precision in the small floating point differences between P and P+epsilon. Ideally it should be left at its default value of 1e-5 but in problematic cases it may be preferable to increase the epsilon, which may solve the numerical artifacts trading them for blurrier bump."
+min     FLOAT 0.0000001
+softmin FLOAT 0.001
+softmax FLOAT 1
+
+[attr normal]
+desc STRING "The shader to be evaluated after the normal perturbation has been done is specified here. Optionally, a shader to specify the color and/or reflectance can be specified here, allowing the node to be connected to the Surface slot of the material (rather than connecting bump3d to the Bump Map slot and the other shader to the Surface slot separately). This may be useful in some situations."
+
+##############################################################################
+[node cache]
+soft.category STRING "Utility"
+
+##############################################################################
+[node camera_projection]
+soft.category STRING "Texture"
+
+[attr camera]
+desc STRING "The projecting camera. Leave blank to use the default render camera."
+soft.node_type STRING "camera"
+
+[attr projection_color]
+desc STRING "The image to be projected."
+
+[attr offscreen_color]
+desc STRING "The color returned outside of the projection camera viewing frustum."
+
+[attr mask]
+desc STRING "Use this parameter to mask out areas that should not receive the projection."
+min FLOAT 0.0
+max FLOAT 1.0
+
+[attr aspect_ratio]
+desc STRING "The projection camera aspect ratio."
+min FLOAT 0.001
+softmin FLOAT 0.001
+softmax FLOAT 3
+
+[attr front_facing]
+desc STRING "Apply the projection to polygons front-facing the projection camera."
+
+[attr back_facing]
+desc STRING "Apply the projection to polygons back-facing the projection camera."
+
+[attr use_shading_normal]
+desc STRING "Use the shading normal for visibility tests instead of the "
+"geometric normal. This results in smoother but less accurate visibility "
+"boundaries that can produce seams if the render camera is used for the "
+"projection."
+
+##############################################################################
+[node checkerboard]
+soft.category STRING "Texture"
+
+[attr u_frequency]
+desc STRING "Frequency along the U direction."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr v_frequency]
+desc STRING "Frequency along the V direction."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr u_offset]
+desc STRING "Offset along the U direction."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr v_offset]
+desc STRING "Offset along the V direction."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr contrast]
+desc STRING "Scale values around the midpoint."
+min FLOAT 0
+max FLOAT 1
+
+[attr filter_strength]
+desc STRING "Filtering strength."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr filter_offset]
+desc STRING "Filtering offset."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr uvset]
+desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
+linkable BOOL false
+soft.label STRING "UV Set"
+
+##############################################################################
+[node clamp]
+soft.category STRING "Utility"
+
+[attr min]
+desc STRING "The minumum value that the input will be clamped to."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr max]
+desc STRING "The maximum value that the input will be clamped to."
+softmin FLOAT 0
+softmax FLOAT 1
+
+# SItoA specific
+##############################################################################
+[node closure]
+soft.category STRING "Surface"
+
+##############################################################################
+[node color_convert]
+soft.category STRING "Color"
+
+[attr from]
+desc STRING "Source color space."
+
+[attr to]
+desc STRING "Destination color space."
+
+##############################################################################
+[node color_correct]
+soft.category STRING "Color"
+soft.order STRING "BeginGroup Color input invert gamma hue_shift saturation contrast contrast_pivot exposure multiply add mask EndGroup "
+"BeginGroup Alpha invert_alpha alpha_is_luminance alpha_multiply alpha_add EndGroup"
+
+[attr input]
+desc STRING "The input color."
+
+[attr invert]
+desc STRING "Inverts the input."
+
+[attr gamma]
+desc STRING "Apply a gamma correction to the color."
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr hue_shift]
+desc STRING "Rotate the color hue, a value of 1 means a full rotation."
+softmin FLOAT -1
+softmax FLOAT 1
+
+[attr saturation]
+desc STRING "Scale the saturation by this factor."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr contrast]
+desc STRING "Scale values around the contrast pivot."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr contrast_pivot]
+desc STRING "The origin of the contrast scaling."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr exposure]
+desc STRING "Multiply the color using a photo f-stop scale, where an increment of 1 doubles the luminosity."
+softmin FLOAT -10
+softmax FLOAT 10
+
+[attr multiply]
+desc STRING "Multiply the color by this factor."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr add]
+desc STRING "Add this value to the color."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr mask]
+desc STRING "Mask."
+min FLOAT 0
+max FLOAT 1
+
+[attr invert_alpha]
+desc STRING "Inverts the alpha."
+
+[attr alpha_is_luminance] 
+desc STRING "If on, set the alpha equal to the color luminance."
+
+[attr alpha_multiply] 
+desc STRING "Multiply the alpha by this factor."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr alpha_add]
+desc STRING "Add this value to the alpha."
+softmin FLOAT 0
+softmax FLOAT 1
+
+##############################################################################
+[node color_jitter]
+soft.category STRING "Color"
+soft.order STRING "BeginGroup Input input EndGroup "
+"BeginGroup Object obj_gain_min obj_gain_max obj_hue_min obj_hue_max obj_saturation_min obj_saturation_max obj_seed EndGroup "
+"BeginGroup Face face_gain_min face_gain_max face_hue_min face_hue_max face_saturation_min face_saturation_max face_seed EndGroup "
+"BeginGroup User_Data data_input data_gain_min data_gain_max data_hue_min data_hue_max data_saturation_min data_saturation_max data_seed EndGroup "
+"BeginGroup Procedural proc_gain_min proc_gain_max proc_hue_min proc_hue_max proc_saturation_min proc_saturation_max proc_seed EndGroup"
+
+[attr input]
+desc STRING "The base color"
+soft.label STRING "Input"
+
+[attr data_input]
+desc STRING "Random seed from an integer user data shader."
+soft.label STRING "Data"
+ 
+[attr data_gain_min]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Gain Min"
+
+[attr data_gain_max]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Gain Max"
+
+[attr data_hue_min]
+desc STRING ""
+softmin FLOAT -1
+softmax FLOAT 1
+soft.label STRING "Hue Min"
+
+[attr data_hue_max]
+desc STRING ""
+softmin FLOAT -1
+softmax FLOAT 1
+soft.label STRING "Hue Max"
+
+[attr data_saturation_min]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 2
+soft.label STRING "Saturation Min"
+
+[attr data_saturation_max]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 2
+soft.label STRING "Saturation Max"
+
+[attr data_seed]
+desc STRING "Random seed for user data"
+min     INT 0
+softmin INT 0
+softmax INT 100
+soft.label STRING "Seed"
+
+[attr proc_gain_min]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Gain Min"
+
+[attr proc_gain_max]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Gain Max"
+
+[attr proc_hue_min]
+desc STRING ""
+softmin FLOAT -1
+softmax FLOAT 1
+soft.label STRING "Hue Min"
+
+[attr proc_hue_max]
+desc STRING ""
+softmin FLOAT -1
+softmax FLOAT 1
+soft.label STRING "Hue Max"
+
+[attr proc_saturation_min]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 2
+soft.label STRING "Saturation Min"
+
+[attr proc_saturation_max]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 2
+soft.label STRING "Saturation Max"
+
+[attr proc_seed]
+desc STRING "Random seed for procedural's"
+min     INT 0
+softmin INT 0
+softmax INT 100
+soft.label STRING "Seed"
+
+[attr obj_gain_min]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Gain Min"
+
+[attr obj_gain_max]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Gain Max"
+
+[attr obj_hue_min]
+desc STRING ""
+softmin FLOAT -1
+softmax FLOAT 1
+soft.label STRING "Hue Min"
+
+[attr obj_hue_max]
+desc STRING ""
+softmin FLOAT -1
+softmax FLOAT 1
+soft.label STRING "Hue Max"
+
+[attr obj_saturation_min]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 2
+soft.label STRING "Saturation Min"
+
+[attr obj_saturation_max]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 2
+soft.label STRING "Saturation Max"
+
+[attr obj_seed]
+desc STRING "Random seed for objects"
+min     INT 0
+softmin INT 0
+softmax INT 100
+soft.label STRING "Seed"
+
+[attr face_gain_min]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Gain Min"
+
+[attr face_gain_max]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Gain Max"
+
+[attr face_hue_min]
+desc STRING ""
+softmin FLOAT -1
+softmax FLOAT 1
+soft.label STRING "Hue Min"
+
+[attr face_hue_max]
+desc STRING ""
+softmin FLOAT -1
+softmax FLOAT 1
+soft.label STRING "Hue Max"
+
+[attr face_saturation_min]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 2
+soft.label STRING "Saturation Min"
+
+[attr face_saturation_max]
+desc STRING ""
+softmin FLOAT 0
+softmax FLOAT 2
+soft.label STRING "Saturation Max"
+
+[attr face_seed]
+desc STRING "Random seed for faces"
+min     INT 0
+softmin INT 0
+softmax INT 100
+soft.label STRING "Seed"
+
+##############################################################################
+[node compare]
+soft.category STRING "Math"
+
+[attr test]
+desc STRING "Operators with which to compare input1 and input2"
+
+##############################################################################
+[node complement]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "The complement will be 1 minus this input"
+
+##############################################################################
+[node complex_ior]
+soft.category STRING "Surface"
+
+[attr material]
+desc STRING "Presets of different materials. The custom mode allows you to define a material with Reflectivity and Edgetint, or n and k parameters."
+
+[attr mode]
+desc STRING "Select between the artist friendly (Reflectivity and Edgetint colors) and physical (n and k) controls."
+soft.disable_when STRING "{ material != custom }"
+
+[attr reflectivity]
+desc STRING "The reflectance at normal incidence."
+soft.disable_when STRING "{ material != custom } { mode != artistic }"
+
+[attr edgetint]
+desc STRING "Controls the color bias as the viewing direction becomes parallel to the surface."
+soft.label STRING "Edge Tint"
+soft.disable_when STRING "{ material != custom } { mode != artistic }"
+
+[attr n]
+desc STRING "The refractive index value for the red/green/blue wavelengths (e.g. 650, 550 and 450 nm)."
+soft.label STRING "Refractive Index (n)"
+soft.disable_when STRING "{ material != custom } { mode != physical }"
+
+[attr k]
+desc STRING "The extinction coefficient value for the red/green/blue wavelengths (e.g. 650, 550 and 450 nm)."
+soft.label STRING "Extinction Coeff. (k)"
+soft.disable_when STRING "{ material != custom } { mode != physical }"
+
+##############################################################################
+[node composite]
+soft.category STRING "Color"
+
+[attr A]
+desc STRING "Foreground A"
+
+[attr B]
+desc STRING "Background B"
+
+[attr operation]
+desc STRING "A: passthrough A\n"
+"B: passthrough B\n"
+"Atop: A * B.a + B * (1 - A.a)\n"
+"Average: (A + B) / 2\n"
+"Cojoint Over: A + B * (1 - A.a) /B.a, A if A.a > B.a\n"
+"Difference: abs(A - B)\n"
+"Disjoint Over: A + B * (1 - A.a) / B.a, A + B if A.a + B.a < 1\n"
+"Divide: A / B, 0 if A and B < 0, else A if B < eps4\n"
+"Exclusion: A + B - 2 * A * B\n"
+"From: B - A\n"
+"Geometric: 2 * A * B / (A + B)\n"
+"Hard Light: 1 - 2 * (1 - A) * (1 - B), 2 * A * B if A < 0.5\n"
+"Hypot Diagonal: sqr(A * A + B * B)\n"
+"In: A * B.a\n"
+"Mask: B * A.a\n"
+"Matte: A * A.a + B * (1 - A.a)\n"
+"Max: max(A, B)\n"
+"Min: min(A, B)\n"
+"Minus: A - B\n"
+"Multiply: A * B, A if A and B < 0\n"
+"Out: A * (1 - B.a)\n"
+"Over: A + B * (1 - A.a)\n"
+"Overlay: hardlight(B, A)\n"
+"Plus: A + B\n"
+"Screen: A + B - A * B if A and B in 0..1, else max(A, B)\n"
+"Soft Light: softer version of Hard Light\n"
+"Stencil: B * (1 - A.a)\n"
+"Under: A * (1 - B.a) + B\n"
+"Xor: A * (1 - B.a) + B * (1 - A.a)"
+
+[attr alpha_operation]
+desc STRING "Same: Apply the same operation to alpha\nA: Use A.a\nB: Use B.a"
+
+##############################################################################
+[node cross]
+soft.category STRING "Math"
+
+[attr input1]
+desc STRING "First vector to use in cross product computation."
+soft.label STRING "Input 1"
+
+[attr input2]
+desc STRING "Second vector to use in cross product computation."
+soft.label STRING "Input 2"
+
+##############################################################################
+[node curvature]
+soft.category STRING "Utility"
+
+[attr output]
+desc STRING "Whether to output the convex (positive) curvature or concave "
+"(negative) curvature only as grayscale, or output both with the convex "
+"curvature in the red channel and concave curvature in the green channel."
+
+[attr samples]
+desc STRING "Controls the number of rays that will be fired to compute the "
+"curvature. Increasing the number of samples will reduce noise and give a "
+"better quality result. The actual number of rays is the square of this value."
+min INT 1
+softmin INT 1  
+softmax INT 10  
+
+[attr radius]
+desc STRING "The radius of the sphere around the shading point within which "
+"the curvature will be estimated. Smaller values show finer details, while "
+"larger values give a smoother result."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr spread]
+desc STRING "Lower values of spread will shoot rays more vertically with "
+"respect to the surface, and the default value of 1 means that rays are shot "
+"in all directions. This acts as a threshold to remove unwanted small "
+"variations of the curvature."
+min FLOAT 0
+max FLOAT 1
+
+[attr threshold]
+desc STRING "Consider only curvature above this normalized angle, with (0, 1) "
+"mapping to (0°, 180°). This parameter is useful to prune geometry \"bubbles\" "
+"behind the surface for convex curvature."
+min FLOAT 0
+max FLOAT 1
+
+[attr bias]
+desc STRING "The bias will affect the falloff of the curvature. With the "
+"default of 0.5, the curvature sample importance decreases linearly with the "
+"distance to the shading point. Higher values will cover more and exaggerate "
+"the curvature, whereas smaller values will emphasize small details."
+min FLOAT 0
+max FLOAT 1
+
+[attr multiply]
+desc STRING "Multiplies the curvature by this factor. Note that before this "
+"multiplication the output values range from 0 to 1, corresponding to angles "
+"in (0°, 90°)."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr trace_set]
+desc STRING "For fine grained control of which geometry should be hit or "
+"avoided when sampling curvature, you can tag objects to be in a trace set. "
+"Put an existing trace set in this parameter to make the probe ray avoid or "
+"hit corresponding tagged geometry. You can control the avoidance behavior "
+"with the Inclusive parameter."
+
+[attr inclusive]
+desc STRING "When a trace set is exclusive, rays are traced against all "
+"geometry except the tagged nodes. When a trace set is inclusive, rays are "
+"traced against tagged nodes, but also against nodes that are not tagged at all."
+
+[attr self_only]
+desc STRING "Sample curvature from the object being shaded only."
+
+##############################################################################
+[node divide]
+soft.category STRING "Math"
+
+[attr input1]
+desc STRING "Input to be divided."
+soft.label STRING "Input 1"
+
+[attr input2]
+desc STRING "Input to divide by."
+soft.label STRING "Input 2"
+
+##############################################################################
+[node dot]
+soft.category STRING "Math"
+
+[attr input1]
+desc STRING "First vector to use in dot product computation."
+
+[attr input2]
+desc STRING "Second vector to use in dot product computation."
+
+##############################################################################
+[node exp]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "Input to calcute exponential of."
+
+##############################################################################
+[node facing_ratio]
+soft.category STRING "Utility"
+
+[attr bias]
+desc STRING "Push or pull values by altering the slope at the beginning of the "
+"range. Bias values below 0.5 decrease the slope and lower values overall. "
+"Above 0.5, the slope is higher and value grow more quickly. A value of 0.5 has "
+"no effect."
+min FLOAT 0
+max FLOAT 1
+
+[attr gain]
+desc STRING "Increase or decrease the slope of the mid range values. Gain values "
+"below 0.5 increase the contrast whereas values above 0.5 flatten the mid range "
+"values. A value of 0.5 has no effect."
+min FLOAT 0
+max FLOAT 1
+
+[attr linear]
+desc STRING "Return the complement of the normalized angle instead of N.Eye (1 - acos(N.Eye) / (PI/2)). This is more costly to compute."
+
+[attr invert]
+desc STRING "Return the complement of the result (1 - x)."
+
+##############################################################################
+[node flakes]
+soft.category STRING "Surface"
+
+[attr scale]
+desc STRING "Scales the flake structure up or down. Larger values zoom out of the map, giving a larger number of flakes."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 100
+
+[attr size]
+desc STRING "The relative size of the flakes."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr normal_randomize]
+desc STRING "Blends between the smooth surface normal (0) and the random flake normal (1)."
+min FLOAT 0
+max FLOAT 1
+
+[attr coord_space]
+desc STRING "Specifies the coordinate space used for calculating the random normals.
+- World: points are relative to the global origin of the scene.
+- Object: points are expressed relative to the local origin (center) of the object.
+- Pref: short for 'vertex in reference pose'. The plugin can pass these vertices to Arnold (in addition to the regular, deformed vertices) which can in turn be queried by the shader so that the texture 'sticks' to the reference pose and does not swim as the mesh deforms.
+- UV: the texture coordinates."
+
+[attr output_space]
+desc STRING "Specifies the space of the output normal vector."
+
+##############################################################################
+[node flat]
+soft.category STRING "Utility"
+
+[attr color]
+soft.viewport_guid STRING "{3515CC71-082C-11D0-91DE-00A024C78EE3}"
+
+##############################################################################
+[node float_to_int]
+soft.category STRING "Conversion"
+
+[attr mode]
+desc STRING "Round yields the nearest integer. Trunc just removes the fractional part. Floor rounds downwards and Ceil upwards."
+
+##############################################################################
+[node float_to_matrix]
+soft.category STRING "Conversion"
+
+##############################################################################
+[node float_to_rgb]
+soft.label STRING "Float To RGB"
+soft.category STRING "Conversion"
+
+##############################################################################
+[node float_to_rgba]
+soft.label STRING "Float To RGBA"
+soft.category STRING "Conversion"
+
+##############################################################################
+[node fog]
+soft.category STRING "Atmosphere"
+soft.order STRING "color distance height ground_point ground_normal"
+
+[attr color]
+desc STRING "Determines the color of the fog."
+
+[attr distance]
+desc STRING "Fog distance controls the fog density. Fog density is modeled with an exponential distribution. Smaller values make the fog appear less dense, while larger values make it appear more dense."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1000
+
+[attr height]
+desc STRING "This value changes the rate of the exponential decay along the direction axis."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1000
+
+[attr ground_point]
+desc STRING "Determines the starting point for the fog along the axis set by the direction."
+soft.label STRING "Origin"
+
+[attr ground_normal]
+desc STRING "Determines the axis for the direction of fog."
+soft.label STRING "Direction"
+
+##############################################################################
+[node fraction]
+soft.category STRING "Math"
+
+##############################################################################
+[node image]
+soft.category STRING "Texture"
+soft.order STRING "BeginGroup Texture filename color_space multiply offset filter mipmap_bias single_channel start_channel ignore_missing_textures missing_texture_color EndGroup "
+"BeginGroup UV uvcoords uvset soffset toffset sscale tscale swrap twrap swap_st sflip tflip EndGroup"
+
+[attr color_space]
+desc STRING "Specifies which color space the texture is assumed to be in. "
+"When set to auto, the colorspace will be guessed from the image properties: sRGB will be used for 16-bit or less integer images, and linear otherwise."
+
+[attr filename]
+desc STRING "The path of the current location of the file texture map. The full path name must be used."
+linkable BOOL false
+soft.type STRING "bitmap"
+
+[attr filter]
+desc STRING "Texel interpolation method used to filter the rendered image file. Cubic is slower but smoother, closest is faster but looks blocky when magnified."
+
+[attr mipmap_bias]
+linkable BOOL false
+desc STRING "Offsets the Mip-Map level from which a texture is sampled. Negative value indicates a larger Mip-Map level (bigger texture) resulting in sharper texture lookups; a positive value indicates a smaller Mip-Map level (smaller texture) which will produce a blurrier result."
+softmin INT -5
+softmax INT  5
+
+[attr multiply]
+desc STRING "Multiplies the image by a constant. Useful for quickly adding a small amount of brightness."
+linkable BOOL false
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr offset]
+desc STRING "Adds a constant to the image. Useful for quickly lifting the black level."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr single_channel]
+desc STRING "Use only a single channel of the texture. The values on the channels other than the first is undefined."
+
+[attr start_channel]
+desc STRING "When only a single channel is used, this defines an offset to the channel to read."
+soft.disable_when STRING "{ single_channel == 0 }"
+min FLOAT 0
+softmin INT 0
+softmax INT 5
+
+[attr swrap]
+desc STRING "Controls how a texture repeats on a large surface along the U direction."
+soft.label STRING "Wrap U"
+
+[attr twrap]
+desc STRING "Controls how a texture repeats on a large surface along the V direction."
+soft.label STRING "Wrap V"
+
+[attr soffset]
+desc STRING "Offset the position of the texture in the U direction."
+soft.label STRING "Offset U"
+softmin FLOAT -1
+softmax FLOAT  1
+
+[attr toffset]
+desc STRING "Offset the position of the texture in the V direction."
+soft.label STRING "Offset V"
+softmin FLOAT -1
+softmax FLOAT  1
+
+[attr sscale]
+desc STRING "Scales the size of the texture along the U direction."
+soft.label STRING "Scale U"
+softmin FLOAT -3
+softmax FLOAT  3
+
+[attr tscale]
+desc STRING "Scales the size of the texture along the V direction."
+soft.label STRING "Scale V"
+softmin FLOAT -3
+softmax FLOAT  3
+
+[attr sflip]
+desc STRING "Flips the texture in the U direction."
+soft.label STRING "Flip U"
+
+[attr tflip]
+desc STRING "Flips the texture in the V direction."
+soft.label STRING "Flip V"
+
+[attr swap_st]
+soft.label STRING "Swap U & V"
+
+[attr uvcoords]
+desc STRING "When this parameter is linked, its input will be used to lookup "
+"the texture instead of the object's UVs.\n\nWARNING: By specifying custom UV "
+"coordinates in this shader parameter, Arnold will sadly stop providing "
+"texture derivatives, which will absolutely destroy texture I/O performance: "
+"there won't be any mip-mapping at all."
+soft.label STRING "Custom UVs"
+
+[attr uvset]
+desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
+linkable BOOL false
+soft.label STRING "UV Set"
+
+[attr ignore_missing_textures]
+desc STRING "Do not generate an error when a missing UDIM tile is encountered and display the missing_texture_color instead."
+
+[attr missing_texture_color]
+desc STRING "The color to be displayed when a missing UDIM tile is encountered and ignore_missing_textures is set."
+soft.disable_when STRING "{ ignore_missing_textures == 0 }"
+
+##############################################################################
+[node is_finite]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "Input to test. Returns false if either infinity or NaN and true otherwise."
+
+##############################################################################
+[node lambert]
+soft.category STRING "Surface"
+
+[attr Kd]
+desc STRING "The weight of the diffuse."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+soft.label STRING "Diffuse"
+
+[attr Kd_color]
+desc STRING "The color of the diffuse"
+soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC72-082C-11D0-91DE-00A024C78EE3}"
+
+[attr opacity]
+desc STRING "Controls how opaque the shader is."
+
+[attr normal]
+desc STRING "If linked, the normal to use."
+
+##############################################################################
+[node length]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "The input vector."
+
+[attr mode]
+desc STRING "Euclidian: The actual length of the vector.\nQuadrance: Euclidian distance squared, which is cheaper to compute.\nManhattan: Measures distance following only axis-aligned directions, which is even cheaper to compute."
+
+##############################################################################
+[node log]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "Input to calcute logarithm of."
+
+[attr base]
+desc STRING "Base for use in logarithm calculation."
+
+##############################################################################
+[node matte]
+soft.category STRING "Surface"
+
+[attr passthrough]
+desc STRING "Passthrough material for rays other than camera."
+
+[attr color]
+desc STRING "Matte color for the camera rays."
+soft.viewport_guid STRING "{3515CC71-082C-11D0-91DE-00A024C78EE3}"
+
+##############################################################################
+[node max]
+soft.category STRING "Math"
+
+[attr input1]
+soft.label STRING "Input 1"
+
+[attr input2]
+soft.label STRING "Input 2"
+
+##############################################################################
+[node min]
+soft.category STRING "Math"
+
+[attr input1]
+soft.label STRING "Input 1"
+
+[attr input2]
+soft.label STRING "Input 2"
+
+##############################################################################
+[node mix_rgba]
+soft.label STRING "Mix RGBA"
+soft.category STRING "Math"
+
+[attr input1]
+soft.label STRING "Input 1"
+
+[attr input2]
+soft.label STRING "Input 2"
+
+[attr mix]
+desc STRING "Computes a blend (or a mix) of its input values using linear interpolation."
+softmin FLOAT 0
+softmax FLOAT 1
+
+##############################################################################
+[node mix_shader]
+soft.category STRING "Math"
+soft.order STRING "shader1 shader2 mode mix"
+
+[attr mode]
+desc STRING "The mixing mode."
+linkable BOOL false
+
+[attr mix]
+desc STRING "The mixing weight."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr shader1]
+desc STRING "First material to be mixed."
+soft.label STRING "Shader 1"
+
+[attr shader2]
+desc STRING "Second material to be mixed."
+soft.label STRING "Shader 2"
+
+##############################################################################
+[node modulo]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "Input color."
+
+[attr divisor]
+desc STRING "Modulo divisor."
+
+##############################################################################
+[node motion_vector]
+soft.category STRING "Utility"
+soft.order STRING "max_displace time0 time1 raw"
+
+[attr raw]
+desc STRING "The vector won't be normalized."
+linkable BOOL false
+soft.label STRING "Do Not Normalize"
+
+[attr max_displace]
+desc STRING "When greater than 0, this is the maximum amount of screen-space motion. The motion vector encoded in the RG components is then normalized to this value. This is better when writing to 8 or 16-bit formats like JPEG, TIFF etc. On the other hand, when this value is less than or equal to zero, magnitude encoding is used instead: RG holds the unit direction vector, and B holds the magnitude. This is better when writing to floating point formats (EXR etc)."
+linkable BOOL false
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Displacement"
+soft.disable_when STRING "{ raw == 1 }"
+
+[attr time0]
+desc STRING "Sample time for shutter start."
+linkable BOOL false
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Shutter Start"
+
+[attr time1]
+desc STRING "Sample time for shutter end."
+linkable BOOL false
+softmin FLOAT 0
+softmax FLOAT 1
+soft.label STRING "Shutter End"
+
+##############################################################################
+[node multiply]
+soft.category STRING "Math"
+
+[attr input1]
+soft.label STRING "Input 1"
+
+[attr input2]
+soft.label STRING "Input 2"
+
+##############################################################################
+[node negate]
+soft.category STRING "Math"
+
+[attr input]
+soft.label STRING "The input color to be negated."
+
+##############################################################################
+[node noise]
+soft.category STRING "Texture"
+soft.order STRING "octaves lacunarity distortion amplitude coord_space scale offset P time mode color1 color2"
+
+[attr octaves]
+desc STRING "The number of octaves over which the noise function is calculated (the fractal noise function is repeated at multiple frequencies, known as octaves; normally each octave is at about twice the frequency, i.e., half the size, of the previous one, but you can alter this with the lacunarity control)."
+min INT 0
+softmin INT 1
+softmax INT 8
+
+[attr lacunarity]
+desc STRING "Controls the average size of gaps in the texture pattern produced. Lacunarity actually means the change in scale between each octave - in musical scales this would be 2.0, meaning each octave is at twice the frequency / half the scale of the previous one, but for our purposes numbers that are near 2.0, but not actually 2.0 are best.  In most cases we recommend using the default value of 1.92."
+min     FLOAT 0.001
+softmin FLOAT 1
+softmax FLOAT 5
+
+[attr distortion]
+desc STRING "Defines a degree of random displacement applied to each point as part of the noise calculation, giving a different aesthetic feel."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr amplitude]
+desc STRING "Controls the amplitude, or range, of the output. Normally the output is RGBA with values between 0 and 1, the amplitude control multiplies this."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr coord_space]
+desc STRING "Specify the coordinate space used to compute the perlin noise."
+soft.label STRING "Coordinate Space"
+
+[attr scale]
+desc STRING "Control the scale of the noise function in x, y, and z directions."
+
+[attr offset]
+desc STRING "Offsets the noise in x, y, or z directions."
+
+[attr P]
+desc STRING "In linked, point at which the noise is evaluated."
+
+[attr time]
+desc STRING "Time at which the noise is evaluated."
+softmin FLOAT 0
+softmax FLOAT 100
+
+[attr color1]
+soft.label STRING "Color 1"
+soft.disable_when STRING "{ mode == vector }"
+
+[attr color2]
+soft.label STRING "Color 2"
+soft.disable_when STRING "{ mode == vector }"
+
+[attr mode]
+desc STRING "Switch between vector or scalar noise."
+
+##############################################################################
+[node normal_map]
+soft.category STRING "Bump"
+soft.order STRING "input tangent_space normal tangent order invert_x invert_y invert_z color_to_signed strength"
+
+[attr input]
+desc STRING "The input color."
+
+[attr normal]
+desc STRING "The normal vector that, together with the tangent, defines the tangent reference frame."
+soft.disable_when STRING "{ tangent_space == 0 }"
+
+[attr tangent]
+desc STRING "The tangent vector that, together with the normal, defines the tangent reference frame."
+soft.disable_when STRING "{ tangent_space == 0 }"
+
+[attr order]
+desc STRING "Re-order the input channels."
+
+[attr invert_x]
+desc STRING "If on, inverts the x channel."
+
+[attr invert_y]
+desc STRING "If on, inverts the y channel."
+
+[attr invert_z]
+desc STRING "If on, inverts the z channel."
+
+[attr color_to_signed]
+desc STRING "Convert from 0..1 color values (typical normal map encoding) to -1..1 vectors"
+
+[attr tangent_space]
+desc STRING "If enabled, creates a tangent reference frame based on normal and tangent."
+
+[attr strength]
+desc STRING "Magnifies the bump effect."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 2
+
+##############################################################################
+[node normalize]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "The input vector to be  normalized."
+
+##############################################################################
+[node osl]
+soft.skip BOOL true
+
+##############################################################################
+[node passthrough]
+soft.category STRING "Utility"
+
+[attr passthrough]
+desc STRING "The input material that is passed-through. All the other linked materials are evaluated. "
+
+[attr eval1]
+soft.label STRING "Material 1"
+
+[attr eval2]
+soft.label STRING "Material 2"
+
+[attr eval3]
+soft.label STRING "Material 3"
+
+[attr eval4]
+soft.label STRING "Material 4"
+
+[attr eval5]
+soft.label STRING "Material 5"
+
+[attr eval6]
+soft.label STRING "Material 6"
+
+[attr eval7]
+soft.label STRING "Material 7"
+
+[attr eval8]
+soft.label STRING "Material 8"
+
+[attr eval9]
+soft.label STRING "Material 9"
+
+[attr eval10]
+soft.label STRING "Material 10"
+
+[attr eval11]
+soft.label STRING "Material 11"
+
+[attr eval12]
+soft.label STRING "Material 12"
+
+[attr eval13]
+soft.label STRING "Material 13"
+
+[attr eval14]
+soft.label STRING "Material 14"
+
+[attr eval15]
+soft.label STRING "Material 15"
+
+[attr eval16]
+soft.label STRING "Material 16"
+
+[attr eval17]
+soft.label STRING "Material 17"
+
+[attr eval18]
+soft.label STRING "Material 18"
+
+[attr eval19]
+soft.label STRING "Material 19"
+
+[attr eval20]
+soft.label STRING "Material 20"
+
+##############################################################################
+[node physical_sky]
+soft.category STRING "Environment"
+soft.order STRING "use_degrees azimuth elevation sun_direction enable_sun sun_size sun_tint sky_tint ground_albedo intensity turbidity X Y Z"
+
+[attr use_degrees]
+linkable BOOL false
+soft.label STRING "Azimuth / Elevation"
+desc STRING "Switch between Azimuth/Elevation mode and Direction for defining the sun position. "
+
+[attr azimuth]
+desc STRING "Sun azimuth angle, between 0 and 360 degrees."
+linkable BOOL false
+soft.disable_when STRING "{ use_degrees == 0 }"
+min FLOAT 0
+max FLOAT 360
+
+[attr elevation]
+desc STRING "Sun elevation angle, between 0 and 90 degrees."
+linkable BOOL false
+soft.disable_when STRING "{ use_degrees == 0 }"
+min FLOAT 0
+max FLOAT 90
+
+[attr sun_direction]
+linkable BOOL false
+soft.disable_when STRING "{ use_degrees == 1 }"
+
+[attr turbidity]
+desc STRING "The overall aerosol content (dust, moisture, ice, fog) of the air."
+linkable BOOL false
+min FLOAT 1
+softmin FLOAT 1
+softmax FLOAT 10
+
+[attr ground_lbedo]
+desc STRING "The amount of light reflected from the planet surface back into the atmosphere."
+linkable BOOL false
+
+[attr enable_sun]
+desc STRING "Enables/disables the visibility of the sun."
+linkable BOOL false
+
+[attr intensity]
+desc STRING "Scalar multiplier for the sky radiance."
+linkable BOOL false
+min     FLOAT 0
+softmin FLOAT 0.1
+softmax FLOAT 10
+
+[attr sky_tint]
+desc STRING "Color that tints the sky color."
+linkable BOOL false
+
+[attr sun_tint]
+desc STRING "Color that tints the sun color."
+linkable BOOL false
+soft.disable_when STRING "{ enable_sun == 0 }"
+
+[attr sun_size]
+desc STRING "Size of the visible sun disk. It is possible to change the size of the sun for artistic reasons. "
+"However, 0.51 is the solid angle (degrees) of the sun, as seen from the earth."
+linkable BOOL false
+soft.disable_when STRING "{ enable_sun == 0 }"
+min     FLOAT 0
+softmin FLOAT 0.1
+softmax FLOAT 5
+
+[attr X]
+desc STRING "Reference X axis."
+linkable BOOL false
+soft.label STRING "X Axis"
+
+[attr Y]
+desc STRING "Reference Y axis."
+linkable BOOL false
+soft.label STRING "Y Axis"
+
+[attr Z]
+desc STRING "Reference Z axis."
+linkable BOOL false
+soft.label STRING "Z Axis"
+
+##############################################################################
+[node pow]
+soft.category STRING "Math"
+
+[attr base]
+desc STRING "Value to be raised to the power of the exponent."
+
+[attr exponent]
+desc STRING "The base is raised to the power of this value."
+
+##############################################################################
+[node ramp_float]
+soft.skip BOOL true
+
+##############################################################################
+[node ramp_rgb]
+soft.skip BOOL true
+
+##############################################################################
+[node random]
+soft.category STRING "Math"
+
+[attr input_type]
+desc STRING "The input type. The integer type is the cheapest to compute, while the color type is the most expensive."
+
+[attr input_int]
+desc STRING "Integer input used when the input type is int."
+soft.label STRING "Integer Input"
+soft.disable_when STRING "{ input_type != int }"
+softmin INT -10
+softmax INT 10
+
+[attr input_float]
+desc STRING "Float input used when the input type is float."
+soft.label STRING "Float Input"
+soft.disable_when STRING "{ input_type != float }"
+softmin FLOAT -10
+softmax FLOAT 10
+
+[attr input_color]
+desc STRING "Color input used when the input type is color."
+soft.label STRING "Color Input"
+soft.disable_when STRING "{ input_type != color }"
+
+[attr seed]
+desc STRING "The random number generator seed."
+softmin INT 0
+softmax INT 100
+
+[attr grayscale]
+desc STRING "Produce a cheaper to compute, monochromatic noise."
+
+##############################################################################
+[node range]
+soft.category STRING "Math"
+
+[attr input_min]
+desc STRING "The minimum value of the input range."
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr input_max]
+desc STRING "The maximum value of the input range."
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr output_min]
+desc STRING "The minimum value of the output range. The Input Min will be mapped to this value."
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr output_max]
+desc STRING "The maximum value of the input range. The Input Max will be mapped to this value."
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr smoothstep]
+desc STRING "Interpolates the output range smoothly between the max and min output values. The returned value is clamped between these values."
+
+##############################################################################
+[node ray_switch_rgba]
+soft.label STRING "Ray Switch RGBA"
+soft.category STRING "Utility"
+
+[attr camera]
+desc STRING "Plug the output of the node you wish to use when calculating camera rays here."
+
+[attr shadow]
+desc STRING "Plug the output of the node you wish to use when calculating shadow rays here."
+
+[attr diffuse_reflection]
+desc STRING "Plug the output of the node you wish to use when calculating diffuse reflection rays here."
+
+[attr diffuse_transmission]
+desc STRING "Plug the output of the node you wish to use when calculating diffuse transmission rays here."
+
+[attr specular_reflection]
+desc STRING "Plug the output of the node you wish to use when calculating specular reflection rays here."
+
+[attr specular_transmission]
+desc STRING "Plug the output of the node you wish to use when calculating specular transmission rays here."
+
+[attr volume]
+desc STRING "Plug the output of the node you wish to use when calculating volume rays here."
+
+##############################################################################
+[node ray_switch_shader]
+soft.category STRING "Utility"
+
+[attr camera]
+desc STRING "Plug the output of the node you wish to use when calculating camera rays here."
+
+[attr shadow]
+desc STRING "Plug the output of the node you wish to use when calculating shadow rays here."
+
+[attr diffuse_reflection]
+desc STRING "Plug the output of the node you wish to use when calculating diffuse reflection rays here."
+
+[attr diffuse_transmission]
+desc STRING "Plug the output of the node you wish to use when calculating diffuse transmission rays here."
+
+[attr specular_reflection]
+desc STRING "Plug the output of the node you wish to use when calculating specular reflection rays here."
+
+[attr specular_transmission]
+desc STRING "Plug the output of the node you wish to use when calculating specular transmission rays here."
+
+[attr volume]
+desc STRING "Plug the output of the node you wish to use when calculating volume rays here."
+
+##############################################################################
+[node reciprocal]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "The input color. 1 divided by input is returned."
+
+##############################################################################
+[node rgb_to_float]
+soft.label STRING "RGB To Float"
+soft.category STRING "Conversion"
+
+[attr input]
+desc STRING "The input color."
+
+[attr mode]
+desc STRING "min: Minimum component. max: Maximum component. average: Average of the components. sum: Sum of the components. luminance: Rec.709/sRGB luminance."
+
+##############################################################################
+[node rgb_to_vector]
+soft.label STRING "RGB To Vector"
+soft.category STRING "Conversion"
+
+[attr input]
+desc STRING "The input color."
+
+[attr mode]
+desc STRING "raw: Pass-through. canonical: Remaps input from [0, 1] to [-1, 1]."
+
+##############################################################################
+[node rgba_to_float]
+soft.label STRING "RGBA To Float"
+soft.category STRING "Conversion"
+
+[attr input]
+desc STRING "The input color."
+
+[attr mode]
+desc STRING "min: Minimum component. max: Maximum component. average: Average of the components. sum: Sum of the components. luminance: Rec.709/sRGB luminance."
+
+##############################################################################
+[node shadow_matte]
+soft.category STRING "Surface"
+soft.order STRING "BeginGroup Shadow shadow_color shadow_opacity EndGroup "
+"BeginGroup Background background_type offscreen_color EndGroup "
+"BeginGroup Diffuse diffuse_color diffuse_use_background diffuse_intensity backlighting indirect_diffuse_enable EndGroup "
+"BeginGroup Specular indirect_specular_enable specular_color specular_intensity specular_roughness EndGroup "
+"BeginGroup AOVs aov_shadow aov_shadow_diff aov_shadow_mask aov_indirect_diffuse aov_indirect_specular EndGroup"
+
+# Shadow group
+
+[attr shadow_color]
+desc STRING "A color to tint the shadows."
+
+[attr shadow_opacity]
+desc STRING "The opacity of the shadows."
+min FLOAT 0.0
+max FLOAT 1.0
+
+# Background group
+
+[attr background_type]
+desc STRING "The background type, sky or image plane."
+
+[attr offscreen_color]
+desc STRING "The offscreen color."
+soft.disable_when STRING "{ background_type == sky }"
+
+# Diffuse group
+
+[attr diffuse_color]
+desc STRING "A color to tint the indirect diffuse."
+soft.disable_when STRING "{ diffuse_use_background == 1 }"
+
+[attr diffuse_use_background]
+desc STRING "Flag to select between using diffuse color or background color to tint the indirect diffuse."
+soft.label STRING "Use Background Color"
+
+[attr diffuse_intensity]
+desc STRING "The indirect diffuse intensity."
+min FLOAT 0.0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr backlighting]
+desc STRING "Intensity of backlight effect."
+min FLOAT 0.0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr indirect_diffuse_enable]
+desc STRING "Add indirect diffuse lighting." 
+soft.label STRING "Indirect Diffuse"
+
+# Specular group
+
+[attr indirect_specular_enable]
+desc STRING "Add indirect specular lighting." 
+soft.label STRING "Indirect Specular"
+
+[attr specular_color]
+desc STRING "A color to tint the indirect specular."
+soft.disable_when STRING "{ indirect_specular_enable == 0 }"
+
+[attr specular_intensity]
+desc STRING "The indirect specular intensity."
+min FLOAT 0.0
+softmin FLOAT 0
+softmax FLOAT 1
+soft.disable_when STRING "{ indirect_specular_enable == 0 }"
+
+[attr specular_roughness]
+desc STRING "The indirect specular roughness."
+min FLOAT 0.0
+max FLOAT 1.0 
+soft.disable_when STRING "{ indirect_specular_enable == 0 }"
+
+# AOV group
+
+[attr aov_shadow]
+aov.type INT 5
+soft.label STRING "Shadow"
+
+[attr aov_shadow_diff]
+aov.type INT 5
+soft.label STRING "Shadow Diff"
+
+[attr aov_shadow_mask]
+aov.type INT 4
+soft.label STRING "Shadow Mask"
+
+[attr aov_indirect_diffuse]
+aov.type INT 5
+soft.label STRING "Indirect Diffuse"
+
+[attr aov_indirect_specular]
+aov.type INT 5
+soft.label STRING "Indirect Specular"
+
+##############################################################################
+[node shuffle]
+soft.category STRING "Conversion"
+
+[attr color]
+desc STRING "The input color."
+
+[attr alpha]
+desc STRING "The input alpha."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr channel_r]
+desc STRING "The red channel."
+
+[attr channel_g]
+desc STRING "The green channel."
+
+[attr channel_b]
+desc STRING "The blue channel."
+
+[attr channel_a]
+desc STRING "The alpha channel."
+
+[attr negate_r]
+desc STRING "Negate R."
+
+[attr negate_g]
+desc STRING "Negate G."
+
+[attr negate_b]
+desc STRING "Negate B."
+
+[attr negate_a]
+desc STRING "Negate A."
+
+##############################################################################
+[node sign]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "The input color. For each channel, the shaders returns -1 if the channel is negative, 0 if 0, 1 if positive."
+
+##############################################################################
+[node space_transform]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "The point, vector or normal to transform."
+
+[attr type]
+desc STRING "The input type."
+
+[attr from]
+desc STRING "Source space."
+
+[attr to]
+desc STRING "Destination space."
+
+[attr tangent]
+desc STRING "The tangent vector that, together with the normal, defines the tangent reference frame."
+soft.disable_when STRING "{ from != tangent to != tangent }"
+
+[attr normal]
+desc STRING "The normal vector that, together with the tangent, defines the tangent reference frame."
+
+[attr normalize]
+desc STRING "Normalize the output vector."
+
+[attr scale]
+desc STRING "Uniformly scales the output or, if the normal is set, magnifies the bump effect."
+softmin FLOAT 0
+softmax FLOAT 10
+soft.disable_when STRING "{ normalize == 1 }"
+
+##############################################################################
+[node sqrt]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "Input to calculate the square root of."
+
+##############################################################################
+[node standard_hair]
+soft.category STRING "Surface"
+soft.order STRING "BeginGroup Color base base_color melanin melanin_redness melanin_randomize EndGroup "
+"BeginGroup Specular roughness ior shift EndGroup "
+"BeginGroup Tint specular_tint specular2_tint transmission_tint EndGroup "
+"BeginGroup Diffuse diffuse diffuse_color EndGroup "
+"BeginGroup Emission emission emission_color EndGroup "
+"BeginGroup Advanced opacity indirect_diffuse indirect_specular extra_depth EndGroup"
+
+[attr base]
+desc STRING "Brightness of the hair, a multiplier for the base color."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr base_color]
+desc STRING "The color of the hair. This controls absorption inside hair fibers, which gives hair its color as light scatters around."
+soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC72-082C-11D0-91DE-00A024C78EE3}"
+
+[attr melanin]
+desc STRING "Amount of melanin in hair. Colors will range from blonde around 0.2, "
+"to red and brown around 0.5, to black at 1.0."
+min FLOAT 0
+max FLOAT 1
+
+[attr melanin_redness]
+desc STRING "Controls the redness of hair. Higher values increase the proportion of red pheomelanin."
+min FLOAT 0
+max FLOAT 1
+
+[attr melanin_randomize]
+desc STRING "Randomizes the amount of melanin in hair fibers, for variation in hair colors (0.. 1)."
+min FLOAT 0
+max FLOAT 1
+
+[attr roughness]
+desc STRING "Roughness of hair specular reflections and transmission."
+min FLOAT 0
+max FLOAT 1
+
+[attr ior]
+desc STRING "Index of refraction. Lower IOR values give stronger forward scattering, "
+"and higher values give stronger reflection."
+min FLOAT 1
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr shift]
+desc STRING "Angle of scales on the hair fiber, shifting the primary and secondary specular "
+"reflections away from the perfect mirror direction."
+min FLOAT -90
+max FLOAT 90
+softmin FLOAT 0
+softmax FLOAT 20
+
+[attr specular_tint]
+desc STRING "Scale of the primary specular contribution."
+soft.label STRING "Specular 1"
+soft.viewport_guid STRING "{3515CC73-082C-11D0-91DE-00A024C78EE3}"
+
+[attr specular2_tint]
+desc STRING "Scale of the secondary specular contribution"
+soft.label STRING "Specular 2"
+
+[attr transmission_tint]
+desc STRING "Transmission Tint."
+soft.label STRING "Transmission"
+
+[attr diffuse]
+desc STRING "Diffuseness of hair, with 0 giving fully specular scattering, and 1 fully diffuse scattering."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr diffuse_color]
+desc STRING "Diffuse scattering color."
+soft.label STRING "Color"
+
+[attr emission]
+desc STRING "Multiplier for the emission color."
+soft.label STRING "Weight"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr emission_color]
+desc STRING "Color used as emission."
+soft.label STRING "Color"
+
+[attr opacity]
+desc STRING "Opacity of the hair."
+
+[attr indirect_diffuse]
+desc STRING "The amount of diffuse light received from indirect sources only."
+min FLOAT 0
+max FLOAT 1
+
+[attr indirect_specular]
+desc STRING "The amount of specularity received from indirect sources only."
+min FLOAT 0
+max FLOAT 1
+
+[attr extra_depth]
+desc STRING "Adds extra Specular Ray Depth just for this shader."
+min INT 0
+max INT 64
+
+##############################################################################
+[node standard_surface]
+soft.category STRING "Surface"
+soft.order STRING "BeginGroup Base base base_color diffuse_roughness metalness EndGroup "
+"BeginGroup Specular specular specular_color specular_roughness specular_IOR specular_anisotropy specular_rotation EndGroup "
+"BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness EndGroup "
+"BeginGroup Subsurface subsurface subsurface_color subsurface_radius subsurface_scale EndGroup "
+"BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal coat_affect_color coat_affect_roughness EndGroup "
+"BeginGroup Thin_Film thin_film_thickness thin_film_IOR EndGroup "
+"BeginGroup Emission emission emission_color EndGroup "
+"BeginGroup Geometry thin_walled opacity normal tangent EndGroup "
+"BeginGroup Advanced caustics internal_reflections exit_to_background indirect_diffuse indirect_specular EndGroup"
+
+[attr base]
+desc STRING "Scales the diffuse component."
+soft.label STRING "Base Scale"
+min FLOAT 0
+max FLOAT 1
+
+[attr base_color]
+desc STRING "The base diffuse color."
+soft.label STRING "Base Color"
+soft.viewport_guid STRING "{3515CC72-082C-11D0-91DE-00A024C78EE3}"
+
+[attr diffuse_roughness]
+desc STRING "An Oren-Nayar type diffuse shading model. This attribute takes surface roughness into account. "
+"A value of 0.0 for the diffuse roughness is comparable to a Lambert, "
+"however, higher values will result in a rougher surface look more suitable for materials like concrete, plaster, sand and so on."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular]
+desc STRING "Weight of the specular component."
+soft.label STRING "Specular"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_color]
+desc STRING "The color of the specular highlights."
+soft.label STRING "Specular Color"
+soft.viewport_guid STRING "{3515CC73-082C-11D0-91DE-00A024C78EE3}"
+
+[attr specular_roughness]
+desc STRING "Controls how blurry/ glossy the specular reflections are. The lower the value, the sharper the reflection. "
+"In the limit, a value of 0 will give you a perfectly sharp mirror reflection, whilst 1.0 will create reflections that are close to diffuse shading."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_IOR]
+desc STRING "The index of refraction."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr specular_anisotropy]
+desc STRING "Anisotropy reflects light with a directional bias and causes materials to appear rougher or glossier in certain directions. "
+"Non-zero values apply an anisotropic reflectance effect, similar to brushed metal. The higher this value, the more pronounced "
+"the anisotropic reflectance is. Higher values stretch the specular reflection making the material look rougher in one direction."
+soft.label STRING "Anisotropy"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_rotation]
+desc STRING "The rotation value changes the orientation of the anisotropy in UV space. At 0.0, there is no rotation, while at 1.0 the effect is rotated by 180 degrees."
+soft.label STRING "Rotation"
+min FLOAT 0
+max FLOAT 1
+
+[attr metalness]
+desc STRING "With metalness 1.0 the surface behaves like metal, using fully specular reflection and complex Fresnel."
+soft.label STRING "Metalness"
+min FLOAT 0
+max FLOAT 1
+
+[attr transmission]
+desc STRING "Allows light to scatter through the surface, for materials such as glass or water."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr transmission_color]
+desc STRING "Filters the refraction according to the distance traveled by the refracted ray. "
+"The longer light travels inside a mesh, the more it is affected by this color."
+soft.label STRING "Color"
+
+[attr transmission_depth]
+desc STRING "Depth into the volume at which the transmission color is realized."
+soft.label STRING "Depth"
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr transmission_scatter]
+desc STRING "Suitable for any kind of liquid that is fairly thick or where there is enough of it "
+"for scattering to be visible, such as a deep body of water or honey. "
+soft.label STRING "Scatter"
+
+[attr transmission_scatter_anisotropy]
+desc STRING "Zero gives isotropic scattering, so that light is scattered evenly in all directions. "
+"Positive values bias the scattering effect forwards, in the direction of the light, while negative values bias the scattering backwards."
+soft.label STRING "Scatter Anisotropy"
+min FLOAT -1
+max FLOAT 1
+
+[attr transmission_dispersion]
+desc STRING "Abbe number of the material, which describes how much the index of refraction varies across wavelengths."
+soft.label STRING "Dispersion"
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 100
+
+[attr transmission_extra_roughness]
+desc STRING "Additional refraction blurriness."
+soft.label STRING "Extra Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr subsurface]
+desc STRING "The amount of sub-surface scattering. Multiplies SSS Color."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr subsurface_color]
+desc STRING "The color used to determine the subsurface scattering effect. For example, replicating a skin material, would mean setting this to a fleshy color."
+soft.label STRING "Color"
+
+[attr subsurface_radius]
+desc STRING "The radius of the area each sample affects. Higher values will smooth the appearance of the subsurface scattering. "
+"Results will vary depending on the scale of your object in scene."
+soft.label STRING "Radius"
+
+[attr subsurface_scale]
+desc STRING "Scales the SSS component."
+soft.label STRING "Scale"
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr thin_walled]
+desc STRING "Provide the effect of a translucent object being lit from behind "
+"It is recommended that this only be used with thin objects (single sided geometry) "
+"as objects with thickness may render incorrectly."
+soft.label STRING "Thin-Walled"
+
+[attr normal]
+desc STRING "Connect a normal map here (usually exported from Mudbox or ZBrush)."
+soft.label STRING "Normal"
+soft.inspectable BOOL false
+
+[attr tangent]
+desc STRING "Custom tangent for specular anisotropic shading. "
+"For example, if the mesh has tangent user data, that could be linked here."
+soft.label STRING "Anisotropy Tangent"
+soft.inspectable BOOL false
+
+[attr coat]
+desc STRING "Clear-coat layer on top of all other shading effects."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr coat_color]
+desc STRING "Color of the coating layer's transparency."
+soft.label STRING "Color"
+
+[attr coat_roughness]
+desc STRING "Glossiness of the specular reflections. The lower the value, the sharper the reflection."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr coat_IOR]
+desc STRING "Index of Refraction."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr coat_normal]
+desc STRING "Affects the Fresnel blending of the coat over the base, so depending on the normal, "
+"the base will be more or less visible from particular angles."
+soft.label STRING "Normal"
+soft.inspectable BOOL false
+
+[attr coat_affect_color]
+desc STRING "Affect Color."
+soft.label STRING "Affect Color"
+min FLOAT 0
+max FLOAT 1
+
+[attr coat_affect_roughness]
+desc STRING "Affect Roughness."
+soft.label STRING "Affect Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr thin_film_thickness]
+desc STRING "Thickness of the thin film interference on the surface. Typical values are between 0 and 3000 nm."
+soft.label STRING "Thickness"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3000
+
+[attr thin_film_IOR]
+desc STRING "Index of refraction of the thin film."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr emission]
+desc STRING "Controls the amount of emitted light. It can create noise, especially if the source of indirect illumination is very small (a light bulb geometry)."
+soft.label STRING "Weight"
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr emission_color]
+desc STRING "The emitted color."
+soft.label STRING "Color"
+
+[attr opacity]
+desc STRING "The opacity color."
+soft.label STRING "Opacity"
+
+[attr caustics]
+desc STRING "Specifies whether indirect diffuse rays will compute direct specular and "
+"indirect specular light components as well as reflection and refraction components."
+soft.label STRING "Enable Caustics"
+
+[attr internal_reflections]
+desc STRING "Unchecking internal reflections will disable indirect specular and mirror perfect reflection "
+"computations when ray refraction depth is bigger than zero (when there has been at least one "
+"refraction ray traced in the current ray tree)."
+soft.label STRING "Internal Reflections"
+
+[attr exit_to_background]
+desc STRING "Specify whether to use the environment color for reflection rays where there was insufficient ray depth (true)."
+soft.label STRING "Exit to Background"
+
+[attr indirect_diffuse]
+desc STRING "Scale the indirect diffuse component."
+soft.label STRING "Indirect Diffuse"
+min FLOAT 0
+max FLOAT 1
+
+[attr indirect_specular]
+desc STRING "Scales the indirect specular component."
+soft.label STRING "Indirect Specular"
+min FLOAT 0
+max FLOAT 1
+
+##############################################################################
+[node standard_volume]
+soft.category STRING "Volume"
+soft.order STRING "BeginGroup Density density density_channel EndGroup "
+"BeginGroup Scattering scatter scatter_color scatter_color_channel scatter_anisotropy EndGroup "
+"BeginGroup Transparency transparent transparent_depth transparent_channel EndGroup "
+"BeginGroup Emission emission_mode emission emission_color emission_channel EndGroup "
+"BeginGroup Blackbody temperature temperature_channel blackbody_kelvin blackbody_intensity EndGroup "
+"BeginGroup Advanced displacement interpolation EndGroup"
+
+[attr density]
+desc STRING "The density of the volume, with low density resulting in thin volumes and high density "
+"in thick volumes. It acts as a multiplier on the density channel"
+min FLOAT 0.0
+softmin FLOAT 0
+softmax FLOAT 100
+
+[attr density_channel]
+desc STRING "Density channel to read from the volume object."
+soft.label STRING "Channel"
+
+[attr scatter]
+desc STRING "Brightness of the volume under illumination. This is the ratio of light that is scattered rather than absorbed."
+soft.label STRING "Intensity"
+min FLOAT 0.0
+max FLOAT 1.0
+
+[attr scatter_color]
+desc STRING "Color of the volume under illumination."
+soft.label STRING "Color"
+
+[attr scatter_color_channel]
+desc STRING "Scatter channel to read from the volume object. This acts as a multiplier on the scatter color."
+soft.label STRING "Channel"
+
+[attr scatter_anisotropy]
+desc STRING "The directional bias, or anisotropy, of the scattering. "
+"The default value of zero gives isotropic scattering, so that light is scattered "
+"evenly in all directions. Positive values bias the scattering effect forwards, "
+"in the direction of the light, while negative values bias the scattering backwards, "
+"toward the light."
+soft.label STRING "Anisotropy"
+min FLOAT -1.0
+max FLOAT 1.0
+
+[attr transparent]
+desc STRING "Additional control over the density of the volume, "
+"to tint the color of volume shadows and objects seen through the volume."
+soft.label STRING "Transparency"
+
+[attr transparent_depth]
+desc STRING "Additional control over the density of the volume, "
+"to control the depth into the volume at which the transparent color is realized."
+soft.label STRING "Depth"
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 100
+
+[attr transparent_channel]
+desc STRING "Transparent color to read from the volume object."
+soft.label STRING "Channel"
+
+[attr emission_mode]
+desc STRING "none: emit no light. "
+"channel: emit light using a specified emission channel, or using a shader connected to the emission "
+"rate or color parameters. "
+"density: emit light using the density channel, modulated by an optional emission channel. "
+"blackbody: emit color and intensity based on temperature, for rendering fire and explosions."
+soft.label STRING "Mode"
+
+[attr emission]
+desc STRING "Rate at which the volume emits light."
+soft.label STRING "Intensity"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr emission_color]
+desc STRING "A color to tint (multiply to) the emission."
+soft.label STRING "Color"
+
+[attr emission_channel]
+desc STRING "In Channel emission mode, the emission channel to sample the emission rate from. "
+"When not empty, this channel will be used to sample the emission values for the volume "
+"instead of the emission parameter."
+soft.label STRING "Channel"
+
+[attr temperature]
+desc STRING "If a blackbody channel is used, this acts as a multiplier for the blackbody temperature."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr temperature_channel]
+desc STRING "In blackbody emission mode, the temperature channel to read from the volume object."
+soft.label STRING "Channel"
+
+[attr blackbody_kelvin]
+desc STRING "Multiplier for the temperature from the temperature volume channel."
+soft.label STRING "Kelvin"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 12000
+
+[attr blackbody_intensity]
+desc STRING " Intensity of the blackbody emission."
+soft.label STRING "Intensity"
+min FLOAT 0
+max FLOAT 1
+
+[attr displacement]
+desc STRING "Connect a noise texture or other shaders here to displace the volume, similar to displacement on surfaces."
+
+[attr interpolation]
+desc STRING "The voxel interpolation to use when sampling the volume data using named channels."
+
+##############################################################################
+[node state_float]
+soft.category STRING "Shading State"
+
+[attr variable]
+desc STRING "Shading state variable."
+
+##############################################################################
+[node state_int]
+soft.category STRING "Shading State"
+
+[attr variable]
+desc STRING "Shading state variable."
+
+##############################################################################
+[node state_vector]
+soft.category STRING "Shading State"
+
+[attr variable]
+desc STRING "Shading state variable."
+
+##############################################################################
+[node subtract]
+soft.category STRING "Math"
+
+[attr input1]
+soft.label STRING "Input 1"
+
+[attr input2]
+soft.label STRING "Input 2"
+
+##############################################################################
+[node switch_rgba]
+soft.label STRING "Switch RGBA"
+soft.category STRING "Utility"
+
+[attr index]
+desc STRING "The index of the returned color."
+min INT 0
+max INT 19
+
+[attr input0]
+soft.label STRING "Color 0"
+
+[attr input1]
+soft.label STRING "Color 1"
+
+[attr input2]
+soft.label STRING "Color 2"
+
+[attr input3]
+soft.label STRING "Color 3"
+
+[attr input4]
+soft.label STRING "Color 4"
+
+[attr input5]
+soft.label STRING "Color 5"
+
+[attr input6]
+soft.label STRING "Color 6"
+
+[attr input7]
+soft.label STRING "Color 7"
+
+[attr input8]
+soft.label STRING "Color 8"
+
+[attr input9]
+soft.label STRING "Color 9"
+
+[attr input10]
+soft.label STRING "Color 10"
+
+[attr input11]
+soft.label STRING "Color 11"
+
+[attr input12]
+soft.label STRING "Color 12"
+
+[attr input13]
+soft.label STRING "Color 13"
+
+[attr input14]
+soft.label STRING "Color 14"
+
+[attr input15]
+soft.label STRING "Color 15"
+
+[attr input16]
+soft.label STRING "Color 16"
+
+[attr input17]
+soft.label STRING "Color 17"
+
+[attr input18]
+soft.label STRING "Color 18"
+
+[attr input19]
+soft.label STRING "Color 19"
+
+##############################################################################
+[node switch_shader]
+soft.category STRING "Utility"
+
+[attr index]
+desc STRING "The index of the returned material."
+min INT 0
+max INT 19
+
+[attr input0]
+soft.label STRING "Material 0"
+
+[attr input1]
+soft.label STRING "Material 1"
+
+[attr input2]
+soft.label STRING "Material 2"
+
+[attr input3]
+soft.label STRING "Material 3"
+
+[attr input4]
+soft.label STRING "Material 4"
+
+[attr input5]
+soft.label STRING "Material 5"
+
+[attr input6]
+soft.label STRING "Material 6"
+
+[attr input7]
+soft.label STRING "Material 7"
+
+[attr input8]
+soft.label STRING "Material 8"
+
+[attr input9]
+soft.label STRING "Material 9"
+
+[attr input10]
+soft.label STRING "Material 10"
+
+[attr input11]
+soft.label STRING "Material 11"
+
+[attr input12]
+soft.label STRING "Material 12"
+
+[attr input13]
+soft.label STRING "Material 13"
+
+[attr input14]
+soft.label STRING "Material 14"
+
+[attr input15]
+soft.label STRING "Material 15"
+
+[attr input16]
+soft.label STRING "Material 16"
+
+[attr input17]
+soft.label STRING "Material 17"
+
+[attr input18]
+soft.label STRING "Material 18"
+
+[attr input19]
+soft.label STRING "Material 19"
+
+
+##############################################################################
+[node thin_film]
+soft.category STRING "Surface"
+
+[attr thickness_min]
+desc STRING "The minimum thickness of the thin film, in nanometers."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1000
+soft.label STRING "Min. Thickness (nm)"
+
+[attr thickness_max]
+desc STRING "The maximum thickness of the thin film, in nanometers."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1000
+soft.label STRING "soft. Thickness (nm)"
+
+[attr thickness]
+desc STRING "Defines the actual thickness of the film between the specified min and max thickness values. Normally this would be something like a noise map to give some variation to the interference effect."
+min FLOAT 0.0
+max FLOAT 1.0
+
+[attr ior_medium]
+desc STRING "The refractive index of the medium surrounding the material. Normally this is set to 1.0 for air."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+soft.label STRING "Medium IOR"
+
+[attr ior_film]
+desc STRING "The refractive index of the medium that the thin film is made of."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+soft.label STRING "Film IOR"
+
+[attr ior_internal]
+desc STRING "The refractive index of the medium below the thin film."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+soft.label STRING "Internal IOR"
+
+##############################################################################
+[node trace_set]
+soft.category STRING "Utility"
+
+##############################################################################
+[node trigo]
+soft.category STRING "Math"
+
+[attr input]
+desc STRING "The input color."
+
+[attr function]
+desc STRING "Trigonometric function to perform."
+
+[attr units]
+desc STRING "Choose between radians and degrees for the argument of sine, cosine and tangent and for the result of the inverse functions. It has no effect on the hyperbolic functions."
+soft.disable_when STRING "{ function == cosh } { function == sinh } { function == tanh }"
+
+[attr frequency]
+desc STRING "The frequency in function(input * frequency + phase). Makes most sense for the sine, cosine and tangent functions."
+softmin FLOAT -5
+softmax FLOAT 5
+
+[attr phase]
+desc STRING "The phase in function(input * frequency + phase). Makes most sense for the sine, cosine and tangent functions."
+softmin FLOAT -5
+softmax FLOAT 5
+
+##############################################################################
+[node triplanar]
+soft.category STRING "Texture"
+
+[attr input]
+desc STRING "The image to be looked up by the computed projection."
+
+[attr scale]
+desc STRING "Scale applied to the projected UV"
+
+[attr rotate]
+desc STRING "Rotation applied to the projected UV"
+
+[attr offset]
+desc STRING "Offset applied to the projected UV"
+
+[attr coord_space]
+soft.label STRING "Coordinate Space"
+desc STRING "Coordinate space"
+
+[attr P]
+desc STRING "If linked, the point at which the shader is evaluated."
+
+[attr blend]
+desc STRING "Blending factor at the seems."
+min FLOAT 0
+max FLOAT 1
+
+##############################################################################
+[node two_sided]
+soft.category STRING "Surface"
+
+[attr front]
+desc STRING "The material when the surface normal is facing the camera."
+soft.label STRING "Front Material"
+
+[attr back]
+desc STRING "The material when the surface normal is opposite to the camera."
+soft.label STRING "Back Material"
+
+##############################################################################
+[node user_data_float]
+soft.category STRING "User Data"
+
+[attr attribute]
+desc STRING "Name of the custom attribute attached to the geometry with float data."
+
+[attr default]
+desc STRING "The default value to use if the attribute is not found on input."
+softmin FLOAT 0
+softmax FLOAT 1
+
+##############################################################################
+[node user_data_int]
+soft.category STRING "User Data"
+
+[attr attribute]
+desc STRING "Name of the custom attribute attached to the geometry with integer data."
+
+[attr default]
+desc STRING "The default value to use if the attribute is not found on input."
+softmin INT 0
+softmax INT 100
+
+##############################################################################
+[node user_data_rgb]
+soft.label STRING "User Data RGB"
+soft.category STRING "User Data"
+
+[attr attribute]
+desc STRING "Name of the custom attribute attached to the geometry with RGB data."
+
+[attr default]
+desc STRING "The default value to use if the attribute is not found on input."
+
+##############################################################################
+[node user_data_rgba]
+soft.label STRING "User Data RGBA"
+soft.category STRING "User Data"
+
+[attr attribute]
+desc STRING "Name of the custom attribute attached to the geometry with RGBA data."
+
+[attr default]
+desc STRING "The default value to use if the attribute is not found on input."
+
+##############################################################################
+[node user_data_string]
+soft.category STRING "User Data"
+
+[attr attribute]
+desc STRING "Name of the custom attribute attached to the geometry with string data."
+
+[attr default]
+desc STRING "The default value to use if the attribute is not found on input."
+
+##############################################################################
+[node utility]
+soft.category STRING "Utility"
+
+[attr color_mode]
+desc STRING "The mode used to color the mesh. You can either choose a flat color as specified by the color setting, or the output color can be chosen to represent various things such as the geometry normal, the shading normal, a wireframe view, etc."
+linkable BOOL false
+
+[attr shade_mode]
+desc STRING "The mode used to color the mesh. You can either choose a flat color as specified by the color setting, or the output color can be chosen to represent various things such as the geometry normal, the shading normal, a wireframe view, etc."
+linkable BOOL false
+
+[attr overlay_mode]
+desc STRING "The mode used to color the mesh. You can either choose a flat color as specified by the color setting, or the output color can be chosen to represent various things such as the geometry normal, the shading normal, a wireframe view, etc."
+linkable BOOL false
+
+[attr color]
+desc STRING "Sets the color of the shader when the Color Mode is set to color."
+soft.disable_when STRING "{ color_mode != color }"
+
+[attr ao_distance]
+desc STRING "Ambient occlusion distance for when mode is set to Ambocc."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 100
+soft.label STRING "Amb. Occ. Distance"
+soft.disable_when STRING "{ shade_mode != ambocc }"
+
+[attr roughness]
+desc STRING "The specular roughness."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr normal]
+desc STRING "If linked, the normal to be used."
+
+##############################################################################
+[node uv_transform]
+soft.category STRING "Utility"
+soft.order STRING "BeginGroup Main passthrough unit uvset EndGroup "
+"BeginGroup Frame scale_frame translate_frame rotate_frame pivot_frame wrap_frame_u wrap_frame_v wrap_frame_color coverage EndGroup "
+"BeginGroup Transform repeat offset rotate pivot noise mirror_u mirror_v flip_u flip_v swap_uv stagger EndGroup"
+
+[attr passthrough]
+desc STRING "The input shader network whose UV will be transformed by this shader before evaluation."
+
+[attr unit]
+desc STRING "The unit to use for rotation values, the default is degrees, you can also use radians if it's more convenient. The normalized rotation units will map [0°, 360°] to [0, 1], which is useful when using rotation maps."
+soft.label STRING "Rotation Units"
+
+[attr uvset]
+desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
+linkable BOOL false
+soft.label STRING "UV Set"
+
+[attr coverage]
+desc STRING "The frame coverage along U and V."
+
+[attr scale_frame]
+desc STRING "Scale the texture frame."
+
+[attr translate_frame]
+desc STRING "Translate the texture frame."
+
+[attr rotate_frame]
+desc STRING "Rotate the texture frame."
+softmin FLOAT 0
+softmax FLOAT 360
+
+[attr pivot_frame]
+desc STRING "The pivot for the scale and rotation of the texture frame."
+
+[attr wrap_frame_u]
+desc STRING "The wrapping mode to when the U coordinate falls outside of the frame. The 'color' mode will get its color from the 'wrap_frame_color' parameter."
+soft.label STRING "Wrap U"
+
+[attr wrap_frame_v]
+desc STRING "The wrapping mode to when the V coordinate falls outside of the frame. The 'color' mode will get its color from the 'wrap_frame_color' parameter."
+soft.label STRING "Wrap V"
+
+[attr wrap_frame_color]
+desc STRING "The color that is output when the UVs fall outside of the frame when the wrapping mode is 'color'."
+soft.label STRING "Wrap Color"
+
+[attr repeat]
+desc STRING "Repetition scale to apply to the UVs."
+
+[attr offset]
+desc STRING "Offset translation to apply to the UVs." 
+
+[attr rotate]
+desc STRING "Rotation to apply to the UVs."
+softmin FLOAT 0
+softmax FLOAT 360
+
+[attr pivot]
+desc STRING "The pivot for the UV rotation and scale."
+
+[attr noise]
+desc STRING "The amount of Perlin noise to jitter the UVs." 
+
+[attr mirror_u]
+desc STRING "Flip every other texture repetition in the U direction."
+
+[attr mirror_v]
+desc STRING "Flip every other texture repetition in the V direction."
+
+[attr flip_u]
+desc STRING "Flip the texture in the U direction."
+
+[attr flip_v]
+desc STRING "Flip the texture in the V direction."
+
+[attr swap_uv]
+desc STRING "Swap the U and V directions."
+soft.label STRING "Swap U & V"
+
+[attr stagger]
+desc STRING "Stagger every other texture row repetition by 0.5 in the V direction, for example for a brick wall texture."
+
+##############################################################################
+[node vector_map]
+soft.category STRING "Conversion"
+soft.order STRING "input tangent_space normal tangent order invert_x invert_y invert_z color_to_signed scale"
+
+[attr input]
+desc STRING "The input vector."
+
+[attr normal]
+desc STRING "The normal vector that, together with the tangent, defines the tangent reference frame."
+soft.disable_when STRING "{ tangent_space == 0 }"
+
+[attr tangent]
+desc STRING "The tangent vector that, together with the normal, defines the tangent reference frame."
+soft.disable_when STRING "{ tangent_space == 0 }"
+
+[attr order]
+desc STRING "Re-order the input channels."
+
+[attr invert_x]
+desc STRING "If on, inverts the x channel."
+
+[attr invert_y]
+desc STRING "If on, inverts the y channel."
+
+[attr invert_z]
+desc STRING "If on, inverts the z channel."
+
+[attr color_to_signed]
+desc STRING "Convert from 0..1 color values (typical normal map encoding) to -1..1 vectors"
+
+[attr tangent_space]
+desc STRING "If enabled, creates a tangent reference frame based on normal and tangent."
+
+[attr scale]
+desc STRING "Uniformly scales the output."
+softmin FLOAT 0
+softmax FLOAT 1
+
+##############################################################################
+[node vector_to_rgb]
+soft.label STRING "Vector To RGB"
+soft.category STRING "Conversion"
+
+[attr input]
+desc STRING "The input vector."
+
+[attr mode]
+desc STRING "raw: Pass-through. normalized: Normalizes the vector and remaps input from [0, 1] to [-1, 1]. canonical: Remaps input from [0, 1] to [-1, 1]."
+
+##############################################################################
+[node volume_sample_float]
+soft.category STRING "Volume"
+soft.order STRING "BeginGroup Samplng channel position_offset interpolation volume_type sdf_offset sdf_blend sdf_invert EndGroup "
+"BeginGroup Remap input_min input_max contrast contrast_pivot bias gain output_min output_max clamp_min clamp_max EndGroup"
+
+[attr channel]
+desc STRING "The volume channel to sample."
+
+[attr position_offset]
+desc STRING "An offset added to the sampling position, in order to displace or "
+"add noise to the volume. Remember to pad the volume bounds_slack accordingly."
+
+[attr interpolation]
+desc STRING "The voxel interpolation used when sampling the channel."
+
+[attr volume_type]
+desc STRING "Interpret the volume data as fog (density) or SDF (signed distance function). In SDF mode, the inside is converted to a constant density of 1."
+
+[attr sdf_offset]
+desc STRING "Offset the SDF values by this distance, allowing to dilate or erode the SDF boundary shape."
+soft.label STRING "SDF Offset"
+soft.disable_when STRING "{ volume_type != sdf }"
+softmin FLOAT -1
+softmax FLOAT 1
+
+[attr sdf_blend]
+desc STRING "The distance over which to smooth out the edges of the SDF."
+soft.label STRING "SDF Blend"
+soft.disable_when STRING "{ volume_type != sdf }"
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr sdf_invert]
+desc STRING "By default, positive distances represent space outside of the boundary while negative distances mean inside. This parameter lets you invert this convention."
+soft.label STRING "Invert SDF"
+soft.disable_when STRING "{ volume_type != sdf }"
+
+[attr input_min]
+desc STRING "The minimum value of the input range."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr input_max]
+desc STRING "The maximum value of the input range."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr contrast]
+desc STRING "Scale values around the contrast pivot."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr contrast_pivot]
+desc STRING "The origin of the contrast scaling."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr bias]
+desc STRING "Push or pull values by altering the slope at the beginning of the "
+"range. Bias values below 0.5 decrease the slope and lower values overall. "
+"Above 0.5, the slope is higher and value grow more quickly. A value of 0.5 has "
+"no effect."
+min FLOAT 0
+max FLOAT 1
+
+[attr gain]
+desc STRING "Increase or decrease the slope of the mid range values. Gain values "
+"below 0.5 increase the contrast whereas values above 0.5 flatten the mid range "
+"values. A value of 0.5 has no effect."
+min FLOAT 0
+max FLOAT 1
+
+[attr output_min]
+desc STRING "The minimum value of the output range, input_min will be mapped to this value."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr output_max]
+desc STRING "The maximum value of the input range, input_max will be mapped to this value."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr clamp_min]
+desc STRING "Clamp the result to the min_output value."
+
+[attr clamp_max]
+desc STRING "Clamp the result to the max_output value."
+
+##############################################################################
+[node volume_sample_rgb]
+soft.label STRING "Volume Sample RGB"
+soft.category STRING "Volume"
+soft.order STRING "BeginGroup Sampling channel position_offset interpolation EndGroup "
+"BeginGroup Color_Correction gamma hue_shift saturation contrast contrast_pivot exposure multiply add EndGroup"
+
+[attr channel]
+desc STRING "The volume channel to sample."
+
+[attr position_offset]
+desc STRING "An offset added to the sampling position, in order to displace or "
+"add noise to the volume. Remember to pad the volume bounds_slack accordingly."
+
+[attr interpolation]
+desc STRING "The voxel interpolation used when sampling the channel."
+
+[attr hue_shift]
+desc STRING "Rotate the color hue, a value of 1 means a full rotation."
+softmin FLOAT -1
+softmax FLOAT 1
+
+[attr saturation]
+desc STRING "Scale the saturation by this factor."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr add]
+desc STRING "Add this value to the color."
+softmin FLOAT -1
+softmax FLOAT 1
+
+[attr contrast]
+desc STRING "Scale values around the contrast pivot."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr contrast_pivot]
+desc STRING "The origin of the contrast scaling."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr exposure]
+desc STRING "Multiply the color using a photo f-stop scale, where an increment of 1 doubles the luminosity."
+softmin FLOAT -10
+softmax FLOAT 10
+
+[attr multiply]
+desc STRING "Multiply the color by this factor."
+softmin FLOAT 0
+softmax FLOAT 2
+
+[attr gamma]
+desc STRING "Apply a gamma correction to the color."
+softmin FLOAT 0
+softmax FLOAT 3
+
+##############################################################################
+[node wireframe]
+soft.category STRING "Utility"
+soft.order STRING "edge_type fill_color line_color line_width raster_space"
+
+[attr edge_type]
+desc STRING "Determines how the mesh is represented. Quads will render as polygon faces. If triangles is selected, polygons will be broken up into their triangular tessellation"
+
+[attr line_width]
+desc STRING "The thickness of the edge lines of the polygon faces in pixel units."
+min     FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+
+[attr fill_color]
+desc STRING "The color used to represent the polygon faces."
+
+[attr line_color]
+desc STRING "The color used to represent the edges."
+
+[attr raster_space]
+desc STRING "By enabling Raster Space, the shader will interpret the Line Width parameter as a number of pixels, otherwise Line Width is measured in world space."

@@ -1,0 +1,5 @@
+Fixing "Instance Master Hidden attribute doesn't work on pointclouds"
+	
+(trac #1204)
+
+author: sjannuz

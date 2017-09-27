@@ -1,0 +1,6 @@
+Implemented Texture_Projection_Lookup shader (sib_texproj_lookup)
+
+Some Procedural nodes allow texture coordinate vector input where you can supply your own coordinates or a texture
+projection lookup, but this node was not implemented.
+
+author: r3d

@@ -1,0 +1,5 @@
+Fixing "Pointclouds not always correctly instanced by other pointclouds"
+	
+(trac #1199
+
+author: sjannuz

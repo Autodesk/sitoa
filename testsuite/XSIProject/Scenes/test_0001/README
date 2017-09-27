@@ -1,0 +1,7 @@
+Texture stretching on subdiv objects
+
+If you make for example a cube, bevel its edges and subdivide it once
+or twice any texture on there will stretch towards the edges.
+See trac#200.
+
+author: Andreas Bystrom

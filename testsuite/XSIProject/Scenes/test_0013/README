@@ -1,0 +1,9 @@
+Camera Rotoscopy 2D Zoom Mode
+
+
+When using a rotoscope image in the viewport the camera has a subpixelzoom mode where you can apply a 2D zoom to the image
+We have to apply the subfustrum information to the screen_window_min and screen_window_max parameters of the camera
+ 
+See trac #483
+
+author: Gregory Ducatel

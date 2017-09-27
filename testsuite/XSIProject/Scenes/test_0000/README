@@ -1,0 +1,7 @@
+Texture-mapped hair
+
+When trying to use a texturemap on hair, the texture appears to be applied
+from root to tip rather than actually using the UVs on the hair.
+See Trac #189
+
+author: Andreas Bystrom

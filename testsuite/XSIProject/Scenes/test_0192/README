@@ -1,0 +1,5 @@
+Fixing "stand-ins' sidedness does not propagate to the shapes"
+	
+(trac #1580)
+
+author: sjannuz

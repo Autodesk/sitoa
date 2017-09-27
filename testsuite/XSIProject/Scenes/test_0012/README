@@ -1,0 +1,8 @@
+Texture wrapping in multiple object sharing the same image node
+
+When applying the same material with a texture to multiple objects
+wrapping will not work if some of this objects haven't texture wrapping enabled
+
+See trac#492.
+
+author: Andreas Bystrom

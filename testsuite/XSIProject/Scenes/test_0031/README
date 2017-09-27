@@ -1,0 +1,6 @@
+sib_color_balance is not working right with preserve brightness on
+
+The computations of ColorBalanceRGBtoHLS inside sib_color_balance are done the wrong way, 
+with a variable (out_hls) being used without having been initialized
+
+author: r3d 

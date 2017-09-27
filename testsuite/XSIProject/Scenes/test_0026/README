@@ -1,0 +1,6 @@
+Arnold Visibility property broken on instanced objects
+
+When an Arnold Visibility property is added to an object inside a model, and said model is instanced, 
+the property and the attributes set within do not appear to be instanced along. Ticket #560
+
+author: Nic Groot Bluemink

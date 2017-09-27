@@ -1,0 +1,793 @@
+# vim: filetype=python
+
+## load our own python modules
+import system
+from build_tools import *
+
+import os, glob, shutil, time, subprocess
+
+Import('env BUILD_BASE_DIR SITOA SITOA_SHADERS')
+
+ROOT_DIR = os.getcwd()
+
+# Total running time for all tests
+TOTAL_RUNNING_TIME = 0
+
+def process_xsibatch_return_code(retcode):
+   if retcode == 0:
+      status = 'OK'
+   else:
+      if system.os() == 'windows':
+         if retcode == 1:
+            status = 'CRASHED'
+         else:
+            status = 'FAILED'
+      else:
+         # This is not a complete list. Check properly in Linux
+         if retcode in [6, 8, 11, 134, 136, 139]:
+            status = 'CRASHED'
+         else:
+            status = 'FAILED'
+   return status      
+
+## Finds a test group and returns a list of all tests included
+def find_test_group(group):
+
+   def find_test_group_in_file(group, file):
+      TEST_GROUP = []
+   
+      f = open(file, 'r')
+      for line in f.readlines():
+         line = line.lstrip(' \t')
+         if line.startswith('#'):
+            # Skip comment lines
+            continue            
+         (l, s, r) = strpartition(line, ':')
+         if s == ':':
+            if group == l.rstrip():
+               # We found the test group
+               TEST_GROUP += Split(r)
+               index = 0
+               while True:
+                  if index == len(TEST_GROUP):
+                     break
+                  test = TEST_GROUP[index]
+                  if not test.startswith('test_'):
+                     # We found a nested group, expand it into single tests
+                     TEST_GROUP += find_test_group(test)
+                     del TEST_GROUP[0]
+                  else:
+                     index += 1
+               break
+      f.close()
+      return TEST_GROUP
+
+   TEST_GROUP = []
+   
+   # First search the user local file for this group (only if the local file exists)
+   if os.path.exists(os.path.join('testsuite', 'groups.local')):
+      TEST_GROUP = find_test_group_in_file(group, os.path.join('testsuite', 'groups.local'))
+      
+   # If not found, then search the global test groups mapping file
+   if len(TEST_GROUP) == 0:
+      TEST_GROUP = find_test_group_in_file(group, os.path.join('testsuite', 'groups'))
+   
+   return TEST_GROUP
+
+## Gets the next test name from the list of existing tests (assuming a 'test_0000' format)
+def get_next_test_name(path):
+   l = glob.glob(os.path.join(path, 'test_[0-9][0-9][0-9][0-9]'))
+   l.sort()
+   result = int(os.path.basename(l[len(l) - 1])[5:]) + 1
+   return "%04d" % result
+
+def list_tests(target, source, env):
+   for file in source:
+      name = os.path.basename(os.path.dirname(str(file)))
+      f = open(os.path.join(str(file)), 'r')
+      summary = f.readline().strip('\n')
+      f.close
+      print '%s: %s' % (name, summary)
+   return None
+listtest_bld = Builder(action = Action(list_tests, "Listing tests..."))
+   
+def list_test_errors(target, source, env):
+   for file in source:
+      dirname = os.path.dirname(str(file))
+      name = os.path.basename(dirname)
+      f = open(str(file), 'r')
+      value = f.readline().strip('\n')
+      if value != 'OK':
+         print '%s: %s' % (name, value)
+         l = open(os.path.join(dirname, name + '.log'), 'r')
+         while True:
+            line = l.readline().strip('\n')
+            if line == "":
+               # We have reached the end of file.
+               break
+            if (line.lower().find('error') != -1) or (line.lower().find('warning') != -1):
+               print line
+         l.close()
+      f.close
+   return None
+listtesterrors_bld = Builder(action = Action(list_test_errors, "Listing broken tests..."))
+   
+## Creates a new test in the testsuite directory
+def make_test(target, source, env):
+   testpath = str(target[0])
+   testname = os.path.basename(testpath)
+   os.mkdir(testpath)
+   os.mkdir(os.path.join(testpath, 'data'))
+   os.mkdir(os.path.join(testpath, 'ref'))
+   
+   # Write README file
+   f = open(os.path.join(testpath, 'README'), 'w')
+   f.write('''****TODO**** write a one-line description for test case %s
+
+author: --''' % testname)
+   f.close()
+   
+   return None ## always succeeds
+maketest_bld = Builder(action = Action(make_test, "Creating test '$TARGET'..."))
+      
+def run_test(target, source, env):
+   global TOTAL_RUNNING_TIME
+   status = 'OK'
+   TEST_NAME = env['TEST_NAME']
+
+   test_env = env.Clone()
+      
+   set_library_path(test_env)
+   set_program_path(test_env)
+
+   ## remove any leftovers
+   output_image_list = glob.glob(os.path.abspath(test_env['OUTPUT_IMAGE'].replace('#', '?')))
+   for image in output_image_list:
+      saferemove(image)
+   saferemove('new.jpg')
+   saferemove('ref.jpg')
+   saferemove('dif.jpg')
+   saferemove('STATUS')
+
+   show_test_output = (test_env['SHOW_TEST_OUTPUT'] == 'always') or (test_env['SHOW_TEST_OUTPUT'] == 'single' and (len(TESTS) == 1))
+
+   file = open('execute_test.js', 'w')
+   file.write('''
+function main(path)
+{
+   var arnoldPlugin = Application.plugins("Arnold Render");
+   var path = arnoldPlugin.OriginPath;
+   logMessage(path);
+   
+   try 
+   {
+      var sPath = "%s";
+      // You have to create a project, else setting it will not work.
+      // If it exists, it's not overwritten
+      var oProj = Application.CreateProject(sPath);
+      Application.ActiveProject2 = oProj;
+      // Application.LogMessage( Application.ActiveProject2 )
+   }
+   catch(e) {}
+   
+   OpenScene("%s", null, null);
+   SetValue("Passes.RenderOptions.ImageLockAspectRatio", false, null);
+   SetValue("Passes.RenderOptions.ImageWidth", 160, null);
+   SetValue("Passes.RenderOptions.ImageHeight", 120, null);
+   SetValue("Passes.Default_Pass.Main.Filename", "%s", null);
+   SetValue("Passes.Default_Pass.Main.Format", "tif", null);
+   
+   try 
+   {
+      SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, null);
+   }
+   catch(e)
+   {
+   }
+   
+   
+   try {
+   SetValue("Passes.Arnold_Render_Options.enable_log_file", true, null); }
+   catch(e) {}
+   
+   try {
+   SetValue("Passes.Arnold_Render_Options.log_level", 1, null); }
+   catch(e) {}
+
+   try {
+   SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "%s", null);}
+   catch(e) {}
+   
+   try {
+   SetValue("Passes.Arnold_Render_Options.shaders_path", "%s", null);}
+   catch(e) {}
+   
+   try 
+   {
+      SetValue("Passes.Arnold_Render_Options.textures_path", "%s", null);
+      SetValue("Passes.Arnold_Render_Options.save_texture_paths", false, null);
+   }
+   catch(e) {}
+   
+   
+   RenderAllPasses();
+}
+''' % (get_escaped_path(os.path.abspath(os.path.join(ROOT_DIR,'testsuite', 'XSIProject'))),
+
+	   get_escaped_path(os.path.abspath('test.scn')),
+       get_escaped_path(os.path.abspath(test_env['OUTPUT_IMAGE'])),
+       get_escaped_path(os.getcwd()),
+       get_escaped_path(os.path.join(ROOT_DIR, os.path.dirname(str(SITOA_SHADERS[0])))),
+       get_escaped_path(os.path.abspath(os.path.join(ROOT_DIR,'testsuite', 'XSIProject', 'Pictures')))))
+   file.close()
+
+   for cmd in test_env['TEST_SCRIPT'].splitlines():
+      ## TODO: attach valgrind to each command
+      output_to_file = not show_test_output or test_env['UPDATE_REFERENCE']
+      before_time = time.time()
+      ## redirect test output
+      if output_to_file:
+         file = open("%s.log" % TEST_NAME, 'w')
+         p = subprocess.Popen(cmd, shell=(system.os() == 'linux'), stdout = file, stderr = subprocess.STDOUT)
+         retcode = p.wait()
+         file.close()
+      else:       
+         p = subprocess.Popen(cmd, shell=(system.os() == 'linux'))
+         retcode = p.wait()
+      running_time = time.time() - before_time
+      TOTAL_RUNNING_TIME += running_time
+      status = process_xsibatch_return_code(retcode)
+      if test_env['FORCE_RESULT'] == 'FAILED':
+         # In this case, retcode interpretation is flipped (except for crashed tests)
+         if status == 'FAILED':
+            status = 'OK'
+         elif status == 'OK':
+            status = 'FAILED'
+      elif test_env['FORCE_RESULT'] == 'CRASHED':
+         if status == 'CRASHED':
+            status = 'OK'
+         elif status == 'OK':
+            status = 'FAILED'
+      if status != 'OK':
+         break
+   output_image_list = glob.glob(os.path.abspath(test_env['OUTPUT_IMAGE'].replace('#', '?'))) 
+   output_image = ''
+   if output_image_list:
+      output_image = output_image_list[0]
+   reference_image = test_env['REFERENCE_IMAGE']
+   has_diff = False
+   if status =='OK' and test_env['FORCE_RESULT'] == 'OK' and reference_image != '':
+      if test_env['UPDATE_REFERENCE']:
+         ## the user wants to update the reference image and log
+         print 'Updating %s ...' % (reference_image)
+         ## NOTE(boulos): For some reason reference.tif might be read
+         ## only, so just remove it first.
+         saferemove(reference_image)
+         shutil.copy(output_image, reference_image)
+         reference_log = os.path.join(os.path.dirname(reference_image), 'reference.log')
+         print 'Updating %s ...' % (reference_log)
+         shutil.copy('%s.log' % TEST_NAME, reference_log)
+
+      if os.path.exists(output_image) and os.path.exists(reference_image):
+         ## if the test passed - compare the generated image to the reference
+         # difftiff_cmd = 'difftiff -f compare.tif -a 0.5 -m 27 %s %s' % (output_image, reference_image)
+         difftiff_cmd = 'oiiotool --fail 0.5 --diff %s %s --sub --abs -o compare.tiff' % (output_image, reference_image)
+         if show_test_output:
+            print difftiff_cmd
+         else:
+            if system.os() == 'windows':
+               difftiff_cmd = '%s 1> %s.diff.log 2>&1' % (difftiff_cmd, TEST_NAME)
+            else:
+               difftiff_cmd = '%s > %s.diff.log 2>>%s.diff.log' % (difftiff_cmd, TEST_NAME, TEST_NAME)
+
+         diff_retcode = os.system(difftiff_cmd)
+
+         if diff_retcode != 0:
+            status = 'FAILED'
+            os.system('oiiotool compare.tiff -ch "R,G,B" -o dif.jpg')
+
+      ## convert these to jpg form for makeweb
+      if os.path.exists(output_image):
+         # os.system('tiff2jpeg %s new.jpg' % (output_image))
+         os.system('oiiotool %s -ch "R,G,B" -o new.jpg' % (output_image))
+      else:
+         status = 'FAILED'
+   if test_env['FORCE_RESULT'] == 'OK' and reference_image != '' and os.path.exists(reference_image):
+      # os.system('tiff2jpeg %s ref.jpg' % (reference_image))
+      os.system('oiiotool %s -ch "R,G,B" -o ref.jpg' % (reference_image))
+
+   ## progress text (scream if the test didn't pass)
+   if status == 'OK':
+      print TEST_NAME
+   else:
+      f = open('README', 'r')
+      summary = f.readline().strip('\n')
+      f.close
+      print '%s %s: %s' % (TEST_NAME, status, summary)
+
+   ## get README so that we can stick it inside the html file
+   f = open('README', 'r')
+   readme = ''
+   for line in f:
+      readme += line
+   f.close()
+
+   ## create the html file with the results
+   f = open('STATUS', 'w')
+   f.write(status) ## so we can get the status of this test later
+   f.close()
+   html_file = os.path.basename(str(target[0]))
+   saferemove(html_file)
+   f = open(html_file, 'w')
+   f.write('''
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>
+SItoA testsuite - %s
+</title>
+</head>
+<body>
+<table border="0" cellpadding="0">
+<tr>
+<th><font face="Arial">test</font></th>
+<th><font face="Arial">status</font></th>
+<th><font face="Arial">description</font></th>
+<th><font face="Arial">new</font></th>
+<th><font face="Arial">ref</font></th>
+<th><font face="Arial">diff</font></th>
+</tr>
+<tr>
+<td bgcolor="#ececec">
+<center>
+<font face="Arial">
+&nbsp;%s&nbsp;
+</font>
+</center>
+</td>
+<td bgcolor="#ececec">
+<center>
+<font face="Arial">
+&nbsp;%s&nbsp;
+</font>
+</center>
+</td>
+<td bgcolor="#ececec">
+&nbsp;
+<pre>
+%s
+</pre>
+&nbsp;
+</td>
+<td bgcolor="#ececec">
+<font face="Arial">
+  %s
+</font>
+</td>
+<td bgcolor="#ececec">
+<font face="Arial">
+  %s
+</font>
+</td>
+<td bgcolor="#ececec">
+<font face="Arial">
+  %s
+</font>
+</td>
+</tr>
+</table>
+<font face="Arial">
+<a href=".">link to files</a>
+</font>
+</body>
+</html>''' % (TEST_NAME,
+              TEST_NAME,
+              status,
+              readme,
+              os.path.exists('new.jpg') and '''<img src="new.jpg" border="0" hspace="1" width="160" height="120" alt="new image" />'''
+                                         or '''&nbsp;''',
+              os.path.exists('ref.jpg') and '''<img src="ref.jpg" border="0" hspace="1" width="160" height="120" alt="ref image" />'''
+                                         or '''&nbsp;''',
+              os.path.exists('dif.jpg') and '''<img src="dif.jpg" border="0" hspace="1" width="160" height="120" alt="difference image" />'''
+                                         or '''&nbsp;<b>no difference</b>&nbsp;'''
+              ))
+   f.close()
+   ## restore environment
+   reset_program_path(test_env)
+   reset_library_path(test_env)
+   ## always succeeds (unless some of the functions above throw an error)
+   return None
+
+runtest_bld = Builder(action = run_test)
+
+def process_testsuite(target, source, env):
+   global TOTAL_RUNNING_TIME
+   ## get number of failed tests
+   passed = 0
+   failed = 0
+   for test in source:
+      f = open(os.path.join(str(test.dir), 'STATUS'), 'r')
+      status = f.readline() ## just one line
+      f.close()
+      if status == 'OK':
+         passed += 1
+      else:
+         failed += 1
+   if failed == 0:
+      print 'Ran %d regression tests - ALL TESTS OK' % (len(source))
+   else:
+      print 'Ran %d regression tests - %d failed!' % (len(source), failed)
+
+   SITOA_VERSION   = get_sitoa_version(os.path.join('plugins', 'sitoa', 'version.cpp'))
+   ARNOLD_VERSION  = get_arnold_version(os.path.join(env['ARNOLD_HOME'], 'include', 'ai_version.h'))
+   (REVISION, URL) = get_latest_revision()
+         
+   ## create testsuite html
+   outfile = open(str(target[0]), 'w')
+   outfile.write('''
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>
+SItoA testsuite
+</title>
+</head>
+<body>
+''')
+   outfile.write('''
+<table border="0" cellpadding="15" cellspacing="2">
+<tr>
+<td>
+<font face="Arial"><h1>SItoA %s testsuite</h1>
+%s<br>%s</font>
+</td>
+<td>
+<pre>
+|     
+|     patterns/tags:      %s
+|     tests:              %-4d
+|     passed:             %-4d (%.2f%%)
+|     failed:             %-4d (%.2f%%)
+|     total running time: %.2f s
+|     
+|     
+</pre>
+</td>
+</tr>
+</table>
+<br>
+''' % (SITOA_VERSION, REVISION, URL, str(PATTERNS + TAGS), len(source), passed, (100.0 * passed) / (passed + failed), failed, (100.0 * failed) / (passed + failed), TOTAL_RUNNING_TIME))
+   outfile.write('''
+<table border="0" cellpadding="0">
+<tr>
+<th><font face="Arial">test</font></th>
+<th><font face="Arial">description</font></th>
+<th><font face="Arial">new</font></th>
+<th><font face="Arial">ref</font></th>
+</tr>
+''')
+   for test in source:
+      test_dir  = str(test.dir)
+      test_name = os.path.basename(test_dir)
+      test_link = os.path.join(test_name, os.path.basename(str(test)))
+      f = open(os.path.join(test_dir, 'STATUS'), 'r')
+      status = f.readline() ## just one line
+      f.close()
+      f = open(os.path.join(test_dir, 'README'), 'r')
+      description = f.readline() ## just one line
+      f.close()
+      bgcolor = status == 'OK' and '#ececec' or '#ffa0a0'
+      new_img = os.path.join(test_dir, 'new.jpg')
+      ref_img = os.path.join(test_dir, 'ref.jpg')
+      outfile.write('''
+<tr>
+  <td bgcolor="%s"><font face="Arial">&nbsp;<a href="%s">%s</a>&nbsp;</font></td>
+  <td bgcolor="%s"><font face="Arial">&nbsp;%s&nbsp;</font></td>
+  <td><a href="%s">%s</a></td>
+  <td><a href="%s">%s</a></td>
+</tr>
+      ''' % (bgcolor,
+             test_link,
+             test_name,
+             bgcolor,
+             description,
+             test_link,
+             os.path.exists(new_img) and '''<img src="%s/new.jpg" border="0" hspace="1" width="60" height="45" alt="new image" />''' % (test_name)
+                                      or '''<center>&nbsp;<br /><b>no</b><br />&nbsp;</center>''',
+             test_link,
+             os.path.exists(ref_img) and '''<img src="%s/ref.jpg" border="0" hspace="1" width="60" height="45" alt="ref image" />''' % (test_name)
+                                      or '''<center>&nbsp;<br /><b>image</b><br />&nbsp;</center>''',
+             ))
+   outfile.write('''
+</table>
+</body>
+</html>
+   ''')
+   outfile.close()
+   print 'View testsuite results at: file://%s' % (os.path.abspath(str(target[0])))
+   return None ## always succeeds
+testsuite_bld = Builder(action = process_testsuite)
+
+BINPATH = os.path.join(env['XSISDK_ROOT'], '..', 'Application', 'bin')
+
+if system.os() == 'windows':
+   xsiexec = 'xsibatch.bat'
+else:
+   xsiexec = 'xsibatch'
+
+class Test:
+   def __init__(self,
+                script = '%s -processing -script "%s" -main main' % (
+                   '"' + os.path.join(BINPATH, xsiexec) + '"',
+                   os.path.join('execute_test.js')),
+                plugin_sources      = '*.c*',
+                program_sources     = '',
+                program_name        = 'prog',
+                plugin_dependencies = '',
+                output_image        = 'testrender.####.tif',     ## can be '' if the test does not generate an image
+                reference_image     = os.path.join('ref', 'reference.tif'),  ## can be '' if the test does not generate an image
+                force_result        = 'OK'):
+      ## save the params
+      if system.os() == 'windows':
+         self.script = os.path.normpath(script)
+      else:
+         self.script = script
+      self.plugin_sources = plugin_sources
+      self.program_sources = program_sources
+      self.program_name = program_name
+      self.plugin_dependencies = plugin_dependencies
+      self.output_image = output_image
+      self.reference_image = reference_image
+      self.force_result = force_result
+
+   def prepare_test(self, test_name):
+      global TESTS, TEST_NAMES
+      
+      # Avoid having duplicate test cases
+      if test_name in TEST_NAMES:
+         return False
+         
+      test_dir       = os.path.abspath(os.path.join('testsuite', 'XSIProject', 'Scenes', test_name))
+      test_data_dir  = os.path.join(test_dir, 'data')
+      test_build_dir = os.path.abspath(os.path.join(BUILD_BASE_DIR, 'testsuite', test_name))
+
+      test_env.VariantDir(test_build_dir, test_data_dir)
+   
+      if test_name in BLACKLIST:
+         # print 'skipping test %s -- found in black list' % (test_name)
+         return False
+      if not (os.path.exists(os.path.join(test_dir, 'README'))):
+         print 'skipping test %s -- missing README' % (test_name)
+         return False
+         
+      ## process the current test directory
+      ## Step 1: build any shaders/procedurals that might exist
+      SHADERS = []
+      if self.plugin_sources.find('*') == -1:
+         ## just a list of regular file names
+         shader_files = Split(self.plugin_sources)
+      else:
+         ## use recursive glob pattern
+         shader_files = []
+         for root, dirs, files in os.walk(test_data_dir):
+            if '.svn' in dirs:
+               dirs.remove('.svn')
+            shader_files += glob.glob(os.path.join(root, self.plugin_sources))
+      for c_file in shader_files:
+         BUILD_C_FILE = c_file.replace(test_data_dir, test_build_dir)
+         SHADERS += test_env.SharedLibrary(os.path.splitext(BUILD_C_FILE)[0], BUILD_C_FILE)
+      if not self.program_sources == '':
+         ## we need to build a program
+         SHADERS += test_env.Program(os.path.join(test_build_dir, self.program_name), [os.path.join(test_build_dir, f) for f in Split(self.program_sources)], LIBS=Split('ai'))
+      FILES = []
+      FILES += test_env.Install(test_build_dir, os.path.join(test_dir, 'README'))
+      
+      if os.path.exists(os.path.join(test_dir, 'execute_test.js')):
+         FILES += test_env.Install(test_build_dir, os.path.join(test_dir, 'execute_test.js'))
+   
+      for root, dirs, files in os.walk(test_data_dir):
+         if '.svn' in dirs:
+            dirs.remove('.svn')
+         for f in files:
+            if os.path.basename(f) == 'Makefile':
+               continue
+            if os.path.splitext(f)[1] == 'c':
+               continue
+            if os.path.splitext(f)[1] == 'cpp':
+               continue
+            d = root
+            d = d.replace(test_data_dir, test_build_dir)
+            FILES += test_env.Install(d, os.path.join(root, f))
+            
+      ## generate the build action that will run the test and produce the html output
+      test_output = test_env.RunTest(os.path.join(test_build_dir, test_name + '.html'), SITOA + SITOA_SHADERS + FILES + SHADERS,
+         TEST_SCRIPT = self.script,
+         REFERENCE_IMAGE = self.reference_image != '' and os.path.join(test_dir, self.reference_image) or '',
+         OUTPUT_IMAGE = self.output_image,
+         FORCE_RESULT = self.force_result,
+         TEST_NAME = test_name,
+         PRINT_CMD_LINE_FUNC = lambda a, b, c, d : None, ## silence the builder
+         chdir = 1)
+         
+      test_env.AlwaysBuild(test_output)
+      test_env.Alias(test_name, test_output)
+
+      TESTS += test_output
+      TEST_NAMES += [test_name]
+
+      test_env.Depends(test_output, SITOA)
+      test_env.Depends(test_output, SITOA_SHADERS)
+      if self.plugin_dependencies != '':
+         for p in Split(self.plugin_dependencies):
+            test_env.Depends(test_output, os.path.join(SPI_PLUGIN_PATH, p + env['SHLIBSUFFIX']))
+
+      return True  # The test has been prepared and can be run
+
+      
+## extra custom command line arguments for specific tests
+tests = dict()
+
+# process build targets
+TESTSUITE = []
+TESTS = []
+TEST_NAMES = []
+TEST_TARGETS = []
+TAGS = []
+PATTERNS = []
+
+if system.os() == 'windows':
+   test_env = env.Clone(SHLIBPREFIX = '', SHLIBSUFFIX='.dll')
+else:
+   test_env = env.Clone(SHLIBPREFIX = '', SHLIBSUFFIX='.so')
+
+test_env.Append(BUILDERS = {'ListTests' : listtest_bld})
+test_env.Append(BUILDERS = {'ListTestErrors' : listtesterrors_bld})
+test_env.Append(BUILDERS = {'MakeTest' : maketest_bld})
+test_env.Append(BUILDERS = {'RunTest': runtest_bld})
+test_env.Append(BUILDERS = {'Testsuite' : testsuite_bld})
+
+if system.os() == 'darwin' or system.os() == 'windows':
+   ## on OS X we need to link against libai for some reason?
+   ## AJJ: Same on windows...
+   test_env.Append(LIBS = Split('ai'))
+
+## make sure we can find oiiotool
+add_to_program_path(test_env, os.path.abspath(os.path.join('.', 'tools', 'oiiotool')))
+
+## First stage. Process build targets, expanding the groups and patterns into single tests
+index = 0
+while True:
+   if index == len(BUILD_TARGETS):
+      break
+      
+   target = BUILD_TARGETS[index]
+   
+   (l, s, r) = strpartition(target, ':')
+   
+   test_dir = os.path.join('testsuite', 'XSIProject', 'Scenes')
+   # Target "maketest[:testname]", creates a new test in the testsuite (defaults to the next available name in ascending order)
+   if l == 'maketest':
+      if r == '':
+         r = get_next_test_name(test_dir)
+      if r != '':
+         testpath = os.path.abspath(os.path.join(test_dir, 'test_' + r))
+         if os.path.exists(testpath):
+            print "ERROR: Test %s already exists!" % r
+         else:
+            MAKETEST = test_env.MakeTest(testpath, None)
+            test_env.Alias(target, MAKETEST)
+            test_env.AlwaysBuild(MAKETEST)
+         index += 1
+   elif l == 'testlist':
+      if r == '':
+         testlist = glob.glob(os.path.join(test_dir, env['TEST_PATTERN']))
+         SRC = []
+         for name in testlist:
+            if os.path.exists(os.path.join(test_dir, os.path.basename(name), 'README')):
+               SRC += [os.path.join('XSIProject', 'Scenes', os.path.basename(name), 'README')]
+      else:
+         tags = r.split(',')
+         SRC = []
+         for tag in tags:
+            TEST_GROUP = find_test_group(tag)
+            if len(TEST_GROUP) == 0:
+               print "WARNING: No tests related to tag \"%s\"" % tag
+            else:
+               for test in TEST_GROUP:
+                  if os.path.exists(os.path.join(test_dir, test, 'README')):
+                     SRC += [os.path.join('XSIProject', 'Scenes', test, 'README')]
+      SRC.sort()
+      TESTLIST = test_env.ListTests(target, SRC)
+      test_env.Alias(target, TESTLIST)
+      test_env.AlwaysBuild(TESTLIST)
+      index += 1
+   elif l == 'testerrors':
+      testlist = glob.glob(os.path.join(BUILD_BASE_DIR, 'testsuite', 'test_*'))
+      SRC = []
+      for name in testlist:
+         SRC += [os.path.join(os.path.basename(name), 'STATUS')]
+      SRC.sort()
+      TESTLIST = test_env.ListTestErrors(target, SRC)
+      test_env.Alias(target, TESTLIST)
+      test_env.AlwaysBuild(TESTLIST)
+      index += 1
+   elif l == 'testsuite':
+      if r == '':
+         # Special 'testsuite' target is expanded to the whole testsuite, filtered by the value of TEST_PATTERN
+         PATTERNS += [env['TEST_PATTERN']]
+         testlist = glob.glob(os.path.join(test_dir, env['TEST_PATTERN']))
+         for name in testlist:
+            name = os.path.basename(name)
+            BUILD_TARGETS += [name]
+      else:
+         # Target "testsuite:tag[,tag...]", runs all tests related to the given tag(s)
+         tags = r.split(',')
+         for tag in tags:
+            TEST_GROUP = find_test_group(tag)
+            if len(TEST_GROUP) == 0:
+               print "WARNING: No tests related to tag \"%s\"" % tag
+            else:
+               TAGS += [tag]
+               BUILD_TARGETS += TEST_GROUP
+      del BUILD_TARGETS[index]
+   else:
+      if s != ':' and target.startswith('test_'):
+         # Expand test patterns
+         l = glob.glob(os.path.join(test_dir, target))
+         if len(l) == 1 and os.path.basename(l[0]) == target:
+            index += 1
+         elif len(l) == 0:
+            print "WARNING: No tests matching expression \"%s\"" % target
+            del BUILD_TARGETS[index]
+         else:
+            PATTERNS += [target]
+            del BUILD_TARGETS[index]
+            for name in l:
+               name = os.path.basename(name)
+               BUILD_TARGETS += [name]
+      else:
+         index += 1
+      
+# Second stage. We have a flat list of single tests, so we prepare them for building
+
+BLACKLIST = []
+
+# Tests in 'ignore' group are always added to the black list
+BLACKLIST = find_test_group('ignore')
+
+# Add tests intended for other platforms to the black list
+for o in system.get_valid_oses():
+   if o != system.os():
+      BLACKLIST.extend(find_test_group(o))
+   
+BUILD_TARGETS.sort()
+index = 0
+while True:
+   if index == len(BUILD_TARGETS):
+      break
+      
+   target = BUILD_TARGETS[index]
+   if target.startswith('test_'):
+      if not tests.get(target, Test()).prepare_test(target):
+         # Test could not be build, so we remove it from the build target list
+         del BUILD_TARGETS[index]
+      else:
+         index += 1
+   else:
+      index += 1
+
+## create top-level makeweb html
+if len(TESTS) > 1:
+   BUILD_TARGETS += ["testsuite"]
+   TESTSUITE = test_env.Testsuite(os.path.abspath(os.path.join(BUILD_BASE_DIR, 'testsuite', 'index.html')), TESTS,
+                                  PRINT_CMD_LINE_FUNC = lambda a, b, c, d : None, ## silence the builder
+                                  chdir = 0
+                                  )
+   test_env.AlwaysBuild(TESTSUITE)
+   
+elif len(TESTS) == 1:
+   # Special case for groups or patterns with a single test
+   for t in TEST_TARGETS:
+      test_env.Alias(t, TESTS[0])
+   
+Return('TESTSUITE')

@@ -1,0 +1,5 @@
+Allowing rendering custom ICE attribute if name has '_' prefix
+	
+(trac #1168)
+
+author: sjannuz

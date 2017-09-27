@@ -1,0 +1,5 @@
+Scalar_Image support for udim/tiled textures and texture projection with instance value
+	
+(trac #1578)
+
+author: sjannuz

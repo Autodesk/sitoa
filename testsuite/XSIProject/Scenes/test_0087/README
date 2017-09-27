@@ -1,0 +1,5 @@
+Fixing crash when exporting strands with null point size
+	
+(trac #1562)
+
+author: sjannuz

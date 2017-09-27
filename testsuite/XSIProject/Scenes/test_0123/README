@@ -1,0 +1,5 @@
+Adding support for ice attributes on polymesh objects (Softimage >= 2012 only)
+	
+(trac #1202)
+
+author: sjannuz

@@ -1,0 +1,5 @@
+ICE strands are no longer working with SoftImage 2010 SP1
+
+See trac#468.
+
+author: Daniel Alejo

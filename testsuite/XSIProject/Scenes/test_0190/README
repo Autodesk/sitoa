@@ -1,0 +1,5 @@
+Avoid getting the geometry twice at the current frame for deformation motion blur
+	
+(trac #1579)
+
+author: sjannuz

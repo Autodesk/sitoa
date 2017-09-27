@@ -1,0 +1,6 @@
+Implemented Copy Alpha to RGB in the node txt2d-image-explicit
+
+Implementation of the Copy Alpha to RGB checkbox of the txt2d-image-explicit node so you can use the alpha information of an image
+without having to resort on a picker (sib_channel_picker) node. Ticket #536
+
+author: Susumu Yukuhiro

@@ -1,0 +1,5 @@
+Expose the adaptive_metric flag to the subdivision settings
+	
+(trac #1367)
+
+author: sjannuz

@@ -1,0 +1,5 @@
+Implement expression driven parameters in Shader Compounds
+
+Shaders Compound expression driven parameter are not exported correctly (#986)
+
+author: kelsolaar_fool

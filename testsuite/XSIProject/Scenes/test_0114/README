@@ -1,0 +1,5 @@
+Fixing "Lights instanced by pointclouds are not exported"
+	
+(trac #1213)
+
+author: sjannuz

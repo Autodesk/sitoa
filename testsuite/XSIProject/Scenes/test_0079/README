@@ -1,0 +1,5 @@
+sib_color_mix should support alpha
+
+The color mixers now manage and return the alpha channel (track #957)
+
+author: sjannuz

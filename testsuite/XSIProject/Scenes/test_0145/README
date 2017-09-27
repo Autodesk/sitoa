@@ -1,0 +1,5 @@
+Fixing "ICE-instanced lights not working if driven by shape instance time"
+	
+(trac #1339)
+
+author: sjannuz

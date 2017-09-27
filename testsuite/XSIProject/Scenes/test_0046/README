@@ -1,0 +1,6 @@
+min pixel width on hair
+
+Test the min pixel width use on hair. It was broken in SItoA 1.6.0 and
+fixed in r1251. 
+
+author: r3d

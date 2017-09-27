@@ -1,0 +1,7 @@
+Implementation of the evaluation of parameters in txt2d-gradient_v2
+
+txt_gradient shader was not evaluating the parameters, only its value with AiNodeGet* in node_initialize.
+If we attach nodes to those params it won't work as expected. This will allow to plug textures/shaders into 
+the different gradient positions
+
+author: gerbrand

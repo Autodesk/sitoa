@@ -1,0 +1,5 @@
+Fixing unexpected behavior with an scene with more than 49999 ICE strands
+	
+(trac #1094)
+
+author: sjannuz

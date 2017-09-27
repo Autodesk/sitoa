@@ -1,0 +1,5 @@
+Fixing "Instanced lights do not inherit the associated models from the master light"
+	
+(trac #1285)
+
+author: sjannuz

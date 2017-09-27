@@ -1,0 +1,5 @@
+ICE instances must honor Arnold Visibility and Sidedness properties of master object
+
+(trac #1031)
+
+author: sjannuz

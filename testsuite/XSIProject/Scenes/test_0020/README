@@ -1,0 +1,8 @@
+Assigning a group with objects to the Light Group of a light doesn't work
+
+If we create a group with some objects in, and drag the group to the associated models of a Light,
+SItoA won't get the objects inside the group and the light linking will not work
+
+Ticket #518
+
+author: Borja Morales

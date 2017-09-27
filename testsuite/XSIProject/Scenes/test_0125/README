@@ -1,0 +1,5 @@
+Fixing bloody "Color Lookup Map pointing to a "texture map" map shader renders black"
+	
+(trac #1082)
+
+author: sjannuz

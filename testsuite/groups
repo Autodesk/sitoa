@@ -1,0 +1,35 @@
+#
+# groups
+#
+#  This file maps all testgroups (elements on the left hand side) with their respective tests. You can also
+# have a local file (groups.local) with the same format, where you can override any group in this file.
+#
+#  Notes:
+#    - Tests can be listed in as many groups as needed.
+#    - Groups can be recursively added to other groups.
+#    - Special 'ignore' group lists tests that will never be executed (you can use it to temporarily disable
+#      some tests or groups)
+#    - There is a special group per supported OS, where you can add tests that will ONLY be executed for that
+#      specific OS (linux, darwin, windows).
+#
+
+#######################
+# SPECIAL TEST GROUPS #
+#######################
+
+# These tests are only executed on Windows
+windows:
+
+# These tests are only executed on Linux
+linux:
+
+# These tests are only executed on Darwin
+darwin:
+
+# Tests in this group will never be executed (you can use it to temporarily disable some tests and/or groups)
+ignore:
+
+############################
+# USER-DEFINED TEST GROUPS #
+############################
+

@@ -1,0 +1,5 @@
+Fixing "Pointcloud won't render with shared instance group"
+	
+(trac #1470)
+
+author: sjannuz

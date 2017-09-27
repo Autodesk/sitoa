@@ -1,0 +1,6 @@
+Implementation of ShapeInstanceTime ICE property
+
+Tests the PolygonMesh timeshift loader via the ShapeInstanceTime ICE 
+property (trac #891)
+
+author: r3D

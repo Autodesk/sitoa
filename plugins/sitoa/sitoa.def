@@ -1,0 +1,12 @@
+
+EXPORTS
+   XSILoadPlugin          @1 PRIVATE
+   XSIUnloadPlugin        @2 PRIVATE
+   ArnoldRender_Init      @3 PRIVATE
+   ArnoldRender_Term      @4 PRIVATE
+   ArnoldRender_Process   @5 PRIVATE
+   ArnoldRender_Cleanup   @6 PRIVATE
+   ArnoldRender_Abort     @7 PRIVATE
+   ArnoldRenderOptions_Define       @8 PRIVATE
+   ArnoldRenderOptions_DefineLayout @9 PRIVATE
+   ArnoldRenderOptions_PPGEvent   @10 PRIVATE

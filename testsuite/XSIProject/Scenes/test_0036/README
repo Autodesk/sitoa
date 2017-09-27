@@ -1,0 +1,9 @@
+Shader compounds don't work when exposed connections are renamed
+
+When exposing various parameters on a shader from within a compound the compound
+only works if the exposed connection is named the same as the port it's plugged
+into, if you for example expose the parameter "Kd" in the standard shader and 
+leave the name of the connection to "Kd" it works but as soon as you rename the
+connection to something ele the output becomes black. 
+
+author: andreasb

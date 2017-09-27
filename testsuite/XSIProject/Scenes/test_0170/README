@@ -1,0 +1,5 @@
+Fixing "Inclusive/Exclusive lighting is inherited by the children of an object that is in the light's Associated Models group"
+	
+(trac #922)
+
+author: sjannuz

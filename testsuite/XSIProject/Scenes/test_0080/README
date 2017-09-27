@@ -1,0 +1,5 @@
+color gradients should support alpha
+
+The color gradient shaders now manage and return the alpha channel correctly (track #1072)
+
+author: sjannuz

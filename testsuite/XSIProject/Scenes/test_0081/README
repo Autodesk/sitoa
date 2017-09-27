@@ -1,0 +1,7 @@
+SI Texture class GetTransformValues method can give null values with polymeshes with multiple materials
+
+When you have more than one texture projection, and a material assigned to a 
+cluster GetTransformValues in objects with multiple materials (via clusters) 
+return null and the UV's are not exported.
+
+author: r3D

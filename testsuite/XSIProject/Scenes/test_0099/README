@@ -1,0 +1,5 @@
+Fixing "Power instances do now inherit user data"
+	
+(trac #1174)
+
+author: sjannuz

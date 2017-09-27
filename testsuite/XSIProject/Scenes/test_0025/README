@@ -1,0 +1,9 @@
+ICE Strand Color is broken in Softimage 2010 + SP1. 
+
+It only works in the first strand, the rest render black.
+This is related to a bug in the XSI SDK in SP1. If the memory for the subarray 
+is assigned prior to the 2d array, it works fine. The reason is a low level 
+memory copy operation to access sub arrays only works that way. Ticket #554
+
+
+author: Daniel Alejo

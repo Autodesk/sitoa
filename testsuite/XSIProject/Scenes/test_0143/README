@@ -1,0 +1,5 @@
+Fixing "The texture_edit node does not take the srt matrix into account"
+	
+(trac #1327)
+
+author: sjannuz

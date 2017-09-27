@@ -1,0 +1,6 @@
+Density Parameter of atmosphere_volume shader is not being evaluated
+
+The volume scatter shader was not evaluating state the density parameter
+(trac #705)
+
+author: sjannuz

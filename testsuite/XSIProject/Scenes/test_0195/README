@@ -1,0 +1,5 @@
+Fixing "User data not cloned over shape-instanced strands and hair"
+	
+(trac #1520)
+
+author: sjannuz

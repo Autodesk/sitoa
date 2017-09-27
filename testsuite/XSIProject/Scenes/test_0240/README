@@ -1,0 +1,5 @@
+Fixig "Crash on instancing of a pointcloud of lights"
+	
+(trac #1793)
+
+author: sjannuz

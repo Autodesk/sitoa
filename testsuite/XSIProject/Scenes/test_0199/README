@@ -1,0 +1,5 @@
+Fixing "Exclusive mode does not working for instanced lights"
+	
+(trac #1601)
+
+author: sjannuz

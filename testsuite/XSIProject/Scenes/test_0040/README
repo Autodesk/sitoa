@@ -1,0 +1,7 @@
+Pass Crop Window render option doesn't match Mental Ray
+
+When Pass crop window option is active, SItoA doesn't crop in the same manner 
+as mental ray.For a mental ray render, this renders the upper left corner. 
+For an arnold render, I get a black empty image.
+
+author: paulrus

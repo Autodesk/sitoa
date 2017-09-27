@@ -1,0 +1,6 @@
+Expressions on parameters are not evaluated correctly
+
+Parameters which source is an expression were being evaluated wrong.
+We can evaluate the parameter directly because XSI is returning the right value
+
+author: luis.armengol

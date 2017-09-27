@@ -1,0 +1,11 @@
+ICE Particles don't respect orientation since Softimage 2011.5
+
+CQuaternion and CQuaternionf internal representation changed.
+As stated by halfdan.
+"A fix was made in Sidecar (2011.5) to fix the order of the CQuaternion data
+ members, because it was different from the internal quaternion class."
+
+This was breaking our ICE code. See Ticket #756
+
+
+author: tom.lippitsch

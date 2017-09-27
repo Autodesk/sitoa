@@ -1,0 +1,5 @@
+Moving the DOF controls from the rendering options into the camera options property
+	
+(trac #1774)
+
+author: sjannuz

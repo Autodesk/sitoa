@@ -1,0 +1,5 @@
+Fixing vertex color map lookup on a subdivided mesh (#1652)
+
+(trac #1652)
+
+author: sjannuz

@@ -1,0 +1,6 @@
+Recompute properly uv derivatives in the shaders
+
+When UV values are scaled, the derivatives have to be scaled by the same factor 
+in order to get a correctly filtered texture lookup, see tickets #1163 and #447
+
+author: michael.heberlein

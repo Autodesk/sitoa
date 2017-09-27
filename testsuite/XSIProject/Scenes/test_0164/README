@@ -1,0 +1,5 @@
+Fixing "Wrong ICE shape instancing when some points have size = 0"
+	
+(trac #1417)
+
+author: sjannuz

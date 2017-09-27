@@ -1,0 +1,224 @@
+=======================================================
+ Autodesk Softimage 11.1.57.0
+=======================================================
+
+License information: using [Processing]
+00:00:00   161MB         | log started Wed Jun  7 12:00:40 2017
+00:00:00   161MB         | Arnold 5.0.0.3 [baf78363] windows icc-17.0.2 oiio-1.7.12 osl-1.8.2 vdb-4.0.0 rlm-12.2.2 2017/05/31 10:45:24
+00:00:00   161MB         | running on cavallo, pid=14512
+00:00:00   161MB         |  1 x Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (4 cores, 8 logical) with 16334MB
+00:00:00   161MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00   161MB         |  soft limit for open files raised from 512 to 2048
+00:00:00   161MB         |  
+00:00:00   161MB         | loading plugins from C:\dev\Mia\Arnold\Extra_Shaders ...
+00:00:00   161MB         | loaded 1 plugins from 1 lib(s) and 1 OSL shaders in 0:00.00
+00:00:00   161MB         | loading plugins from C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
+00:00:00   162MB         | loaded 103 plugins from 1 lib(s) in 0:00.00
+
+
+
+
+00:00:00   166MB         |  
+00:00:00   166MB         | releasing resources
+00:00:00   166MB         | Arnold shutdown
+// INFO : [sitoa] SItoA 4.0.0 win loaded.
+// INFO : [sitoa] Arnold 5.0.0.3 detected.
+InstallCustomPreferences("ArnoldRenderPreferences", "Arnold Render");
+COMMAND: -processing -script "execute_test.js" -main main
+// INFO : C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
+>Loading: C:\dev\Mia\Arnold\sitoa\build\windows_x86_64\msvc_opt\si_11000\testsuite\test_0137\test.scn...
+// INFO : 4034 - Loaded scene was created with build number: 11.1.57.0 - compatibility version: 1100
+OpenScene("C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0137\\test.scn", null, null);
+SetValue("Passes.RenderOptions.ImageLockAspectRatio", false, null);
+SetValue("Passes.RenderOptions.ImageWidth", 160, null);
+SetValue("Passes.RenderOptions.ImageHeight", 120, null);
+SetValue("Passes.Default_Pass.Main.Filename", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0137\\testrender.####.tif", null);
+SetValue("Passes.Default_Pass.Main.Format", "tif", null);
+SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, null);
+SetValue("Passes.Arnold_Render_Options.enable_log_file", true, null);
+SetValue("Passes.Arnold_Render_Options.log_level", 1, null);
+SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0137", null);
+// ERROR : 2000 - Argument 0 (Target) is invalid
+// ERROR : 2001-EDIT-SetValue - Argument 0 is invalid
+SetValue("Passes.Arnold_Render_Options.shaders_path", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\shaders", null);
+Command failed, returned -2147024809
+SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\dev\\Mia\\Arnold\\sitoa\\testsuite\\XSIProject\\Pictures", null);
+SetValue("Passes.Arnold_Render_Options.save_texture_paths", false, null);
+// INFO : Rendering pass 'Default_Pass'...
+// INFO : Rendering frame 100 (0.0% done)
+// WARNING : [arnold] node entry "standard" is deprecated, and may be removed in the future
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:0: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:1: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:2: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:3: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:4: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:5: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:6: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:7: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:8: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:9: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:10: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:11: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:12: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:13: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:14: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:15: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:16: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:17: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:18: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:19: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:20: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:21: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:22: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:23: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:24: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:25: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:26: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:27: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:28: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:29: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:30: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:31: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:32: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:33: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:34: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:35: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:36: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:37: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:38: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:39: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:40: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:41: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:42: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:43: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:44: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:45: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:46: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:47: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:48: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:49: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:50: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:51: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:52: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:53: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:54: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:55: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:56: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:57: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:58: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:59: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:60: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:61: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:62: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:63: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:64: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:65: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:66: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:67: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:68: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:69: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:70: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:71: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:72: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:73: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:74: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:75: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:76: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:77: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:78: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:79: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:80: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:81: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:82: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:83: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:84: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:85: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:86: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:87: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:88: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:89: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:90: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:91: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:92: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:93: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:94: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:95: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:96: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:97: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:98: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:99: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:100: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:101: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:102: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:103: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:104: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:105: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:106: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:107: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:108: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:109: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:110: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:111: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:112: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:113: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:114: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:115: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:116: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:117: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:118: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:119: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:120: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:121: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:122: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:123: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:124: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:125: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:126: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:127: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:128: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:129: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:130: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:131: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:132: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:133: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:134: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:135: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:136: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:137: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:138: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:139: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:140: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:141: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:142: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:143: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:144: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:145: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:146: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:147: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:148: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:149: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:150: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:151: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:152: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:153: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:154: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:155: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:156: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:157: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:158: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:159: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:160: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:161: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:162: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:163: parameter "dso" is deprecated, use "filename"
+// WARNING : [arnold] PointCloud.SItoA.Instance.100000.:164: parameter "dso" is deprecated, use "filename"
+// INFO : [sitoa] Frame 100 exported to Arnold in 0.209 sec.
+RenderAllPasses(null, null, null, null, siRenderVerbosityDefault);
+Warning: return value of the executed script is not an integer
+// INFO : Render completed (100% done)
+// INFO : Characters has been unloaded.
+// INFO : TransformUVsPlugin has been unloaded.
+// INFO : [sitoa] SItoA 4.0.0 win has been unloaded.
+// INFO : polymatricksPlugin has been unloaded.
+// INFO : FBX-XSI import/export Plug-in has been unloaded.
+// INFO : Unfold3D Plugin has been unloaded.

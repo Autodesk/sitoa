@@ -1,0 +1,6 @@
+Aspect Ratio is not being computed correctly in several cases
+
+Now it takes into account the ImageAspectRatio with the ImagePixelRatio. Also the camera aspect ratio.
+The output is the same to mental ray now in all the cases. Ticket #671
+
+author: r3D

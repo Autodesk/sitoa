@@ -1,0 +1,5 @@
+Fixing "Lights loop breaks on a mental ray light"
+	
+(trac #1307)
+
+author: sjannuz

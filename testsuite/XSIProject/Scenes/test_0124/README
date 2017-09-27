@@ -1,0 +1,5 @@
+Fixing "Texture wrapping fails if image node is inside a compound"
+	
+(trac #1291)
+
+author: sjannuz

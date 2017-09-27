@@ -1,0 +1,5 @@
+Fixing "Arnold Visibility and Sidedness don't work for instanced models if applied under groups or partitions"
+	
+(trac #1116)
+
+author: sjannuz

@@ -1,0 +1,7 @@
+Parented instances not rendering
+
+When you have an instance directly under the root of the scene it renders
+fine, however when you parent the model and the instance under a null the
+instance no longer renders. See trac#226.
+
+author: Andreas Bystrom

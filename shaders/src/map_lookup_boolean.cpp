@@ -1,0 +1,97 @@
+/************************************************************************************************************************************
+Copyright 2017 Autodesk, Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. 
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, 
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+See the License for the specific language governing permissions and limitations under the License.
+************************************************************************************************************************************/
+
+#include "map_lookup.h"
+
+AI_SHADER_NODE_EXPORT_METHODS(MapLookupBooleanMethods);
+
+enum MapLookupBooleanParams 
+{
+   p_map,
+   p_threshold,
+};
+
+node_parameters
+{
+   AiParameterStr( "map"      , ""   );
+   AiParameterFlt( "threshold", 0.5f );
+}
+
+node_initialize
+{
+   MapLookupShaderData *data = new MapLookupShaderData;
+   AiNodeSetLocalData(node, (void*)data);
+}
+
+node_update
+{
+   MapLookupShaderData *data = (MapLookupShaderData*)AiNodeGetLocalData(node);
+   DestroyTextureHandles(data);
+   data->userData.clear();
+   SetUserData(node, data, "_map");
+}
+
+node_finish
+{
+   MapLookupShaderData *data = (MapLookupShaderData*)AiNodeGetLocalData(node);
+   DestroyTextureHandles(data);
+   data->userData.clear();
+   delete data;
+}
+
+shader_evaluate
+{
+   MapLookupShaderData *data = (MapLookupShaderData*)AiNodeGetLocalData(node);
+
+   sg->out.BOOL() = false;
+   MapLookupUserData* ud = GetLookupUserData(sg, data);
+
+   CClipData *clipData = ud ? &ud->clip_data : NULL;
+
+   AtString map = ud && !ud->map.empty() ? ud->map : AiShaderEvalParamStr(p_map);
+   if (map.empty())
+      return;
+
+   float threshold = AiShaderEvalParamFlt(p_threshold);
+
+   AtRGBA color;
+   float val;
+   const AtUserParamEntry * paramEntry = AiNodeLookUpUserParameter(sg->Op, map);
+   if (!paramEntry)
+   {
+      // No user data named after map, so it may be a texture map
+      // If so, we should find the texture projection exported as user data, or, if not,
+      // use the main uv set
+      if (clipData && clipData->m_isValid)
+      {
+         color = clipData->LookupTextureMap(sg);
+         val = (color.r + color.g + color.b) * .333f;
+         sg->out.BOOL() = val > threshold ? true : false;
+      }
+   }
+   else
+   {
+      int paramType = AiUserParamGetType(paramEntry);
+      if(paramType == AI_TYPE_FLOAT)
+      {
+         // weight map
+         AiUDataGetFlt(map, val);
+         sg->out.BOOL() = val > threshold ? true : false;
+      }
+      else if(paramType == AI_TYPE_RGBA)
+      {
+         // color map 
+         AiUDataGetRGBA(map, color);
+         val = (color.r + color.g + color.b) * .333f;
+         sg->out.BOOL() = val > threshold ? true : false;
+      }
+   }
+}

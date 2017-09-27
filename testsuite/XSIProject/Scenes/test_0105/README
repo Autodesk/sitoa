@@ -1,0 +1,5 @@
+Fixing "Models transformation not honored when instanced on hair"
+	
+(trac #1181)
+
+author: sjannuz

@@ -1,0 +1,5 @@
+Add support for the uv_remap node of persp_camera, using the camera options property
+
+(trac #1771, #1775)
+
+author: sjannuz

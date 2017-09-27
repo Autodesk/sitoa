@@ -1,0 +1,5 @@
+ICE color attributes must also export alpha
+
+(trac #770)
+
+author: sjannuz

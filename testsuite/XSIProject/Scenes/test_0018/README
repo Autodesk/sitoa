@@ -1,0 +1,9 @@
+Textures out of 0-1 space with wrapping fail to display if there is no projection explicitly set
+
+When trying to read the tspace_id parameter from txt2d_image_explicit node to get the wrapping values,
+It will be empty if there is no projection explicitly set. 
+We have to fill the tspace_id parameter with the default projection
+
+Ticket #265
+
+author: droolz

@@ -1,0 +1,63 @@
+=======================================================
+ Autodesk Softimage 11.1.57.0
+=======================================================
+
+License information: using [Processing]
+00:00:00   160MB         | log started Wed Jun  7 12:07:31 2017
+00:00:00   160MB         | Arnold 5.0.0.3 [baf78363] windows icc-17.0.2 oiio-1.7.12 osl-1.8.2 vdb-4.0.0 rlm-12.2.2 2017/05/31 10:45:24
+00:00:00   160MB         | running on cavallo, pid=13748
+00:00:00   160MB         |  1 x Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (4 cores, 8 logical) with 16334MB
+00:00:00   160MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00   160MB         |  soft limit for open files raised from 512 to 2048
+00:00:00   160MB         |  
+00:00:00   160MB         | loading plugins from C:\dev\Mia\Arnold\Extra_Shaders ...
+00:00:00   160MB         | loaded 1 plugins from 1 lib(s) and 1 OSL shaders in 0:00.00
+00:00:00   160MB         | loading plugins from C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
+00:00:00   161MB         | loaded 103 plugins from 1 lib(s) in 0:00.00
+
+
+
+
+00:00:00   166MB         |  
+00:00:00   166MB         | releasing resources
+00:00:00   166MB         | Arnold shutdown
+// INFO : [sitoa] SItoA 4.0.0 win loaded.
+// INFO : [sitoa] Arnold 5.0.0.3 detected.
+InstallCustomPreferences("ArnoldRenderPreferences", "Arnold Render");
+COMMAND: -processing -script "execute_test.js" -main main
+// INFO : C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
+>Loading: C:\dev\Mia\Arnold\sitoa\build\windows_x86_64\msvc_opt\si_11000\testsuite\test_0166\test.scn...
+// INFO : 4034 - Loaded scene was created with build number: 11.1.57.0 - compatibility version: 1100
+// WARNING : 3033 - Unable to resolve path: Pictures\seqMari<udim>.png
+// WARNING : 3033 - Unable to resolve path: Pictures\number<tile>.jpg
+OpenScene("C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0166\\test.scn", null, null);
+SetValue("Passes.RenderOptions.ImageLockAspectRatio", false, null);
+SetValue("Passes.RenderOptions.ImageWidth", 160, null);
+SetValue("Passes.RenderOptions.ImageHeight", 120, null);
+SetValue("Passes.Default_Pass.Main.Filename", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0166\\testrender.####.tif", null);
+SetValue("Passes.Default_Pass.Main.Format", "tif", null);
+SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, null);
+SetValue("Passes.Arnold_Render_Options.enable_log_file", true, null);
+SetValue("Passes.Arnold_Render_Options.log_level", 1, null);
+SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0166", null);
+// ERROR : 2000 - Argument 0 (Target) is invalid
+// ERROR : 2001-EDIT-SetValue - Argument 0 is invalid
+SetValue("Passes.Arnold_Render_Options.shaders_path", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\shaders", null);
+Command failed, returned -2147024809
+SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\dev\\Mia\\Arnold\\sitoa\\testsuite\\XSIProject\\Pictures", null);
+SetValue("Passes.Arnold_Render_Options.save_texture_paths", false, null);
+// INFO : Rendering pass 'Default_Pass'...
+// INFO : Rendering frame 65 (0.0% done)
+// WARNING : [arnold] node entry "standard" is deprecated, and may be removed in the future
+// INFO : [sitoa] Frame 65 exported to Arnold in 0.036 sec.
+// WARNING : [arnold] [disp] VectorDisplacementModel.grid1.SItoA.65000: padded bounds could be 11.9x more efficient. given disp_padding: 10, recommended: 1.22187138
+// WARNING : [arnold] [disp] sphere.SItoA.65000: padded bounds could be 2.29x more efficient. given disp_padding: 1, recommended: 0.321414113
+RenderAllPasses(null, null, null, null, siRenderVerbosityDefault);
+Warning: return value of the executed script is not an integer
+// INFO : Render completed (100% done)
+// INFO : Characters has been unloaded.
+// INFO : TransformUVsPlugin has been unloaded.
+// INFO : [sitoa] SItoA 4.0.0 win has been unloaded.
+// INFO : polymatricksPlugin has been unloaded.
+// INFO : FBX-XSI import/export Plug-in has been unloaded.
+// INFO : Unfold3D Plugin has been unloaded.

@@ -1,0 +1,6 @@
+Fixig motion blur artifacts with dynamic topology using PointVelocity
+	
+(trac #1518)
+
+author: sjannuz
+

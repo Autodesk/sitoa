@@ -1,0 +1,5 @@
+Rewriting and improving the texture map support by the map_lookup shaders
+	
+(trac #1574)
+
+author: sjannuz

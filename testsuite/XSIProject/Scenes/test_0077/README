@@ -1,0 +1,5 @@
+Fixing "Crash when a strand-instanced object has a light association" 
+	
+(trac #1561)
+
+author: sjannuz

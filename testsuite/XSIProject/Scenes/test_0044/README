@@ -1,0 +1,5 @@
+Add SItoA support for the upcoming skydome_light
+
+Implementation of the skydome_light from the new Arnold 3.3.2
+
+author: r3d

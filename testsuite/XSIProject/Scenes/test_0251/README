@@ -1,0 +1,5 @@
+Fixing UVs when exporting a mesh subdivided by ICE Subdivide Locally
+
+(trac #1623)
+
+author: sjannuz

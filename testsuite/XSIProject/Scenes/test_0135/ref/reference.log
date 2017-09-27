@@ -1,0 +1,258 @@
+=======================================================
+ Autodesk Softimage 11.1.57.0
+=======================================================
+
+License information: using [Processing]
+00:00:00   160MB         | log started Wed Jun  7 12:00:13 2017
+00:00:00   161MB         | Arnold 5.0.0.3 [baf78363] windows icc-17.0.2 oiio-1.7.12 osl-1.8.2 vdb-4.0.0 rlm-12.2.2 2017/05/31 10:45:24
+00:00:00   161MB         | running on cavallo, pid=4588
+00:00:00   161MB         |  1 x Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (4 cores, 8 logical) with 16334MB
+00:00:00   161MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00   161MB         |  soft limit for open files raised from 512 to 2048
+00:00:00   161MB         |  
+00:00:00   161MB         | loading plugins from C:\dev\Mia\Arnold\Extra_Shaders ...
+00:00:00   161MB         | loaded 1 plugins from 1 lib(s) and 1 OSL shaders in 0:00.00
+00:00:00   161MB         | loading plugins from C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
+00:00:00   161MB         | loaded 103 plugins from 1 lib(s) in 0:00.00
+
+
+
+
+00:00:00   166MB         |  
+00:00:00   166MB         | releasing resources
+00:00:00   166MB         | Arnold shutdown
+// INFO : [sitoa] SItoA 4.0.0 win loaded.
+// INFO : [sitoa] Arnold 5.0.0.3 detected.
+InstallCustomPreferences("ArnoldRenderPreferences", "Arnold Render");
+COMMAND: -processing -script "execute_test.js" -main main
+// INFO : C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
+>Loading: C:\dev\Mia\Arnold\sitoa\build\windows_x86_64\msvc_opt\si_11000\testsuite\test_0135\test.scn...
+// INFO : 4034 - Loaded scene was created with build number: 11.1.57.0 - compatibility version: 1100
+OpenScene("C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0135\\test.scn", null, null);
+SetValue("Passes.RenderOptions.ImageLockAspectRatio", false, null);
+SetValue("Passes.RenderOptions.ImageWidth", 160, null);
+SetValue("Passes.RenderOptions.ImageHeight", 120, null);
+SetValue("Passes.Default_Pass.Main.Filename", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0135\\testrender.####.tif", null);
+SetValue("Passes.Default_Pass.Main.Format", "tif", null);
+SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, null);
+SetValue("Passes.Arnold_Render_Options.enable_log_file", true, null);
+SetValue("Passes.Arnold_Render_Options.log_level", 1, null);
+SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0135", null);
+// ERROR : 2000 - Argument 0 (Target) is invalid
+// ERROR : 2001-EDIT-SetValue - Argument 0 is invalid
+SetValue("Passes.Arnold_Render_Options.shaders_path", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\shaders", null);
+Command failed, returned -2147024809
+SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\dev\\Mia\\Arnold\\sitoa\\testsuite\\XSIProject\\Pictures", null);
+SetValue("Passes.Arnold_Render_Options.save_texture_paths", false, null);
+// INFO : Rendering pass 'Default_Pass'...
+// INFO : Rendering frame 1 (0.0% done)
+// INFO : [sitoa] Frame 1 exported to Arnold in 0.039 sec.
+// WARNING : [arnold] out-of-range sample alpha in pixel (35,50), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (37,51), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (42,57), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (54,58), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (55,60), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (55,60), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (49,61), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (46,62), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (64,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (72,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (72,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (64,92), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (77,96), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (116,96), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (73,98), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (34,50), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (44,53), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (47,61), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (69,67), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (67,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (68,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (64,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (90,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (73,97), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (80,101), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (75,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (124,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (63,104), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (151,67), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (159,69), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (154,72), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (151,73), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (153,79), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (158,82), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (149,83), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (152,84), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (48,57), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (48,59), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (49,60), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (46,61), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (46,61), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (65,85), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (90,85), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (65,90), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (75,91), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (66,92), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (71,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (78,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (109,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (81,96), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (108,96), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (75,98), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (119,111), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (65,112), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (27,66), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (27,67), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (18,76), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (19,77), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (23,77), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (20,78), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (2,79), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (21,80), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (36,81), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (43,81), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (96,83), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (92,84), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (90,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (91,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (124,100), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (73,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (80,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (64,105), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (85,118), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (109,119), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (70,98), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (76,99), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (64,100), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (65,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (65,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (69,104), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (74,111), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (83,111), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (69,117), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (56,83), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (58,86), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (13,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (20,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (42,88), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (17,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (35,90), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (44,91), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (15,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (42,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (20,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (80,99), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (67,101), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (125,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (125,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (72,103), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (127,111), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (116,113), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (114,116), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (3,84), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (57,85), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (56,86), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (18,88), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (56,88), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (40,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (40,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (54,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (54,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (25,91), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (25,91), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (23,93), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (23,93), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (16,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (24,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (44,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (28,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (58,101), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (51,105), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (68,110), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (75,110), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (76,111), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (116,116), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (105,118), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (67,119), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (34,82), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (37,84), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (48,84), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (23,86), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (19,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (50,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (64,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (19,88), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (62,88), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (50,90), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (23,91), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (52,93), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (43,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (46,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (17,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (18,97), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (45,100), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (24,101), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (58,103), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (32,105), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (20,106), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (60,108), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (158,91), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (159,92), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (157,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (152,96), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (153,96), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (130,99), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (131,99), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (142,103), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (156,103), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (138,104), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (139,104), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (97,118), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (94,119), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (97,120), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (48,82), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (61,83), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (32,84), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (10,85), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (56,85), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (17,87), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (19,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (42,89), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (52,90), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (28,91), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (29,92), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (48,93), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (20,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (45,94), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (29,95), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (38,96), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (44,97), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (44,99), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (26,100), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (44,100), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (4,101), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (62,102), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (56,104), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (2,105), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (11,108), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (42,98), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (51,99), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (60,100), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (54,104), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (16,106), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (5,103), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (44,103), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (55,103), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (63,104), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (55,106), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (58,108), alpha=1.00000012
+// WARNING : [arnold] out-of-range sample alpha in pixel (38,108), alpha=1.00000012
+RenderAllPasses(null, null, null, null, siRenderVerbosityDefault);
+Warning: return value of the executed script is not an integer
+// INFO : Render completed (100% done)
+// INFO : Characters has been unloaded.
+// INFO : TransformUVsPlugin has been unloaded.
+// INFO : [sitoa] SItoA 4.0.0 win has been unloaded.
+// INFO : polymatricksPlugin has been unloaded.
+// INFO : FBX-XSI import/export Plug-in has been unloaded.
+// INFO : Unfold3D Plugin has been unloaded.

@@ -1,0 +1,50 @@
+# vim: filetype=python
+
+## load our own python modules
+import system
+from build_tools import find_files_recursive
+
+import os
+
+# import build env
+Import('env')
+local_env = env.Clone()
+
+# Automatically add all source and include files found in the source path
+src_base_dir  = os.path.join(local_env['ROOT_DIR'], 'shaders', 'src')
+source_files  = find_files_recursive(src_base_dir, ['.c', '.cpp'])
+include_files = find_files_recursive(src_base_dir, ['.h'])
+   
+local_env.Append(CPPPATH = ['.'])
+local_env.Append(LIBS = Split('ai'))
+
+# make shared or static library
+SITOA_SHADERS = local_env.SharedLibrary('sitoa_shaders', source_files, SHLIBPREFIX='')
+
+if system.os() == 'windows':
+   SITOA_SHADERS_PRJ = local_env.MSVSProject(target = 'sitoa_shaders' + env['MSVS']['PROJECTSUFFIX'],
+                                             srcs = source_files + include_files,
+                                             incs = [],
+                                             buildtarget = 'shaders',
+                                             cmdargs = ['-Q -s COMPILER=msvc MODE=debug TARGET_ARCH=x86',
+                                                        '-Q -s COMPILER=icc MODE=debug TARGET_ARCH=x86',
+                                                        '-Q -s COMPILER=msvc MODE=opt TARGET_ARCH=x86',
+                                                        '-Q -s COMPILER=icc MODE=opt TARGET_ARCH=x86'],
+                                             variant = ['Debug_MSVC|Win32',
+                                                        'Debug_ICC|Win32',
+                                                        'Opt_MSVC|Win32',
+                                                        'Opt_ICC|Win32'],
+                                             auto_build_solution = 0,
+                                             nokeep = 1)
+   
+   local_env.AlwaysBuild(SITOA_SHADERS_PRJ)
+   
+   Return('SITOA_SHADERS SITOA_SHADERS_PRJ')
+elif system.os() == 'darwin':
+   local_env.Append(CCFLAGS = Split('-fvisibility=hidden')) # hide symbols by default
+   #local_env.Append(LINKFLAGS = Split('-Wl,-rpath="\\$$ORIGIN" -z origin'))
+   Return('SITOA_SHADERS')
+else:
+   local_env.Append(CCFLAGS = Split('-fvisibility=hidden')) # hide symbols by default
+   #local_env.Append(LINKFLAGS = Split('-Wl,-rpath="\\$$ORIGIN" -z origin'))
+   Return('SITOA_SHADERS')

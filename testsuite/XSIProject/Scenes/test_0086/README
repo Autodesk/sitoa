@@ -1,0 +1,6 @@
+AOVs can be not anti-aliased
+
+(trac #1028)
+In the test scene, the color AOV filtering is set off, so you get an aliased picture.
+
+author: sjannuz

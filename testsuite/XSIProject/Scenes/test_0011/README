@@ -1,0 +1,6 @@
+Match Gradient types in txt2d_gradient_v2 to mental ray
+
+There are some gradient types that are not rendered like XSI does.
+See trac#61.
+
+author: Luis Armengol

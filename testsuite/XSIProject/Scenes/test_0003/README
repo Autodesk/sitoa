@@ -1,0 +1,7 @@
+Discontinuity angle not working
+
+The Geometry Approximation setting for discontinuity angle is broken.
+It's off when set to zero, and on (always smoothing) when set to anything
+other then zero. See trac#296.
+
+author: Francois Lord

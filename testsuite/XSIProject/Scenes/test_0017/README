@@ -1,0 +1,10 @@
+Instancing a model that has instances inside
+
+Instancing a model with an other instance inside won't show all the instances in the render
+since Arnold doesn't support group instancing
+
+See trac #437
+
+author: guillaume
+
+Fixed by sjannuz in r1591, updating reference

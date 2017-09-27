@@ -1,0 +1,7 @@
+Texture Derivatives are not restored after they are modified by a shader
+	
+Texture Derivatives are not restored after they are modified by a shader.
+This makes that more than if there are several shaders modifying them, 
+they will give bad results. (ticket #1345)
+
+author: r3D

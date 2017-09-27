@@ -1,0 +1,6 @@
+Support of cylinder lights
+
+Support of cylinder lights and its various parameters 
+Implemented as a new Arnold Cylinder light (ticket #1101)
+
+author: r3D

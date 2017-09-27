@@ -1,0 +1,5 @@
+Fixing "Malfunction rendering an image node shared by different objects with multiple uv projections"
+	
+(trac #505)
+
+author: sjannuz

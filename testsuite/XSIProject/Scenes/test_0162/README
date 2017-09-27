@@ -1,0 +1,5 @@
+Fixing "Image shader on hair not using the applied texture projection"
+	
+(trac #1388)
+
+author: sjannuz

@@ -1,0 +1,6 @@
+Motion blur with indexed normals
+
+Test of motion blur with indexed normals in mesh with discontinuity angles
+and user normals (trac #143)
+
+author: r3d

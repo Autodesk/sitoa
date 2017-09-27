@@ -1,0 +1,5 @@
+Fixing "Mesh objects with an icetree not correctly instanced by a pointcould"
+	
+(trac #1198)
+
+author: sjannuz

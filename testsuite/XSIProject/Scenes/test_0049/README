@@ -1,0 +1,8 @@
+UV computing code
+
+This test does several checks in several shaders. It tries different uv
+computation (alternates, repeats, remaps, offsets) from different shaders
+that use them like txt2d_image_explicit, mib_texture_remap and 
+sib_texproj_lookup 
+
+author: r3d
