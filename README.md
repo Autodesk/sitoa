@@ -7,7 +7,7 @@ Building and Installation
 **Requirements:**
 
 * Python 2.6 or newer
-* The Arnold SDK
+* The Arnold SDK (5.0.1.1 or newer)
 * The Softimage SDK
 * Microsoft Visual Studio 2012 (Windows)
 * gcc-4.2.4 (Linux)
