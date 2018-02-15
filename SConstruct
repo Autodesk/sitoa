@@ -97,7 +97,12 @@ if system.os() == 'windows':
 else:
    ALLOWED_COMPILERS = ['gcc']
 
-vars = Variables('custom.py')
+# load custom or default build variables
+if os.path.isfile('custom.py'):
+   vars = Variables('custom.py')
+else:
+   vars = Variables('custom_%s.py' % system.os())
+    
 vars.AddVariables(
       ## basic options
       EnumVariable('MODE',        'Set compiler configuration', 'debug', allowed_values=('opt', 'debug', 'profile')),
@@ -111,10 +116,9 @@ vars.AddVariables(
       ('TEST_PATTERN' , 'Glob pattern of tests to be run', 'test_*'),
 
       PathVariable('XSISDK_ROOT', 'Where to find XSI libraries', get_default_path('XSISDK_ROOT', '.')),
-      PathVariable('EXTERNAL_PATH', 'External dependencies are found here', '.'),
       PathVariable('ARNOLD_HOME', 'Base Arnold dir', '.'),
       PathVariable('VS_HOME', 'Visual Studio 11 home', '.'),
-      PathVariable('VS_KIT', 'Windows kits home', '.'),
+      PathVariable('WINDOWS_KIT', 'Windows Kit home', '.'),
 
       PathVariable('TARGET_WORKGROUP_PATH', 'Path used for installation of plugins', '.', PathVariable.PathIsDirCreate),
       PathVariable('SHCXX', 'C++ compiler used for generating shared-library objects', None),
@@ -142,7 +146,7 @@ else:
   ARNOLD_API_LIB = ARNOLD_BINARIES
 
 VS_HOME = env['VS_HOME']
-VS_KIT  = env['VS_KIT']
+WINDOWS_KIT  = env['WINDOWS_KIT']
 
 # Find XSISDK_VERSION by parsing xsi_version.h in the SDK
 XSISDK_VERSION = get_softimage_version(env['XSISDK_ROOT']);
@@ -248,12 +252,12 @@ elif env['COMPILER'] == 'icc':
 env.Append(CPPPATH = ARNOLD_API_INCLUDES)
 if system.os() == 'windows':
   env.Append(CPPPATH = [os.path.join(VS_HOME, 'include')])
-  env.Append(CPPPATH = [os.path.join(VS_KIT, 'Include', 'um')])
-  env.Append(CPPPATH = [os.path.join(VS_KIT, 'Include', 'shared')])
+  env.Append(CPPPATH = [os.path.join(WINDOWS_KIT, 'Include', 'um')])
+  env.Append(CPPPATH = [os.path.join(WINDOWS_KIT, 'Include', 'shared')])
 
 env.Append(LIBPATH = ARNOLD_API_LIB)
 if system.os() == 'windows':
-  env.Append(LIBPATH = [os.path.join(VS_KIT, 'Lib' , 'win8', 'um', 'x64')])
+  env.Append(LIBPATH = [os.path.join(WINDOWS_KIT, 'Lib' , 'win8', 'um', 'x64')])
   env.Append(LIBPATH = [os.path.join(VS_HOME, 'lib', 'amd64')])
 
 ## configure base directory for temp files                                                   
