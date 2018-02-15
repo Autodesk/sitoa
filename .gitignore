@@ -1,0 +1,37 @@
+# Python
+*.py[cod]
+
+# C++
+*.so
+*.a
+*.lai
+*.la
+*.dylib
+*.dll
+*.o
+*.os
+*.slo
+*.lo
+
+# SCons
+.sconsign.dblite
+custom.py
+dist
+build
+
+# Eclipse
+.settings
+.*project
+
+# JetBrains
+.idea
+CMakeLists.txt
+cmake-build-debug
+
+# backup and temp
+*.swp
+*.bak
+*~
+
+# mac cruft
+.DS_Store
