@@ -15,7 +15,7 @@ Solid Angle and Autodesk are now making SItoA available to the community
 under an Apache 2.0 open source license.
 
 
-### Requirements
+#### Requirements
 
 * Softimage 2015 SP1
 * Arnold 5.0.1.1 or newer
@@ -166,7 +166,7 @@ README     (description of the test)
 
 You will find a placeholder scene file called `test.scn` in the `data` folder.
 The test is checked by rendering the scene and comparing the result with the
-reference image. If the difference is bigger than a pre-specified threshold,
+reference image. If the difference is bigger than a predefined threshold,
 the test will fail.
 
 To re-generate the reference image for a specific test, type:
@@ -178,7 +178,7 @@ abuild test_0005 UPDATE_REFERENCE=true
 Finally, you should provide a description of the test in the `README` file,
 including both a one-line summary and an optional, longer, more detailed description.
 
-You can list all the tests with its oneliner description with:
+You can list all the tests with their one-line description with:
 
 ```
 abuild testlist
@@ -258,7 +258,7 @@ MyFunction( a, b );  // wrong
 //But I suck
 ```
 
- - Always precede classes, methods and functions with a Doxygen-style comment. For classes, describe its responsabilities and dependencies. For methods and functions, describe what the function does ''and'' describe each individual parameter, as well as the return value. Follow the syntax in this example:
+ - Always precede classes, methods and functions with a Doxygen-style comment. For classes, describe its responsibilities and dependencies. For methods and functions, describe what the function does **and** describe each individual parameter, as well as the return value. Follow the syntax in this example:
 
 ```cpp
 // Short description in one phrase (in this case: Add two numbers together).
