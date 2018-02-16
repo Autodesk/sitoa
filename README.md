@@ -1,17 +1,17 @@
-# SItoA
+# Softimage to Arnold
 
-The Autodesk Softimage plugin for the Arnold renderer.
+_Softimage to Arnold_ (or **SItoA**) is the Arnold plugin for Autodesk Softimage. 
 
-This repository contains the official  Softimage plugin source for Arnold.
-Solid Angle, the company behind the Arnold renderer, and that was later
-acquired by Autodesk, had been developing this plugin commercially since 2009.
+This repository contains the official SItoA plugin source code.
+[Solid Angle](https://www.solidangle.com/), the company behind the Arnold renderer, and now part
+of [Autodesk](https://www.autodesk.com/), developed the SItoA plugin commercially from 2009 to 2017.
 
-Upon the announcement of the Softimage end of life, Solid Angle committed to
-continue the development and maintenance of SItoA for at least a year, and then
-extended this period for another year, porting to the new Arnold 5 API along
-the way.
+After the Softimage end-of-life announcement in April 2014, Solid Angle 
+committed to continue the development and maintenance of SItoA for at 
+least a year, and then extended this period until July 2017, porting SItoA 
+to the new Arnold 5 API along the way.
 
-Solid Angle and Autodesk are now making SItoA available to the community
+Solid Angle and Autodesk are now making SItoA available to the community 
 under an Apache 2.0 open source license.
 
 
