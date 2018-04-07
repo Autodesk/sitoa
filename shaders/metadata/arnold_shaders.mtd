@@ -1646,52 +1646,57 @@ desc STRING "min: Minimum component. max: Maximum component. average: Average of
 ##############################################################################
 [node shadow_matte]
 soft.category STRING "Surface"
-soft.order STRING "BeginGroup Shadow shadow_color shadow_opacity EndGroup "
-"BeginGroup Background background_type offscreen_color EndGroup "
-"BeginGroup Diffuse diffuse_color diffuse_use_background diffuse_intensity backlighting indirect_diffuse_enable EndGroup "
-"BeginGroup Specular indirect_specular_enable specular_color specular_intensity specular_roughness EndGroup "
-"BeginGroup AOVs aov_shadow aov_shadow_diff aov_shadow_mask aov_indirect_diffuse aov_indirect_specular EndGroup"
+soft.order STRING "BeginGroup Background background background_color EndGroup "
+"BeginGroup Shadows shadow_color shadow_opacity backlighting alpha_mask EndGroup "
+"BeginGroup Diffuse diffuse_color diffuse_intensity diffuse_use_background indirect_diffuse_enable EndGroup "
+"BeginGroup Specular indirect_specular_enable specular_color specular_intensity specular_roughness specular_IOR EndGroup "
+"BeginGroup Lights aov_group EndGroup "
+"BeginGroup AOVs aov_shadow aov_shadow_diff aov_shadow_mask EndGroup"
 
-# Shadow group
+# Background group
+
+[attr background]
+desc STRING "The background type, sky or image plane."
+
+[attr background_color]
+desc STRING "The offscreen color."
+soft.disable_when STRING "{ background != background_color }"
+
+# Shadows group
 
 [attr shadow_color]
 desc STRING "A color to tint the shadows."
 
 [attr shadow_opacity]
 desc STRING "The opacity of the shadows."
-min FLOAT 0.0
-max FLOAT 1.0
+min FLOAT 0
+max FLOAT 1
 
-# Background group
+[attr backlighting]
+desc STRING "Intensity of backlight effect."
+min FLOAT 0
+max FLOAT 1
 
-[attr background_type]
-desc STRING "The background type, sky or image plane."
-
-[attr offscreen_color]
-desc STRING "The offscreen color."
-soft.disable_when STRING "{ background_type == sky }"
+[attr alpha_mask]
+desc STRING "Controls whether the alpha should be opaque or contain the shadow mask."
 
 # Diffuse group
 
 [attr diffuse_color]
 desc STRING "A color to tint the indirect diffuse."
+soft.label STRING "Color"
 soft.disable_when STRING "{ diffuse_use_background == 1 }"
-
-[attr diffuse_use_background]
-desc STRING "Flag to select between using diffuse color or background color to tint the indirect diffuse."
-soft.label STRING "Use Background Color"
 
 [attr diffuse_intensity]
 desc STRING "The indirect diffuse intensity."
+soft.label STRING "Intensity"
 min FLOAT 0.0
 softmin FLOAT 0
 softmax FLOAT 1
 
-[attr backlighting]
-desc STRING "Intensity of backlight effect."
-min FLOAT 0.0
-softmin FLOAT 0
-softmax FLOAT 1
+[attr diffuse_use_background]
+desc STRING "Flag to select between using diffuse color or background color to tint the indirect diffuse."
+soft.label STRING "Use Background"
 
 [attr indirect_diffuse_enable]
 desc STRING "Add indirect diffuse lighting." 
@@ -1705,10 +1710,12 @@ soft.label STRING "Indirect Specular"
 
 [attr specular_color]
 desc STRING "A color to tint the indirect specular."
+soft.label STRING "Color"
 soft.disable_when STRING "{ indirect_specular_enable == 0 }"
 
 [attr specular_intensity]
 desc STRING "The indirect specular intensity."
+soft.label STRING "Intensity"
 min FLOAT 0.0
 softmin FLOAT 0
 softmax FLOAT 1
@@ -1716,9 +1723,22 @@ soft.disable_when STRING "{ indirect_specular_enable == 0 }"
 
 [attr specular_roughness]
 desc STRING "The indirect specular roughness."
+soft.label STRING "Roughness"
 min FLOAT 0.0
 max FLOAT 1.0 
 soft.disable_when STRING "{ indirect_specular_enable == 0 }"
+
+[attr specular_IOR]
+desc STRING "The index of refraction."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+soft.disable_when STRING "{ indirect_specular_enable == 0 }"
+
+# Lights group
+[attr aov_group]
+soft.label STRING "Light Group"
 
 # AOV group
 
@@ -1733,14 +1753,6 @@ soft.label STRING "Shadow Diff"
 [attr aov_shadow_mask]
 aov.type INT 4
 soft.label STRING "Shadow Mask"
-
-[attr aov_indirect_diffuse]
-aov.type INT 5
-soft.label STRING "Indirect Diffuse"
-
-[attr aov_indirect_specular]
-aov.type INT 5
-soft.label STRING "Indirect Specular"
 
 ##############################################################################
 [node shuffle]

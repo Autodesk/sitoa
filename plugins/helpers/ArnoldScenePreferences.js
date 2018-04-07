@@ -160,8 +160,6 @@ function CreateRenderChannels()
    aov_array.push({ name: "shadow",                type: siRenderChannelColorType });
    aov_array.push({ name: "shadow_diff",           type: siRenderChannelColorType });
    aov_array.push({ name: "shadow_mask",           type: siRenderChannelColorType });
-   aov_array.push({ name: "indirect_diffuse",      type: siRenderChannelColorType });
-   aov_array.push({ name: "indirect_specular",     type: siRenderChannelColorType });
 
    var aov_name, aov_type;
 	for (var i = 0; i < aov_array.length; i++) 
