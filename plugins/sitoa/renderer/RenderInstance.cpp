@@ -1035,7 +1035,7 @@ void CRenderInstance::SetRenderStatus(const eRenderStatus in_status)
 }
 
 
-int CRenderInstance::DoRender(const int in_mode)
+int CRenderInstance::DoRender(const AtRenderMode in_mode)
 {
    SetRenderStatus(eRenderStatus_Started);
    int result = AiRender(in_mode);

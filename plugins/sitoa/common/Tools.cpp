@@ -1216,9 +1216,6 @@ CString GetRenderCodeDesc(int in_errorCode)
       case AI_ABORT:
          desc = L"render aborted";
          break;
-      case AI_ERROR_WRONG_OUTPUT:
-         desc = L"can't open output file";
-         break;
       case AI_ERROR_NO_CAMERA:
          desc = L"camera not defined";
          break;
@@ -1231,20 +1228,14 @@ CString GetRenderCodeDesc(int in_errorCode)
       case AI_ERROR_RENDER_REGION:
          desc = L"invalid render region";
          break;
-      case AI_ERROR_OUTPUT_EXISTS:
-         desc = L"output file already exists";
-         break;
-      case AI_ERROR_OPENING_FILE:
-         desc = L"can't open file";
-         break;
       case AI_INTERRUPT:
          desc = L"render interrupted by user";
          break;
-      case AI_ERROR_UNRENDERABLE_SCENEGRAPH:
-         desc = L"unrenderable scenegraph";
-         break;
       case AI_ERROR_NO_OUTPUTS:
          desc = L"no rendering outputs";
+         break;
+      case AI_ERROR_UNAVAILABLE_DEVICE:
+         desc = L"Cannot create GPU context.";
          break;
       case AI_ERROR:
          desc = L"generic error";
