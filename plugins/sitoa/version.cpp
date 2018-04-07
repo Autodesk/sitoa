@@ -13,9 +13,9 @@ See the License for the specific language governing permissions and limitations 
 
 #include <xsi_utils.h>
 
-#define SITOA_MAJOR_VERSION_NUM    4
-#define SITOA_MINOR_VERSION_NUM    1
-#define SITOA_FIX_VERSION          L"0"
+#define SITOA_MAJOR_VERSION_NUM    5
+#define SITOA_MINOR_VERSION_NUM    0
+#define SITOA_FIX_VERSION          L"0-alpha"
 
 
 CString GetSItoAVersion(bool in_addPlatform)
