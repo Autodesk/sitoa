@@ -366,7 +366,7 @@ With contributions by:
 - Frederic Servant
 - Jules Stevenson
 
-After open-sourcing, development has been continued by:
+After open-sourcing, development has continued by:
 
 - Jens Lindgren
 
