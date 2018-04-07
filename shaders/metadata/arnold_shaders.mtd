@@ -1938,7 +1938,7 @@ max INT 64
 soft.category STRING "Surface"
 soft.order STRING "BeginGroup Base base base_color diffuse_roughness metalness EndGroup "
 "BeginGroup Specular specular specular_color specular_roughness specular_IOR specular_anisotropy specular_rotation EndGroup "
-"BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness EndGroup "
+"BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness transmit_aovs EndGroup "
 "BeginGroup Subsurface subsurface subsurface_color subsurface_radius subsurface_scale subsurface_type subsurface_anisotropy EndGroup "
 "BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal coat_affect_color coat_affect_roughness EndGroup "
 "BeginGroup Thin_Film thin_film_thickness thin_film_IOR EndGroup "
@@ -2052,6 +2052,9 @@ desc STRING "Additional refraction blurriness."
 soft.label STRING "Extra Roughness"
 min FLOAT 0
 max FLOAT 1
+
+[attr transmit_aovs]
+soft.label STRING "Transmit AOVs"
 
 [attr subsurface]
 desc STRING "The amount of sub-surface scattering. Multiplies SSS Color."
