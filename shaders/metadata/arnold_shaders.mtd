@@ -2563,6 +2563,9 @@ softmax FLOAT 5
 ##############################################################################
 [node triplanar]
 soft.category STRING "Texture"
+soft.order STRING "BeginGroup Main input coord_space pref_name blend EndGroup "
+"BeginGroup Transform scale rotate offset EndGroup "
+"BeginGroup Cell cell cell_rotate cell_blend EndGroup"
 
 [attr input]
 desc STRING "The image to be looked up by the computed projection."
@@ -2577,14 +2580,30 @@ desc STRING "Rotation applied to the projected UV"
 desc STRING "Offset applied to the projected UV"
 
 [attr coord_space]
+desc STRING "Specifies the coordinate space to use."
 soft.label STRING "Coordinate Space"
-desc STRING "Coordinate space"
 
-[attr P]
-desc STRING "If linked, the point at which the shader is evaluated."
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
 
 [attr blend]
 desc STRING "Blending factor at the seems."
+min FLOAT 0
+max FLOAT 1
+
+[attr cell]
+desc STRING "Enable Voronoi cellular projection."
+soft.label STRING "Enable Cell"
+
+[attr cell_rotate]
+desc STRING "Controls rotation of the randomization."
+soft.label STRING "Rotate"
+softmin FLOAT -180
+softmax FLOAT 180
+
+[attr cell_blend]
+desc STRING "Controls the blending width."
+soft.label STRING "Blend"
 min FLOAT 0
 max FLOAT 1
 
