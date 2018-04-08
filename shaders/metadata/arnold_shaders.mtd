@@ -1215,6 +1215,321 @@ softmin FLOAT 0
 softmax FLOAT 1
 
 ##############################################################################
+[node layer_rgba]
+soft.category STRING "Utility"
+soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 operation1 mix1 alpha_operation1 EndGroup "
+"BeginGroup Layer_2 enable2 name2 input2 operation2 mix2 alpha_operation2 EndGroup "
+"BeginGroup Layer_3 enable3 name3 input3 operation3 mix3 alpha_operation3 EndGroup "
+"BeginGroup Layer_4 enable4 name4 input4 operation4 mix4 alpha_operation4 EndGroup "
+"BeginGroup Layer_5 enable5 name5 input5 operation5 mix5 alpha_operation5 EndGroup "
+"BeginGroup Layer_6 enable6 name6 input6 operation6 mix6 alpha_operation6 EndGroup "
+"BeginGroup Layer_7 enable7 name7 input7 operation7 mix7 alpha_operation7 EndGroup "
+"BeginGroup Layer_8 enable8 name8 input8 operation8 mix8 alpha_operation8 EndGroup"
+
+[attr enable1]
+soft.label STRING "Enable"
+
+[attr name1]
+soft.label STRING "Name"
+
+[attr input1]
+soft.label STRING "Input"
+
+[attr mix1]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr operation1]
+soft.label STRING "Operation"
+
+[attr alpha_operation1]
+soft.label STRING "Alpha Operation"
+
+[attr enable2]
+soft.label STRING "Enable"
+
+[attr name2]
+soft.label STRING "Name"
+
+[attr input2]
+soft.label STRING "Input"
+
+[attr mix2]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr operation2]
+soft.label STRING "Operation"
+
+[attr alpha_operation2]
+soft.label STRING "Alpha Operation"
+
+[attr enable3]
+soft.label STRING "Enable"
+
+[attr name3]
+soft.label STRING "Name"
+
+[attr input3]
+soft.label STRING "Input"
+
+[attr mix3]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr operation3]
+soft.label STRING "Operation"
+
+[attr alpha_operation3]
+soft.label STRING "Alpha Operation"
+
+[attr enable4]
+soft.label STRING "Enable"
+
+[attr name4]
+soft.label STRING "Name"
+
+[attr input4]
+soft.label STRING "Input"
+
+[attr mix4]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr operation4]
+soft.label STRING "Operation"
+
+[attr alpha_operation4]
+soft.label STRING "Alpha Operation"
+
+[attr enable5]
+soft.label STRING "Enable"
+
+[attr name5]
+soft.label STRING "Name"
+
+[attr input5]
+soft.label STRING "Input"
+
+[attr mix5]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr operation5]
+soft.label STRING "Operation"
+
+[attr alpha_operation5]
+soft.label STRING "Alpha Operation"
+
+[attr enable6]
+soft.label STRING "Enable"
+
+[attr name6]
+soft.label STRING "Name"
+
+[attr input6]
+soft.label STRING "Input"
+
+[attr mix6]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr operation6]
+soft.label STRING "Operation"
+
+[attr alpha_operation6]
+soft.label STRING "Alpha Operation"
+
+[attr enable7]
+soft.label STRING "Enable"
+
+[attr name7]
+soft.label STRING "Name"
+
+[attr input7]
+soft.label STRING "Input"
+
+[attr mix7]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr operation7]
+soft.label STRING "Operation"
+
+[attr alpha_operation7]
+soft.label STRING "Alpha Operation"
+
+[attr enable8]
+soft.label STRING "Enable"
+
+[attr name8]
+soft.label STRING "Name"
+
+[attr input8]
+soft.label STRING "Input"
+
+[attr mix8]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr operation8]
+soft.label STRING "Operation"
+
+[attr alpha_operation8]
+soft.label STRING "Alpha Operation"
+
+[attr clamp]
+soft.label STRING "Clamp Result"
+
+##############################################################################
+[node layer_shader]
+soft.category STRING "Utility"
+soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 mix1 EndGroup "
+"BeginGroup Layer_2 enable2 name2 input2 mix2 EndGroup "
+"BeginGroup Layer_3 enable3 name3 input3 mix3 EndGroup "
+"BeginGroup Layer_4 enable4 name4 input4 mix4 EndGroup "
+"BeginGroup Layer_5 enable5 name5 input5 mix5 EndGroup "
+"BeginGroup Layer_6 enable6 name6 input6 mix6 EndGroup "
+"BeginGroup Layer_7 enable7 name7 input7 mix7 EndGroup "
+"BeginGroup Layer_8 enable8 name8 input8 mix8 EndGroup"
+
+[attr enable1]
+soft.label STRING "Enable"
+
+[attr name1]
+soft.label STRING "Name"
+
+[attr input1]
+soft.label STRING "Input"
+
+[attr mix1]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr enable2]
+soft.label STRING "Enable"
+
+[attr name2]
+soft.label STRING "Name"
+
+[attr input2]
+soft.label STRING "Input"
+
+[attr mix2]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr enable3]
+soft.label STRING "Enable"
+
+[attr name3]
+soft.label STRING "Name"
+
+[attr input3]
+soft.label STRING "Input"
+
+[attr mix3]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr enable4]
+soft.label STRING "Enable"
+
+[attr name4]
+soft.label STRING "Name"
+
+[attr input4]
+soft.label STRING "Input"
+
+[attr mix4]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr enable5]
+soft.label STRING "Enable"
+
+[attr name5]
+soft.label STRING "Name"
+
+[attr input5]
+soft.label STRING "Input"
+
+[attr mix5]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr enable6]
+soft.label STRING "Enable"
+
+[attr name6]
+soft.label STRING "Name"
+
+[attr input6]
+soft.label STRING "Input"
+
+[attr mix6]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr enable7]
+soft.label STRING "Enable"
+
+[attr name7]
+soft.label STRING "Name"
+
+[attr input7]
+soft.label STRING "Input"
+
+[attr mix7]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr enable8]
+soft.label STRING "Enable"
+
+[attr name8]
+soft.label STRING "Name"
+
+[attr input8]
+soft.label STRING "Input"
+
+[attr mix8]
+soft.label STRING "Mix"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+##############################################################################
 [node length]
 soft.category STRING "Math"
 

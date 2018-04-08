@@ -63,6 +63,8 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("is_finite", 1, 0);
    in_reg.RegisterShader("lambert", 1, 0);
    in_reg.RegisterShader("layer_float", 1, 0);
+   in_reg.RegisterShader("layer_rgba", 1, 0);
+   in_reg.RegisterShader("layer_shader", 1, 0);
    in_reg.RegisterShader("length", 1, 0);
    in_reg.RegisterShader("log", 1, 0);
    in_reg.RegisterShader("matte", 1, 0);
@@ -219,6 +221,10 @@ function Arnold_lambert_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_lambert_1_0_Define(in_ctxt) { return true; }
 function Arnold_layer_float_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_layer_float_1_0_Define(in_ctxt) { return true; }
+function Arnold_layer_rgba_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_layer_rgba_1_0_Define(in_ctxt) { return true; }
+function Arnold_layer_shader_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_layer_shader_1_0_Define(in_ctxt) { return true; }
 function Arnold_length_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_length_1_0_Define(in_ctxt) { return true; }
 function Arnold_log_1_0_DefineInfo(in_ctxt) { return true; }
