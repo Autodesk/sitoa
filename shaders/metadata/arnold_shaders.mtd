@@ -436,7 +436,7 @@ softmax FLOAT 1
 soft.category STRING "Color"
 soft.order STRING "BeginGroup Input input EndGroup "
 "BeginGroup Object obj_gain_min obj_gain_max obj_hue_min obj_hue_max obj_saturation_min obj_saturation_max obj_seed EndGroup "
-"BeginGroup Face face_gain_min face_gain_max face_hue_min face_hue_max face_saturation_min face_saturation_max face_seed EndGroup "
+"BeginGroup Face face_gain_min face_gain_max face_hue_min face_hue_max face_saturation_min face_saturation_max face_seed face_mode EndGroup "
 "BeginGroup User_Data data_input data_gain_min data_gain_max data_hue_min data_hue_max data_saturation_min data_saturation_max data_seed EndGroup "
 "BeginGroup Procedural proc_gain_min proc_gain_max proc_hue_min proc_hue_max proc_saturation_min proc_saturation_max proc_seed EndGroup"
 
@@ -619,6 +619,9 @@ min     INT 0
 softmin INT 0
 softmax INT 100
 soft.label STRING "Seed"
+
+[attr face_mode]
+desc STRING "The color can be randomized per triangle (Face ID) as well as quadrangle (Uniform ID)."
 
 ##############################################################################
 [node compare]
