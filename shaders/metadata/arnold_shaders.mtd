@@ -31,7 +31,7 @@ soft.label STRING "Input 2"
 ##############################################################################
 [node ambient_occlusion]
 soft.category STRING "Surface"
-soft.order STRING "white black samples spread near_clip far_clip falloff self_only invert_normals normal"
+soft.order STRING "white black samples spread near_clip far_clip falloff self_only invert_normals trace_set inclusive normal"
 
 [attr white]
 desc STRING "The output color when the ratio of the ray hits/total rays is zero (fully unoccluded)."
@@ -41,6 +41,7 @@ desc STRING "The output color when the ratio of the ray hits/total rays is one (
 
 [attr normal]
 desc STRING "Alters the opacity of the ambient occlusion effect, thereby changing the opacity of the object. Lower values increase the opacity. It is possible to drive the opacity of the ambient occlusion effect with a shading network. You must ensure that Opaque is switched off for the geometry."
+soft.inspectable BOOL false
 
 [attr samples]
 desc STRING "Controls the number of rays that will be fired to compute the ray hits/total ratio. Increasing the number of samples will reduce noise and give a better quality result."
@@ -74,6 +75,12 @@ softmax FLOAT   100
 
 [attr invert_normals]
 desc STRING "This attribute changes the direction of the rays being traced. When it is off the rays are traced outside of the surface. When it is on the rays are traced inside the surface. The most common use for this is to simulate dirt or erosion, as corners and cracks will get darker."
+
+[attr trace_set]
+desc STRING "The string label defining the set of objects to be traced or avoided. Objects are labeled using the Arnold Parameters Tag property."
+
+[attr inclusive]
+desc STRING "If on, the tracing works in inclusive mode, else in exclusive, as described above."
 
 [attr self_only]
 desc STRING "Gather occlusion against the shaded object only."
