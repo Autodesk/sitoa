@@ -1407,7 +1407,7 @@ soft.label STRING "The input color to be negated."
 ##############################################################################
 [node noise]
 soft.category STRING "Texture"
-soft.order STRING "octaves lacunarity distortion amplitude coord_space scale offset P time mode color1 color2"
+soft.order STRING "octaves lacunarity distortion amplitude coord_space pref_name scale offset P time mode color1 color2"
 
 [attr octaves]
 desc STRING "The number of octaves over which the noise function is calculated (the fractal noise function is repeated at multiple frequencies, known as octaves; normally each octave is at about twice the frequency, i.e., half the size, of the previous one, but you can alter this with the lacunarity control)."
@@ -1417,7 +1417,7 @@ softmax INT 8
 
 [attr lacunarity]
 desc STRING "Controls the average size of gaps in the texture pattern produced. Lacunarity actually means the change in scale between each octave - in musical scales this would be 2.0, meaning each octave is at twice the frequency / half the scale of the previous one, but for our purposes numbers that are near 2.0, but not actually 2.0 are best.  In most cases we recommend using the default value of 1.92."
-min     FLOAT 0.001
+min     FLOAT 0.0001
 softmin FLOAT 1
 softmax FLOAT 5
 
@@ -1429,13 +1429,15 @@ softmax FLOAT 10
 
 [attr amplitude]
 desc STRING "Controls the amplitude, or range, of the output. Normally the output is RGBA with values between 0 and 1, the amplitude control multiplies this."
-min     FLOAT 0
 softmin FLOAT 0
 softmax FLOAT 1
 
 [attr coord_space]
 desc STRING "Specify the coordinate space used to compute the perlin noise."
-soft.label STRING "Coordinate Space"
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
+soft.disable_when STRING "{ coord_space != Pref }"
 
 [attr scale]
 desc STRING "Control the scale of the noise function in x, y, and z directions."
