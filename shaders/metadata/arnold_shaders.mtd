@@ -275,8 +275,6 @@ desc STRING "Use the shading normal for visibility tests instead of the "
 "projection."
 
 ##############################################################################
-<<<<<<< HEAD
-=======
 [node car_paint]
 soft.category STRING "Surface"
 soft.order STRING "BeginGroup Base base base_color base_roughness EndGroup "
@@ -441,7 +439,6 @@ soft.label STRING "Normal"
 soft.inspectable BOOL false
 
 ##############################################################################
->>>>>>> a872f14... pref_name fixes
 [node checkerboard]
 soft.category STRING "Texture"
 
