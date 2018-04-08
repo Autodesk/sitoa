@@ -282,6 +282,170 @@ desc STRING "Use the shading normal for visibility tests instead of the "
 "projection."
 
 ##############################################################################
+[node car_paint]
+soft.category STRING "Surface"
+soft.order STRING "BeginGroup Base base base_color base_roughness EndGroup "
+"BeginGroup Specular specular specular_color specular_flip_flop specular_light_facing specular_falloff specular_roughness specular_IOR transmission_color EndGroup "
+"BeginGroup Flakes flake_color flake_flip_flop flake_light_facing flake_falloff flake_roughness flake_IOR flake_scale flake_density flake_layers flake_normal_randomize flake_coord_space pref_name EndGroup "
+"BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal EndGroup"
+
+[attr base]
+desc STRING "The primer layer color weight."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr base_color]
+desc STRING "The base diffuse color."
+soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC72-082C-11D0-91DE-00A024C78EE3}"
+
+[attr base_roughness]
+desc STRING "An Oren-Nayar type diffuse shading model. This attribute takes surface roughness into account. "
+"A value of 0.0 for the diffuse roughness is comparable to a Lambert, "
+"however, higher values will result in a rougher surface look more suitable for materials like concrete, plaster, sand and so on."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular]
+desc STRING "The base coat color weight."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_color]
+desc STRING "The color of the specular reflection."
+soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC73-082C-11D0-91DE-00A024C78EE3}"
+
+[attr specular_flip_flop]
+desc STRING "Connect a ramp shader here to modulate the specular reflection from the base coat depending on the viewing angle. This can be used to mimic a pearlescent effect."
+soft.label STRING "Flip-Flop"
+
+[attr specular_light_facing]
+desc STRING "Modulates the base coat specular color of the area facing the light source."
+soft.label STRING "Light Facing Color"
+
+[attr specular_falloff]
+desc STRING "The falloff rate of the light facing color of the base specular coat. The higher the value, the narrower the region. It also determines how the ramp color and light facing color are blended."
+soft.label STRING "Falloff"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_roughness]
+desc STRING "Controls how blurry/ glossy the specular reflections are. The lower the value, the sharper the reflection. "
+"In the limit, a value of 0 will give you a perfectly sharp mirror reflection, whilst 1.0 will create reflections that are close to diffuse shading."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_IOR]
+desc STRING "The index of refraction."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 1
+softmax FLOAT 3
+
+[attr transmission_color]
+desc STRING "Simulates light attenuation due to pigments. The lower the value, the denser pigments."
+soft.label STRING "Transmission Color"
+
+[attr flake_color]
+desc STRING "The color the specular reflection will be modulated with. Use this color to 'tint' the specular highlight from flakes."
+soft.label STRING "Color"
+
+[attr flake_flip_flop]
+desc STRING "Connect a ramp shader here to modulate the specular reflection from flakes depending on the viewing angle."
+soft.label STRING "Flip-Flop"
+
+[attr flake_light_facing]
+desc STRING "Modulate the specular reflection color from flakes of the area facing the light source."
+soft.label STRING "Light Facing Color"
+
+[attr flake_falloff]
+desc STRING "The falloff rate of the light facing color of flakes. The higher the value, the narrower the region."
+soft.label STRING "Falloff"
+min FLOAT 0
+max FLOAT 1
+
+[attr flake_roughness]
+desc STRING "Controls how blurry/ glossy the specular reflections are. The lower the value, the sharper the reflection. "
+"In the limit, a value of 0 will give you a perfectly sharp mirror reflection, whilst 1.0 will create reflections that are close to diffuse shading."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr flake_IOR]
+desc STRING "Determines the index of refraction of flakes."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 1
+softmax FLOAT 200
+
+[attr flake_scale]
+desc STRING "Scales the flake structure up or down. Smaller values zoom out of the map, giving a larger number of flakes."
+soft.label STRING "Scale"
+softmin FLOAT 0
+softmax FLOAT 0.01
+
+[attr flake_density]
+desc STRING "Controls the density of flakes. There will be no flakes if it is 0. The surface is fully covered with flakes at 1."
+soft.label STRING "Density"
+min FLOAT 0
+max FLOAT 1
+
+[attr flake_layers]
+desc STRING "Specify the number of flake layers. The flakes at a deep layer are covered by the ones closest to the surface."
+soft.label STRING "Layers"
+min INT 0
+softmin INT 0
+softmax INT 5
+
+[attr flake_normal_randomize]
+desc STRING "Randomize the orientation of flakes."
+soft.label STRING "Normal Randomize"
+min FLOAT 0
+max FLOAT 1
+
+[attr flake_coord_space]
+desc STRING "Specifies the coordinate space used for calculating the shapes of flakes."
+soft.label STRING "Coord Space"
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
+soft.disable_when STRING "{ flake_coord_space != Pref }"
+
+[attr coat]
+desc STRING "The clear-coat weight."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr coat_color]
+desc STRING "This is the color of the coating layer's transparency."
+soft.label STRING "Color"
+
+[attr coat_roughness]
+desc STRING "Controls how blurry/ glossy the specular reflections are. The lower the value, the sharper the reflection. "
+"In the limit, a value of 0 will give you a perfectly sharp mirror reflection, whilst 1.0 will create reflections that are close to diffuse shading."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr coat_IOR]
+desc STRING "The index of refraction."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 1
+softmax FLOAT 3
+
+[attr coat_normal]
+desc STRING "Connect a normal map here (usually exported from Mudbox or ZBrush)."
+soft.label STRING "Normal"
+soft.inspectable BOOL false
+
+##############################################################################
 [node checkerboard]
 soft.category STRING "Texture"
 
