@@ -2984,6 +2984,274 @@ softmax FLOAT 3
 soft.label STRING "Internal IOR"
 
 ##############################################################################
+[node toon]
+soft.category STRING "Surface"
+soft.order STRING "BeginGroup Edge enable edge_color edge_tonemap edge_opacity edge_width_scale "
+    "BeginGroup Edge_Detection id_difference shader_difference mask_color uv_threshold angle_threshold normal_type EndGroup "
+    "BeginGroup Advanced_Edge_Control priority ignore_throughput EndGroup "
+"EndGroup "
+"BeginGroup Silhouette enable_silhouette silhouette_color silhouette_tonemap silhouette_opacity silhouette_width_scale EndGroup "
+"BeginGroup Base base base_color base_tonemap EndGroup "
+"BeginGroup Specular specular specular_color specular_roughness specular_anisotropy specular_rotation specular_tonemap EndGroup "
+"BeginGroup Stylized_Highlight lights highlight_color highlight_size EndGroup "
+"BeginGroup Rim_Lighting rim_light rim_light_color rim_light_width EndGroup "
+"BeginGroup Transmission transmission transmission_color transmission_roughness transmission_anisotropy transmission_rotation IOR EndGroup "
+"BeginGroup Emission emission emission_color EndGroup "
+"BeginGroup Geometry normal tangent bump_mode EndGroup "
+"BeginGroup AOVs aov_highlight aov_rim_light EndGroup "
+"BeginGroup Advanced indirect_diffuse indirect_specular energy_conserving EndGroup"
+
+# Edge
+
+[attr enable]
+desc STRING "When turned off, the edge detection is disabled (enabled by default)."
+soft.label STRING "Edge (requires contour filter)"
+
+[attr edge_color]
+desc STRING "The color of the toon edge. The line style can be controlled with a texture here."
+
+[attr edge_tonemap]
+desc STRING "Connect a ramp node here to change the Edge Color based on the shading result of the Base."
+
+[attr edge_opacity]
+desc STRING "Controls the transparency of the Edge."
+min FLOAT 0
+max FLOAT 1
+
+[attr edge_width_scale]
+desc STRING "The maximum width of contour lines is determined by the Width parameter of the Contour Filter. The actual width is the multiplication of it and this parameter. The line style can be controlled by combining this with a texture."
+soft.label STRING "Width Scaling"
+min FLOAT 0
+max FLOAT 1
+
+[attr id_difference]
+desc STRING "If enabled, edge detection uses the difference of IDs from neighboring pixels."
+soft.label STRING "ID Difference"
+
+[attr shader_difference]
+desc STRING "Detects the difference of shaders of neighboring samples. This is useful when multiple shaders are assigned to a single polymesh, for example."
+
+[attr mask_color]
+desc STRING "The edge is detected when the mask color of neighboring pixels is different. The Mask Color is assumed to have a texture connected to draw an arbitrary shape by detecting color differences."
+
+[attr uv_threshold]
+desc STRING "If enabled, edge detection uses the difference of UVs from neighboring pixels."
+soft.label STRING "UV Threshold"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr angle_threshold]
+desc STRING "When less than 180, the Edge detection uses the difference of the angle between neighboring pixels."
+min FLOAT 0
+max FLOAT 180
+
+[attr normal_type]
+desc STRING "The normal used in the Edge detection. Choose from: Shading Normal, Smoothed Normal, and Geometric Normal."
+
+[attr priority]
+desc STRING "Changes the sorting priority of the Edge."
+softmin INT 0
+softmax INT 10
+
+[attr ignore_throughput]
+desc STRING "By default, the contour color is affected by ray throughput. If a specific color is required for a reflected/refracted object, enable this and use a ray_switch shader."
+
+# Silhouette
+
+[attr enable_silhouette]
+desc STRING ""
+soft.label STRING "Enable"
+
+[attr silhouette_color]
+desc STRING "The color of the silhouette edge. The line style can be controlled with a texture here."
+soft.label STRING "Color"
+
+[attr silhouette_tonemap]
+desc STRING "Connect a ramp node here to change the Silhouette Color based on the shading result of the Base."
+soft.label STRING "Tonemap"
+
+[attr silhouette_opacity]
+desc STRING "Controls the transparency of the Silhouette."
+soft.label STRING "Opacity"
+min FLOAT 0
+max FLOAT 1
+
+[attr silhouette_width_scale]
+desc STRING "The maximum width of silhouette contour lines is determined by the Width parameter of the Contour Filter. The actual width is the multiplication of it and this parameter. The line style can be controlled by combining this with a texture."
+soft.label STRING "Width Scaling"
+min FLOAT 0
+max FLOAT 1
+
+[attr base]
+desc STRING "The base color weight (default is 0.8)."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr base_color]
+desc STRING ""
+soft.label STRING "Color"
+
+[attr base_tonemap]
+desc STRING "Connect a ramp node here to create a cell look (regarded as a tone map)."
+soft.label STRING "Tonemap"
+
+# Specular
+
+[attr specular]
+desc STRING "The specular weight. Influences the brightness of the specular highlight."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_color]
+desc STRING "The color the specular reflection will be modulated with. Use this color to 'tint' the specular highlight."
+soft.label STRING "Color"
+
+[attr specular_roughness]
+desc STRING "Controls the glossiness of the specular reflections."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_anisotropy]
+desc STRING "Anisotropy reflects and transmits light with a directional bias and causes materials to appear rougher or glossier in certain directions. The default value for Anisotropy is 0, which means isotropic. As you move the control towards 1.0, the surface is made more anisotropic in the U axis."
+soft.label STRING "Anisotropy"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_rotation]
+desc STRING "The rotation value changes the orientation of the anisotropic reflectance in UV space. At 0.0, there is no rotation, while at 1.0 the effect is rotated by 180 degrees."
+soft.label STRING "Rotation"
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr specular_tonemap]
+desc STRING "Connect a ramp node here to create a cell look (regarded as a tone map)."
+soft.label STRING "Tonemap"
+
+# Stylized highlight
+
+[attr lights]
+desc STRING "Specify the name of the key light to be used for the stylized highlight. You can specify multiple lights using a semicolon-delimited string as lightShape1;lightShape2. The supported light types are Distant, Point, Spot, and Photometric."
+
+[attr highlight_color]
+desc STRING "An arbitrary texture (or RGB type node) can be used to create a stylized highlight on an object. If nothing is connected, the stylized highlight is disabled."
+soft.label STRING "Color"
+
+[attr highlight_size]
+desc STRING "The size of the stylized highlight."
+soft.label STRING "Size"
+min FLOAT 0
+max FLOAT 1
+
+# Rim lighting
+
+[attr rim_light]
+desc STRING "Specify the name of the light to be used here. Rim lighting is affected by the shadow of this light. The supported light types are: Distant, Point, Spot, and Photometric."
+soft.label STRING "Light"
+
+[attr rim_light_color]
+desc STRING "The color of the rim light. Connect a ramp here to get a rim lighting effect."
+soft.label STRING "Color"
+
+[attr rim_light_width]
+desc STRING "The size of the stylized highlight."
+soft.label STRING "Width"
+min FLOAT 0
+max FLOAT 1
+
+# Transmission
+
+[attr transmission]
+desc STRING "Transmission allows light to scatter through the surface, for materials such as glass or water."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr transmission_color]
+desc STRING "This filters the refraction according to the distance traveled by the refracted ray. The longer light travels inside a mesh, the more it is affected by the Transmission Color."
+soft.label STRING "Color"
+
+[attr transmission_roughness]
+desc STRING "Adds some additional blurriness of a refraction computed with an isotropic microfacet BTDF. The range goes from 0 (no roughness) to 1."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr transmission_anisotropy]
+desc STRING "The directional bias, or anisotropy, of the scattering. The default value of zero gives isotropic scattering so that light is scattered evenly in all directions. Positive values bias the scattering effect forwards, in the direction of the light, while negative values bias the scattering backward, toward the light."
+soft.label STRING "Anisotropy"
+min FLOAT 0
+max FLOAT 1
+
+[attr transmission_rotation]
+desc STRING "The rotation value changes the orientation of the anisotropic reflectance in UV space. At 0.0, there is no rotation, while at 1.0 the effect is rotated by 180 degrees."
+soft.label STRING "Rotation"
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr IOR]
+desc STRING "The IOR parameter (Index of Refraction) defines the material's Fresnel reflectivity and is by default the angular function used."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+
+# Emission
+
+[attr emission]
+desc STRING "Controls the amount of emitted light. It can create noise, especially if the source of indirect illumination is very small (e.g. light bulb geometry)."
+soft.label STRING "Weight"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr emission_color]
+desc STRING "The emitted light color."
+soft.label STRING "Color"
+
+# Geometry
+
+[attr normal]
+desc STRING "Connect a Normal map here (usually exported from Mudbox or ZBrush)."
+soft.inspectable BOOL false
+
+[attr tangent]
+desc STRING "The tangent map. Together with the shading normal, it defines the tangent coordinate system that the input vector applies to."
+soft.inspectable BOOL false
+
+[attr bump_mode]
+desc STRING "Choose the component(s) affected by bump: diffuse, specular, or both."
+soft.label STRING "Bump Mapping Mode"
+
+# AOVs
+
+[attr aov_highlight]
+desc STRING "Stylized highlight AOV."
+soft.label STRING "Highlight"
+
+[attr aov_rim_light]
+desc STRING "Rim light AOV."
+soft.label STRING "Rim Light"
+
+# Advanced
+
+[attr indirect_diffuse]
+desc STRING "The amount of diffuse light received from indirect sources only."
+min FLOAT 0
+max FLOAT 1
+
+[attr indirect_specular]
+desc STRING "The amount of specularity received from indirect sources only. Values other than 1.0 will cause the materials to not preserve energy, and global illumination may not converge."
+min FLOAT 0
+max FLOAT 1
+
+[attr energy_conserving]
+desc STRING "The Toon shader is energy conserving by default. If this is disabled, the Toon shader simply adds Base, Specular, and Transmission. Care should be taken when disabling this option as it will affect indirect illumination with the Toon shader."
+
+##############################################################################
 [node trace_set]
 soft.category STRING "Utility"
 

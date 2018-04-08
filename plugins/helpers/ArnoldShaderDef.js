@@ -111,6 +111,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("switch_rgba", 1, 0);
    in_reg.RegisterShader("switch_shader", 1, 0);
    in_reg.RegisterShader("thin_film", 1, 0);
+   in_reg.RegisterShader("toon", 1, 0);
    in_reg.RegisterShader("trace_set", 1, 0);
    in_reg.RegisterShader("trigo", 1, 0);
    in_reg.RegisterShader("triplanar", 1, 0);
@@ -317,6 +318,8 @@ function Arnold_switch_shader_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_switch_shader_1_0_Define(in_ctxt) { return true; }
 function Arnold_thin_film_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_thin_film_1_0_Define(in_ctxt) { return true; }
+function Arnold_toon_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_toon_1_0_Define(in_ctxt) { return true; }
 function Arnold_trace_set_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_trace_set_1_0_Define(in_ctxt) { return true; }
 function Arnold_trigo_1_0_DefineInfo(in_ctxt) { return true; }

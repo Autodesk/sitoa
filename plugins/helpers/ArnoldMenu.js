@@ -242,6 +242,7 @@ function AddShadersSubMenu(in_menu)
 {
    in_menu.AddCallbackItem("Standard Surface",  "OnShadersMenu");
    in_menu.AddCallbackItem("Standard Hair",     "OnShadersMenu");
+   in_menu.AddCallbackItem("Toon",              "OnShadersMenu");
    in_menu.AddCallbackItem("Utility",           "OnShadersMenu");
    in_menu.AddSeparatorItem();
    in_menu.AddCallbackItem("Camera Projection", "OnShadersMenu");
@@ -434,6 +435,9 @@ function OnShadersMenu(in_ctxt)
          break;
       case "Standard Hair":
          SITOA_AddShader("Arnold.standard_hair.1.0", "surface");
+         break;
+      case "Toon":
+         SITOA_AddShader("Arnold.toon.1.0", "surface");
          break;
       case "Utility":
          SITOA_AddShader("Arnold.utility.1.0", null);
