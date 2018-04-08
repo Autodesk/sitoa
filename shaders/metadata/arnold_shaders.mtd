@@ -1425,6 +1425,9 @@ soft.label STRING "Material 19"
 [attr eval20]
 soft.label STRING "Material 20"
 
+[attr normal]
+soft.inspectable BOOL false
+
 ##############################################################################
 [node physical_sky]
 soft.category STRING "Environment"
