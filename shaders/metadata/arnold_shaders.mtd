@@ -1876,7 +1876,7 @@ soft.order STRING "BeginGroup Color base base_color melanin melanin_redness mela
 "BeginGroup Tint specular_tint specular2_tint transmission_tint EndGroup "
 "BeginGroup Diffuse diffuse diffuse_color EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
-"BeginGroup Advanced opacity indirect_diffuse indirect_specular extra_depth EndGroup"
+"BeginGroup Advanced opacity indirect_diffuse indirect_specular extra_depth extra_samples EndGroup"
 
 [attr base]
 desc STRING "Brightness of the hair, a multiplier for the base color."
@@ -1976,6 +1976,12 @@ max FLOAT 1
 desc STRING "Adds extra Specular Ray Depth just for this shader."
 min INT 0
 max INT 64
+
+[attr extra_samples]
+desc STRING "Adds additional GI samples on a per-shader basis (d'Eon BSDF Specular and Transmission (R, TT, and TRT paths)."
+min INT 0
+softmin INT 0
+softmax INT 8
 
 ##############################################################################
 [node standard_surface]
