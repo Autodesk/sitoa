@@ -1007,7 +1007,7 @@ desc STRING "Return the complement of the result (1 - x)."
 
 ##############################################################################
 [node flakes]
-soft.category STRING "Surface"
+soft.category STRING "Texture"
 
 [attr scale]
 desc STRING "Scales the flake structure up or down. Larger values zoom out of the map, giving a larger number of flakes."
@@ -1015,11 +1015,29 @@ min FLOAT 0
 softmin FLOAT 0
 softmax FLOAT 100
 
-[attr size]
-desc STRING "The relative size of the flakes."
+[attr density]
+desc STRING "Controls the density of flakes. There will be no flakes if it is 0. The surface is fully covered with flakes at 1."
+min FLOAT 0
+max FLOAT 1
+
+[attr step]
+desc STRING "This shader performs ray marching to compute 3d flakes. With this users can specify the step size. The number of layers is determined by depth/step."
 min FLOAT 0
 softmin FLOAT 0
-softmax FLOAT 1
+softmax FLOAT 10
+
+[attr depth]
+desc STRING "Specifies how deep a ray goes inside of an object. This shader generates 2d flakes if Depth = 0, and 3d flakes otherwise. If a ray hits an object, it cannot traverse longer than the specified Depth."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr IOR]
+desc STRING "This value is used to refract a ray used for ray marching."
+sof.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
 
 [attr normal_randomize]
 desc STRING "Blends between the smooth surface normal (0) and the random flake normal (1)."
@@ -1032,6 +1050,11 @@ desc STRING "Specifies the coordinate space used for calculating the random norm
 - Object: points are expressed relative to the local origin (center) of the object.
 - Pref: short for 'vertex in reference pose'. The plugin can pass these vertices to Arnold (in addition to the regular, deformed vertices) which can in turn be queried by the shader so that the texture 'sticks' to the reference pose and does not swim as the mesh deforms.
 - UV: the texture coordinates."
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
+soft.disable_when STRING "{ coord_space != Pref }"
+
 
 [attr output_space]
 desc STRING "Specifies the space of the output normal vector."
