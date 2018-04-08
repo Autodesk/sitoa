@@ -112,9 +112,18 @@ function AddShader_Execute(in_shaderName, in_connectionPoint, in_collection, in_
          {
             DeleteObj(shader);      
             shader = CreateShaderFromProgID(in_shaderName, xsiObj.material, null);
-            var closure = CreateShaderFromProgID("Arnold.closure.1.0", xsiObj.material, null);
-            SIConnectShaderToCnxPoint(shader, closure + ".closure", false);
-            SIConnectShaderToCnxPoint(closure, xsiObj.material + ".surface", false);
+            // we only want to add a closure shader when it's needed
+            // closures have 20 as OutputType value so we test for that
+            if (shader.OutputType == 20)
+            {
+               var closure = CreateShaderFromProgID("Arnold.closure.1.0", xsiObj.material, null);
+               SIConnectShaderToCnxPoint(shader, closure + ".closure", false);
+               SIConnectShaderToCnxPoint(closure, xsiObj.material + ".surface", false);
+            }
+            else
+            {
+               SIConnectShaderToCnxPoint(shader, xsiObj.material + ".surface", false);
+            }
          }
       }
    }
