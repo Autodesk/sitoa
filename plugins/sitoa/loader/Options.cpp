@@ -158,13 +158,10 @@ void CFrameBuffer::Log()
 //
 void LoadPlayControlData(AtNode* in_optionsNode, double in_frame)
 {
-   if (AiNodeDeclare(in_optionsNode, "frame", "constant FLOAT"))
-      CNodeSetter::SetFloat(in_optionsNode, "frame", (float)in_frame);
+   CNodeSetter::SetFloat(in_optionsNode, "frame", (float)in_frame);
 
    double fps = CTimeUtilities().GetFps();
-
-   if (AiNodeDeclare(in_optionsNode, "fps", "constant FLOAT"))
-      CNodeSetter::SetFloat(in_optionsNode, "fps", (float)fps);
+   CNodeSetter::SetFloat(in_optionsNode, "fps", (float)fps);
 }
 
 
