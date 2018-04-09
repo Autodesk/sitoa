@@ -19,12 +19,6 @@ custom.py
 dist
 build
 
-# VS and VS Code
-.vs
-.vscode/*
-*.user
-*.code-workspace
-
 # Eclipse
 .settings
 .*project
