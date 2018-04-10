@@ -520,6 +520,10 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetInt(in_optionsNode, "GI_sss_samples",          GetRenderOptions()->m_GI_sss_samples);
    CNodeSetter::SetInt(in_optionsNode, "GI_volume_samples",       GetRenderOptions()->m_GI_volume_samples);
 
+   CNodeSetter::SetBoolean(in_optionsNode, "enable_adaptive_sampling", GetRenderOptions()->m_enable_adaptive_sampling);
+   CNodeSetter::SetInt(in_optionsNode, "AA_samples_max",               GetRenderOptions()->m_AA_samples_max);
+   CNodeSetter::SetFloat(in_optionsNode, "AA_adaptive_threshold",      GetRenderOptions()->m_AA_adaptive_threshold);
+
    CNodeSetter::SetFloat(in_optionsNode, "indirect_specular_blur", GetRenderOptions()->m_indirect_specular_blur);
 
    // Use sample clamp?
