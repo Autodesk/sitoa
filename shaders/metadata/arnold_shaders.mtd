@@ -52,8 +52,8 @@ softmax INT 10
 
 [attr spread]
 desc STRING "Angular spread around the normal vector N, in the range [0,1], where 1 maps to 90 degrees (the full hemisphere). 1.0 is the most common value. Other values may produce results that are not useful."
-softmin FLOAT 0
-softmax FLOAT 180
+min FLOAT 0
+max FLOAT 1
 
 [attr near_clip]
 desc STRING "Minimum occlusion distance that is sampled."
