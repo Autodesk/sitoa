@@ -188,7 +188,7 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
       // Setting time to statistics
       loadStart = clock();
 
-      AiBegin();
+      AiBegin(GetSessionMode());
       // Setting Log Level
       SetLogSettings(in_renderType, iframe);
 
