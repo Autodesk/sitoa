@@ -158,13 +158,10 @@ void CFrameBuffer::Log()
 //
 void LoadPlayControlData(AtNode* in_optionsNode, double in_frame)
 {
-   if (AiNodeDeclare(in_optionsNode, "frame", "constant FLOAT"))
-      CNodeSetter::SetFloat(in_optionsNode, "frame", (float)in_frame);
+   CNodeSetter::SetFloat(in_optionsNode, "frame", (float)in_frame);
 
    double fps = CTimeUtilities().GetFps();
-
-   if (AiNodeDeclare(in_optionsNode, "fps", "constant FLOAT"))
-      CNodeSetter::SetFloat(in_optionsNode, "fps", (float)fps);
+   CNodeSetter::SetFloat(in_optionsNode, "fps", (float)fps);
 }
 
 
@@ -522,6 +519,10 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetInt(in_optionsNode, "GI_transmission_samples", GetRenderOptions()->m_GI_transmission_samples);
    CNodeSetter::SetInt(in_optionsNode, "GI_sss_samples",          GetRenderOptions()->m_GI_sss_samples);
    CNodeSetter::SetInt(in_optionsNode, "GI_volume_samples",       GetRenderOptions()->m_GI_volume_samples);
+
+   CNodeSetter::SetBoolean(in_optionsNode, "enable_adaptive_sampling", GetRenderOptions()->m_enable_adaptive_sampling);
+   CNodeSetter::SetInt(in_optionsNode, "AA_samples_max",               GetRenderOptions()->m_AA_samples_max);
+   CNodeSetter::SetFloat(in_optionsNode, "AA_adaptive_threshold",      GetRenderOptions()->m_AA_adaptive_threshold);
 
    CNodeSetter::SetFloat(in_optionsNode, "indirect_specular_blur", GetRenderOptions()->m_indirect_specular_blur);
 

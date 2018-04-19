@@ -458,4 +458,5 @@ CStatus GetBoundingBoxFromObjects(const CRefArray in_objects, double in_frame, d
 bool ArrayContainsCRef(const CRefArray& in_array, const CRef& in_ref);
 // Add a CRef to the output array, optionally recursing over the children
 void AddCRefToArray(CRefArray& out_array, const CRef& in_item, bool in_recursive);
-
+// Checks whether running in interactive or batch mode and returns the correct Arnold enum.
+const AtSessionMode GetSessionMode();

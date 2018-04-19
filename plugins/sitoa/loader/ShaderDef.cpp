@@ -680,7 +680,7 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
 
    GetRenderInstance()->DestroyScene(false);
 
-   AiBegin();
+   AiBegin(GetSessionMode());
    // load the plugins (installation, + the ones in the shader search path)
    GetRenderInstance()->GetPluginsSearchPath().Put(in_plugin_origin_path, true);
    GetRenderInstance()->GetPluginsSearchPath().LoadPlugins();

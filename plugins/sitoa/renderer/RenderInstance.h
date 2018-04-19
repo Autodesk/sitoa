@@ -266,6 +266,6 @@ private:
    // class for the auto shader definition
    CShaderDefSet      m_shaderDefSet;
 
-   int DoRender(const int in_mode = AI_RENDER_MODE_CAMERA);
+   int DoRender(const AtRenderMode in_mode = AI_RENDER_MODE_CAMERA);
 };
 

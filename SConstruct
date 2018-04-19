@@ -20,7 +20,7 @@ import SCons
 def make_package(target, source, env):
    package_name = str(target[0]) + ".xsiaddon"
    zip_name = str(target[0])
-   base_pkg_dir = 'package_temp' + get_softimage_version(env['XSISDK_ROOT']);
+   base_pkg_dir = os.path.join('dist', 'package_temp' + get_softimage_version(env['XSISDK_ROOT']));
    
    # First we make sure the temp directory doesn't exist
    #if os.path.exists(base_pkg_dir):
@@ -77,7 +77,7 @@ function main()
       #if retcode != 0:
       #   print "ERROR: Could not create package '%s'" % package_name
       #else:
-      shutil.move(os.path.join(base_pkg_dir, 'SItoA.xsiaddon'), package_name)
+      shutil.move(os.path.join(base_pkg_dir, 'SItoA.xsiaddon'), os.path.join('dist', package_name))
    """
    import zipfile
 
@@ -140,6 +140,7 @@ system.set_target_arch(env['TARGET_ARCH'])
 ARNOLD_HOME = env['ARNOLD_HOME']
 ARNOLD_API_INCLUDES = os.path.join(ARNOLD_HOME, 'include')
 ARNOLD_BINARIES = os.path.join(ARNOLD_HOME, 'bin')
+ARNOLD_PLUGINS = os.path.join(ARNOLD_HOME, 'plugins')
 if system.os() == 'windows':
   ARNOLD_API_LIB = os.path.join(ARNOLD_HOME, 'lib')
 else:
@@ -391,10 +392,16 @@ PACKAGE_FILES = [
 [os.path.join(plugin_binary_path, 'shaders', DLLS),                        os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'kick%s' % get_executable_extension()),     os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'maketx%s' % get_executable_extension()),   os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, 'noice%s' % get_executable_extension()),    os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, 'oslc%s' % get_executable_extension()),     os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, 'oslinfo%s' % get_executable_extension()),  os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*%s' % get_library_extension()),           os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, '*.pit'),                                   os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_PLUGINS, '*'),                                        os.path.join(addon_path, bin_path, '..', 'plugins')],
 [os.path.join('plugins', 'helpers', '*.js'),                               os.path.join(addon_path, plugins_path)],
 [os.path.join('plugins', 'helpers', 'Pictures', '*.bmp'),                  os.path.join(addon_path, pictures_path)],
 [os.path.join('shaders', 'metadata', '*.mtd'),                             os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_HOME, 'license', 'lmuti*'),                           os.path.join(addon_path, license_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'rl*'),                              os.path.join(addon_path, license_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'solidangle.*'),                     os.path.join(addon_path, license_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'pit', '*'),                         os.path.join(addon_path, pit_path)]
@@ -452,6 +459,7 @@ env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [str(SITOA[0])
                                                                    str(SITOA_SHADERS[0])])
 
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join(ARNOLD_BINARIES, '*'))])
+env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..'), [glob.glob(ARNOLD_PLUGINS)])
 
 # Copying Scripting Plugins 
 # (if you modify the files directly on workgroup they will be overwritted with trunk version)
