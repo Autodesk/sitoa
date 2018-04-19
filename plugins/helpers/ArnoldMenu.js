@@ -112,9 +112,18 @@ function AddShader_Execute(in_shaderName, in_connectionPoint, in_collection, in_
          {
             DeleteObj(shader);      
             shader = CreateShaderFromProgID(in_shaderName, xsiObj.material, null);
-            var closure = CreateShaderFromProgID("Arnold.closure.1.0", xsiObj.material, null);
-            SIConnectShaderToCnxPoint(shader, closure + ".closure", false);
-            SIConnectShaderToCnxPoint(closure, xsiObj.material + ".surface", false);
+            // we only want to add a closure shader when it's needed
+            // closures have 20 as OutputType value so we test for that
+            if (shader.OutputType == 20)
+            {
+               var closure = CreateShaderFromProgID("Arnold.closure.1.0", xsiObj.material, null);
+               SIConnectShaderToCnxPoint(shader, closure + ".closure", false);
+               SIConnectShaderToCnxPoint(closure, xsiObj.material + ".surface", false);
+            }
+            else
+            {
+               SIConnectShaderToCnxPoint(shader, xsiObj.material + ".surface", false);
+            }
          }
       }
    }
@@ -242,6 +251,7 @@ function AddShadersSubMenu(in_menu)
 {
    in_menu.AddCallbackItem("Standard Surface",  "OnShadersMenu");
    in_menu.AddCallbackItem("Standard Hair",     "OnShadersMenu");
+   in_menu.AddCallbackItem("Toon",              "OnShadersMenu");
    in_menu.AddCallbackItem("Utility",           "OnShadersMenu");
    in_menu.AddSeparatorItem();
    in_menu.AddCallbackItem("Camera Projection", "OnShadersMenu");
@@ -434,6 +444,9 @@ function OnShadersMenu(in_ctxt)
          break;
       case "Standard Hair":
          SITOA_AddShader("Arnold.standard_hair.1.0", "surface");
+         break;
+      case "Toon":
+         SITOA_AddShader("Arnold.toon.1.0", "surface");
          break;
       case "Utility":
          SITOA_AddShader("Arnold.utility.1.0", null);

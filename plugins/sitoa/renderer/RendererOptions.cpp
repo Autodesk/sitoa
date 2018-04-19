@@ -816,8 +816,10 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       filters.Add(L"blackman_harris"); filters.Add(L"blackman_harris");
       filters.Add(L"box");        filters.Add(L"box");
       filters.Add(L"catmull-rom");filters.Add(L"catrom");
+      filters.Add(L"contour");filters.Add(L"contour");
       filters.Add(L"gaussian");   filters.Add(L"gaussian");
       filters.Add(L"mitchell-netravali"); filters.Add(L"mitnet");
+      filters.Add(L"sinc"); filters.Add(L"sinc");
       filters.Add(L"triangle");   filters.Add(L"triangle");       
       filters.Add(L"variance");   filters.Add(L"variance");
       layout.AddEnumControl(L"output_filter", filters, L"Type", siControlCombo);    
@@ -1301,7 +1303,8 @@ void SamplingTabLogic(CustomProperty &in_cp)
    CString filter = ParAcc_GetValue(in_cp, L"output_filter", DBL_MAX).GetAsText();
 
    bool enableWidth = filter.IsEqualNoCase(L"gaussian") || filter.IsEqualNoCase(L"triangle") ||
-                      filter.IsEqualNoCase(L"variance") || filter.IsEqualNoCase(L"blackman_harris");
+                      filter.IsEqualNoCase(L"variance") || filter.IsEqualNoCase(L"blackman_harris") ||
+                      filter.IsEqualNoCase(L"contour") || filter.IsEqualNoCase(L"sinc");
 
    ParAcc_GetParameter(in_cp, L"output_filter_width").PutCapabilityFlag(siReadOnly, !enableWidth);
 

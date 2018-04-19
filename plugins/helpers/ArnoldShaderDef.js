@@ -62,6 +62,9 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("image", 1, 0);
    in_reg.RegisterShader("is_finite", 1, 0);
    in_reg.RegisterShader("lambert", 1, 0);
+   in_reg.RegisterShader("layer_float", 1, 0);
+   in_reg.RegisterShader("layer_rgba", 1, 0);
+   in_reg.RegisterShader("layer_shader", 1, 0);
    in_reg.RegisterShader("length", 1, 0);
    in_reg.RegisterShader("log", 1, 0);
    in_reg.RegisterShader("matte", 1, 0);
@@ -108,6 +111,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("switch_rgba", 1, 0);
    in_reg.RegisterShader("switch_shader", 1, 0);
    in_reg.RegisterShader("thin_film", 1, 0);
+   in_reg.RegisterShader("toon", 1, 0);
    in_reg.RegisterShader("trace_set", 1, 0);
    in_reg.RegisterShader("trigo", 1, 0);
    in_reg.RegisterShader("triplanar", 1, 0);
@@ -216,6 +220,12 @@ function Arnold_is_finite_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_is_finite_1_0_Define(in_ctxt) { return true; }
 function Arnold_lambert_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_lambert_1_0_Define(in_ctxt) { return true; }
+function Arnold_layer_float_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_layer_float_1_0_Define(in_ctxt) { return true; }
+function Arnold_layer_rgba_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_layer_rgba_1_0_Define(in_ctxt) { return true; }
+function Arnold_layer_shader_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_layer_shader_1_0_Define(in_ctxt) { return true; }
 function Arnold_length_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_length_1_0_Define(in_ctxt) { return true; }
 function Arnold_log_1_0_DefineInfo(in_ctxt) { return true; }
@@ -308,6 +318,8 @@ function Arnold_switch_shader_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_switch_shader_1_0_Define(in_ctxt) { return true; }
 function Arnold_thin_film_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_thin_film_1_0_Define(in_ctxt) { return true; }
+function Arnold_toon_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_toon_1_0_Define(in_ctxt) { return true; }
 function Arnold_trace_set_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_trace_set_1_0_Define(in_ctxt) { return true; }
 function Arnold_trigo_1_0_DefineInfo(in_ctxt) { return true; }

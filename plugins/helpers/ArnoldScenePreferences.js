@@ -160,6 +160,9 @@ function CreateRenderChannels()
    aov_array.push({ name: "shadow",                type: siRenderChannelColorType });
    aov_array.push({ name: "shadow_diff",           type: siRenderChannelColorType });
    aov_array.push({ name: "shadow_mask",           type: siRenderChannelColorType });
+   // toon
+   aov_array.push({ name: "highlight",             type: siRenderChannelColorType });
+   aov_array.push({ name: "rim_light",             type: siRenderChannelColorType });
 
    var aov_name, aov_type;
 	for (var i = 0; i < aov_array.length; i++) 
