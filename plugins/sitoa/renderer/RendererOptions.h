@@ -103,10 +103,15 @@ public:
    int     m_GI_transmission_samples;
    int     m_GI_sss_samples;
    int     m_GI_volume_samples;
-   float   m_indirect_specular_blur;
 
+   bool    m_enable_adaptive_sampling;
+   int     m_AA_samples_max;
+   float   m_AA_adaptive_threshold;
+
+   float   m_indirect_specular_blur;
    bool    m_lock_sampling_noise;
    bool    m_sss_use_autobump;
+
    bool    m_use_sample_clamp;
    bool    m_use_sample_clamp_AOVs;
    float   m_AA_sample_clamp;
@@ -262,6 +267,11 @@ public:
       m_GI_transmission_samples(2),
       m_GI_sss_samples(2),
       m_GI_volume_samples(2),
+
+      m_enable_adaptive_sampling(false),
+      m_AA_samples_max(8),
+      m_AA_adaptive_threshold(0.05f),
+
       m_indirect_specular_blur(1.0f),
 
       m_lock_sampling_noise(false),

@@ -112,6 +112,10 @@ void CRenderOptions::Read(const Property &in_cp)
    m_GI_sss_samples          = (int)ParAcc_GetValue(in_cp, L"GI_sss_samples",          DBL_MAX);
    m_GI_volume_samples       = (int)ParAcc_GetValue(in_cp, L"GI_volume_samples",       DBL_MAX);
 
+   m_enable_adaptive_sampling = (bool)ParAcc_GetValue(in_cp,  L"enable_adaptive_sampling", DBL_MAX);
+   m_AA_samples_max           = (int)ParAcc_GetValue(in_cp,   L"AA_samples_max",           DBL_MAX);
+   m_AA_adaptive_threshold    = (float)ParAcc_GetValue(in_cp, L"AA_adaptive_threshold",    DBL_MAX);
+
    m_indirect_specular_blur  = (float)ParAcc_GetValue(in_cp, L"indirect_specular_blur", DBL_MAX);
 
    m_lock_sampling_noise = (bool)ParAcc_GetValue(in_cp, L"lock_sampling_noise", DBL_MAX);
@@ -375,6 +379,10 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"GI_transmission_samples", CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
    cpset.AddParameter(L"GI_sss_samples",          CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
    cpset.AddParameter(L"GI_volume_samples",       CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
+
+   cpset.AddParameter(L"enable_adaptive_sampling", CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 8, -3, 100, 0, 10, p);
+   cpset.AddParameter(L"AA_adaptive_threshold",    CValue::siDouble, siPersistable, L"", L"", 0.05f, 0.0f, 1.0f, 0.0f, 100.0f, p);
 
    cpset.AddParameter(L"indirect_specular_blur",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 1.0f, 0.0f, 2.0f, 0.0f, 100.0f, p);
    
@@ -776,6 +784,14 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item = layout.AddItem(L"GI_sss_samples", L"SSS");
       item.PutAttribute(siUILabelPercentage, 100);
       item = layout.AddItem(L"GI_volume_samples", L"Volume");
+      item.PutAttribute(siUILabelPercentage, 100);
+   layout.EndGroup();
+
+   layout.AddGroup(L"Adaptive Sampling");
+      layout.AddItem(L"enable_adaptive_sampling",  L"Enable");
+      item = layout.AddItem(L"AA_samples_max", L"Max. Camera (AA)");
+      item.PutAttribute(siUILabelPercentage, 100);
+      item = layout.AddItem(L"AA_adaptive_threshold", L"Adaptive Threshold");
       item.PutAttribute(siUILabelPercentage, 100);
    layout.EndGroup();
 
@@ -1198,7 +1214,8 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
           paramName == L"motion_shutter_onframe")
          MotionBlurTabLogic(cpset);
 
-      else if (paramName == L"use_sample_clamp" ||
+      else if (paramName == L"enable_adaptive_sampling" ||
+               paramName == L"use_sample_clamp" ||
                paramName == L"output_filter")
          SamplingTabLogic(cpset);
 
@@ -1275,6 +1292,11 @@ void MotionBlurTabLogic(CustomProperty &in_cp)
 //
 void SamplingTabLogic(CustomProperty &in_cp)
 {
+   // adaptive sampling
+   bool adaptive = (bool)ParAcc_GetValue(in_cp, L"enable_adaptive_Sampling", DBL_MAX);
+   ParAcc_GetParameter(in_cp, L"AA_samples_max").PutCapabilityFlag(siReadOnly, !adaptive);
+   ParAcc_GetParameter(in_cp, L"AA_adaptive_threshold").PutCapabilityFlag(siReadOnly, !adaptive);
+
    // Only some filter nodes have a width attribute
    CString filter = ParAcc_GetValue(in_cp, L"output_filter", DBL_MAX).GetAsText();
 

@@ -614,7 +614,7 @@ bool CGSUserData::Initialize()
       if (prop.GetParameter(L"use_asstoc").IsValid())
          m_useAsstoc = (bool)ParAcc_GetValue(prop, L"use_asstoc", DBL_MAX);
 
-   AiBegin();
+   AiBegin(GetSessionMode());
    AtNode *options = AiUniverseGetOptions();
    CNodeSetter::SetBoolean(options, "skip_license_check", true);
    CNodeSetter::SetBoolean(options, "enable_procedural_cache", false); // for #1660
@@ -706,7 +706,7 @@ bool CGSUserData::Initialize()
    AiEnd();
 
    // now read back the resavep-ed universe
-   AiBegin();
+   AiBegin(GetSessionMode());
    options = AiUniverseGetOptions();
    CNodeSetter::SetBoolean(options, "preserve_scene_data", true);
    CNodeSetter::SetBoolean(options, "skip_license_check", true);

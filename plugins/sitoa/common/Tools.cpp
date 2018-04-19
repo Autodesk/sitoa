@@ -1548,3 +1548,14 @@ void AddCRefToArray(CRefArray& out_array, const CRef& in_item, bool in_recursive
          AddCRefToArray(out_array, children[i], true);
    }
 }
+
+
+// Checks whether running in interactive or batch mode and returns the correct Arnold enum.
+//
+const AtSessionMode GetSessionMode()
+{
+   if(Application().IsInteractive())
+      return AI_SESSION_INTERACTIVE;
+   else
+      return AI_SESSION_BATCH;
+}
