@@ -31,7 +31,7 @@ soft.label STRING "Input 2"
 ##############################################################################
 [node ambient_occlusion]
 soft.category STRING "Surface"
-soft.order STRING "white black samples spread near_clip far_clip falloff self_only invert_normals normal"
+soft.order STRING "white black samples spread near_clip far_clip falloff self_only invert_normals trace_set inclusive normal"
 
 [attr white]
 desc STRING "The output color when the ratio of the ray hits/total rays is zero (fully unoccluded)."
@@ -41,6 +41,7 @@ desc STRING "The output color when the ratio of the ray hits/total rays is one (
 
 [attr normal]
 desc STRING "Alters the opacity of the ambient occlusion effect, thereby changing the opacity of the object. Lower values increase the opacity. It is possible to drive the opacity of the ambient occlusion effect with a shading network. You must ensure that Opaque is switched off for the geometry."
+soft.inspectable BOOL false
 
 [attr samples]
 desc STRING "Controls the number of rays that will be fired to compute the ray hits/total ratio. Increasing the number of samples will reduce noise and give a better quality result."
@@ -51,8 +52,8 @@ softmax INT 10
 
 [attr spread]
 desc STRING "Angular spread around the normal vector N, in the range [0,1], where 1 maps to 90 degrees (the full hemisphere). 1.0 is the most common value. Other values may produce results that are not useful."
-softmin FLOAT 0
-softmax FLOAT 180
+min FLOAT 0
+max FLOAT 1
 
 [attr near_clip]
 desc STRING "Minimum occlusion distance that is sampled."
@@ -74,6 +75,12 @@ softmax FLOAT   100
 
 [attr invert_normals]
 desc STRING "This attribute changes the direction of the rays being traced. When it is off the rays are traced outside of the surface. When it is on the rays are traced inside the surface. The most common use for this is to simulate dirt or erosion, as corners and cracks will get darker."
+
+[attr trace_set]
+desc STRING "The string label defining the set of objects to be traced or avoided. Objects are labeled using the Arnold Parameters Tag property."
+
+[attr inclusive]
+desc STRING "If on, the tracing works in inclusive mode, else in exclusive, as described above."
 
 [attr self_only]
 desc STRING "Gather occlusion against the shaded object only."
@@ -275,6 +282,170 @@ desc STRING "Use the shading normal for visibility tests instead of the "
 "projection."
 
 ##############################################################################
+[node car_paint]
+soft.category STRING "Surface"
+soft.order STRING "BeginGroup Base base base_color base_roughness EndGroup "
+"BeginGroup Specular specular specular_color specular_flip_flop specular_light_facing specular_falloff specular_roughness specular_IOR transmission_color EndGroup "
+"BeginGroup Flakes flake_color flake_flip_flop flake_light_facing flake_falloff flake_roughness flake_IOR flake_scale flake_density flake_layers flake_normal_randomize flake_coord_space pref_name EndGroup "
+"BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal EndGroup"
+
+[attr base]
+desc STRING "The primer layer color weight."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr base_color]
+desc STRING "The base diffuse color."
+soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC72-082C-11D0-91DE-00A024C78EE3}"
+
+[attr base_roughness]
+desc STRING "An Oren-Nayar type diffuse shading model. This attribute takes surface roughness into account. "
+"A value of 0.0 for the diffuse roughness is comparable to a Lambert, "
+"however, higher values will result in a rougher surface look more suitable for materials like concrete, plaster, sand and so on."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular]
+desc STRING "The base coat color weight."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_color]
+desc STRING "The color of the specular reflection."
+soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC73-082C-11D0-91DE-00A024C78EE3}"
+
+[attr specular_flip_flop]
+desc STRING "Connect a ramp shader here to modulate the specular reflection from the base coat depending on the viewing angle. This can be used to mimic a pearlescent effect."
+soft.label STRING "Flip-Flop"
+
+[attr specular_light_facing]
+desc STRING "Modulates the base coat specular color of the area facing the light source."
+soft.label STRING "Light Facing Color"
+
+[attr specular_falloff]
+desc STRING "The falloff rate of the light facing color of the base specular coat. The higher the value, the narrower the region. It also determines how the ramp color and light facing color are blended."
+soft.label STRING "Falloff"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_roughness]
+desc STRING "Controls how blurry/ glossy the specular reflections are. The lower the value, the sharper the reflection. "
+"In the limit, a value of 0 will give you a perfectly sharp mirror reflection, whilst 1.0 will create reflections that are close to diffuse shading."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr specular_IOR]
+desc STRING "The index of refraction."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 1
+softmax FLOAT 3
+
+[attr transmission_color]
+desc STRING "Simulates light attenuation due to pigments. The lower the value, the denser pigments."
+soft.label STRING "Transmission Color"
+
+[attr flake_color]
+desc STRING "The color the specular reflection will be modulated with. Use this color to 'tint' the specular highlight from flakes."
+soft.label STRING "Color"
+
+[attr flake_flip_flop]
+desc STRING "Connect a ramp shader here to modulate the specular reflection from flakes depending on the viewing angle."
+soft.label STRING "Flip-Flop"
+
+[attr flake_light_facing]
+desc STRING "Modulate the specular reflection color from flakes of the area facing the light source."
+soft.label STRING "Light Facing Color"
+
+[attr flake_falloff]
+desc STRING "The falloff rate of the light facing color of flakes. The higher the value, the narrower the region."
+soft.label STRING "Falloff"
+min FLOAT 0
+max FLOAT 1
+
+[attr flake_roughness]
+desc STRING "Controls how blurry/ glossy the specular reflections are. The lower the value, the sharper the reflection. "
+"In the limit, a value of 0 will give you a perfectly sharp mirror reflection, whilst 1.0 will create reflections that are close to diffuse shading."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr flake_IOR]
+desc STRING "Determines the index of refraction of flakes."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 1
+softmax FLOAT 200
+
+[attr flake_scale]
+desc STRING "Scales the flake structure up or down. Smaller values zoom out of the map, giving a larger number of flakes."
+soft.label STRING "Scale"
+softmin FLOAT 0
+softmax FLOAT 0.01
+
+[attr flake_density]
+desc STRING "Controls the density of flakes. There will be no flakes if it is 0. The surface is fully covered with flakes at 1."
+soft.label STRING "Density"
+min FLOAT 0
+max FLOAT 1
+
+[attr flake_layers]
+desc STRING "Specify the number of flake layers. The flakes at a deep layer are covered by the ones closest to the surface."
+soft.label STRING "Layers"
+min INT 0
+softmin INT 0
+softmax INT 5
+
+[attr flake_normal_randomize]
+desc STRING "Randomize the orientation of flakes."
+soft.label STRING "Normal Randomize"
+min FLOAT 0
+max FLOAT 1
+
+[attr flake_coord_space]
+desc STRING "Specifies the coordinate space used for calculating the shapes of flakes."
+soft.label STRING "Coord Space"
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
+soft.disable_when STRING "{ flake_coord_space != Pref }"
+
+[attr coat]
+desc STRING "The clear-coat weight."
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr coat_color]
+desc STRING "This is the color of the coating layer's transparency."
+soft.label STRING "Color"
+
+[attr coat_roughness]
+desc STRING "Controls how blurry/ glossy the specular reflections are. The lower the value, the sharper the reflection. "
+"In the limit, a value of 0 will give you a perfectly sharp mirror reflection, whilst 1.0 will create reflections that are close to diffuse shading."
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr coat_IOR]
+desc STRING "The index of refraction."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 1
+softmax FLOAT 3
+
+[attr coat_normal]
+desc STRING "Connect a normal map here (usually exported from Mudbox or ZBrush)."
+soft.label STRING "Normal"
+soft.inspectable BOOL false
+
+##############################################################################
 [node checkerboard]
 soft.category STRING "Texture"
 
@@ -429,7 +600,7 @@ softmax FLOAT 1
 soft.category STRING "Color"
 soft.order STRING "BeginGroup Input input EndGroup "
 "BeginGroup Object obj_gain_min obj_gain_max obj_hue_min obj_hue_max obj_saturation_min obj_saturation_max obj_seed EndGroup "
-"BeginGroup Face face_gain_min face_gain_max face_hue_min face_hue_max face_saturation_min face_saturation_max face_seed EndGroup "
+"BeginGroup Face face_gain_min face_gain_max face_hue_min face_hue_max face_saturation_min face_saturation_max face_seed face_mode EndGroup "
 "BeginGroup User_Data data_input data_gain_min data_gain_max data_hue_min data_hue_max data_saturation_min data_saturation_max data_seed EndGroup "
 "BeginGroup Procedural proc_gain_min proc_gain_max proc_hue_min proc_hue_max proc_saturation_min proc_saturation_max proc_seed EndGroup"
 
@@ -612,6 +783,9 @@ min     INT 0
 softmin INT 0
 softmax INT 100
 soft.label STRING "Seed"
+
+[attr face_mode]
+desc STRING "The color can be randomized per triangle (Face ID) as well as quadrangle (Uniform ID)."
 
 ##############################################################################
 [node compare]
@@ -840,7 +1014,7 @@ desc STRING "Return the complement of the result (1 - x)."
 
 ##############################################################################
 [node flakes]
-soft.category STRING "Surface"
+soft.category STRING "Texture"
 
 [attr scale]
 desc STRING "Scales the flake structure up or down. Larger values zoom out of the map, giving a larger number of flakes."
@@ -848,11 +1022,29 @@ min FLOAT 0
 softmin FLOAT 0
 softmax FLOAT 100
 
-[attr size]
-desc STRING "The relative size of the flakes."
+[attr density]
+desc STRING "Controls the density of flakes. There will be no flakes if it is 0. The surface is fully covered with flakes at 1."
+min FLOAT 0
+max FLOAT 1
+
+[attr step]
+desc STRING "This shader performs ray marching to compute 3d flakes. With this users can specify the step size. The number of layers is determined by depth/step."
 min FLOAT 0
 softmin FLOAT 0
-softmax FLOAT 1
+softmax FLOAT 10
+
+[attr depth]
+desc STRING "Specifies how deep a ray goes inside of an object. This shader generates 2d flakes if Depth = 0, and 3d flakes otherwise. If a ray hits an object, it cannot traverse longer than the specified Depth."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr IOR]
+desc STRING "This value is used to refract a ray used for ray marching."
+sof.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
 
 [attr normal_randomize]
 desc STRING "Blends between the smooth surface normal (0) and the random flake normal (1)."
@@ -865,6 +1057,11 @@ desc STRING "Specifies the coordinate space used for calculating the random norm
 - Object: points are expressed relative to the local origin (center) of the object.
 - Pref: short for 'vertex in reference pose'. The plugin can pass these vertices to Arnold (in addition to the regular, deformed vertices) which can in turn be queried by the shader so that the texture 'sticks' to the reference pose and does not swim as the mesh deforms.
 - UV: the texture coordinates."
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
+soft.disable_when STRING "{ coord_space != Pref }"
+
 
 [attr output_space]
 desc STRING "Specifies the space of the output normal vector."
@@ -1217,7 +1414,7 @@ soft.label STRING "The input color to be negated."
 ##############################################################################
 [node noise]
 soft.category STRING "Texture"
-soft.order STRING "octaves lacunarity distortion amplitude coord_space scale offset P time mode color1 color2"
+soft.order STRING "octaves lacunarity distortion amplitude coord_space pref_name scale offset P time mode color1 color2"
 
 [attr octaves]
 desc STRING "The number of octaves over which the noise function is calculated (the fractal noise function is repeated at multiple frequencies, known as octaves; normally each octave is at about twice the frequency, i.e., half the size, of the previous one, but you can alter this with the lacunarity control)."
@@ -1227,7 +1424,7 @@ softmax INT 8
 
 [attr lacunarity]
 desc STRING "Controls the average size of gaps in the texture pattern produced. Lacunarity actually means the change in scale between each octave - in musical scales this would be 2.0, meaning each octave is at twice the frequency / half the scale of the previous one, but for our purposes numbers that are near 2.0, but not actually 2.0 are best.  In most cases we recommend using the default value of 1.92."
-min     FLOAT 0.001
+min     FLOAT 0.0001
 softmin FLOAT 1
 softmax FLOAT 5
 
@@ -1239,13 +1436,15 @@ softmax FLOAT 10
 
 [attr amplitude]
 desc STRING "Controls the amplitude, or range, of the output. Normally the output is RGBA with values between 0 and 1, the amplitude control multiplies this."
-min     FLOAT 0
 softmin FLOAT 0
 softmax FLOAT 1
 
 [attr coord_space]
 desc STRING "Specify the coordinate space used to compute the perlin noise."
-soft.label STRING "Coordinate Space"
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
+soft.disable_when STRING "{ coord_space != Pref }"
 
 [attr scale]
 desc STRING "Control the scale of the noise function in x, y, and z directions."
@@ -1389,6 +1588,9 @@ soft.label STRING "Material 19"
 
 [attr eval20]
 soft.label STRING "Material 20"
+
+[attr normal]
+soft.inspectable BOOL false
 
 ##############################################################################
 [node physical_sky]
@@ -1646,52 +1848,57 @@ desc STRING "min: Minimum component. max: Maximum component. average: Average of
 ##############################################################################
 [node shadow_matte]
 soft.category STRING "Surface"
-soft.order STRING "BeginGroup Shadow shadow_color shadow_opacity EndGroup "
-"BeginGroup Background background_type offscreen_color EndGroup "
-"BeginGroup Diffuse diffuse_color diffuse_use_background diffuse_intensity backlighting indirect_diffuse_enable EndGroup "
-"BeginGroup Specular indirect_specular_enable specular_color specular_intensity specular_roughness EndGroup "
-"BeginGroup AOVs aov_shadow aov_shadow_diff aov_shadow_mask aov_indirect_diffuse aov_indirect_specular EndGroup"
+soft.order STRING "BeginGroup Background background background_color EndGroup "
+"BeginGroup Shadows shadow_color shadow_opacity backlighting alpha_mask EndGroup "
+"BeginGroup Diffuse diffuse_color diffuse_intensity diffuse_use_background indirect_diffuse_enable EndGroup "
+"BeginGroup Specular indirect_specular_enable specular_color specular_intensity specular_roughness specular_IOR EndGroup "
+"BeginGroup Lights aov_group EndGroup "
+"BeginGroup AOVs aov_shadow aov_shadow_diff aov_shadow_mask EndGroup"
 
-# Shadow group
+# Background group
+
+[attr background]
+desc STRING "The background type, sky or image plane."
+
+[attr background_color]
+desc STRING "The offscreen color."
+soft.disable_when STRING "{ background != background_color }"
+
+# Shadows group
 
 [attr shadow_color]
 desc STRING "A color to tint the shadows."
 
 [attr shadow_opacity]
 desc STRING "The opacity of the shadows."
-min FLOAT 0.0
-max FLOAT 1.0
+min FLOAT 0
+max FLOAT 1
 
-# Background group
+[attr backlighting]
+desc STRING "Intensity of backlight effect."
+min FLOAT 0
+max FLOAT 1
 
-[attr background_type]
-desc STRING "The background type, sky or image plane."
-
-[attr offscreen_color]
-desc STRING "The offscreen color."
-soft.disable_when STRING "{ background_type == sky }"
+[attr alpha_mask]
+desc STRING "Controls whether the alpha should be opaque or contain the shadow mask."
 
 # Diffuse group
 
 [attr diffuse_color]
 desc STRING "A color to tint the indirect diffuse."
+soft.label STRING "Color"
 soft.disable_when STRING "{ diffuse_use_background == 1 }"
-
-[attr diffuse_use_background]
-desc STRING "Flag to select between using diffuse color or background color to tint the indirect diffuse."
-soft.label STRING "Use Background Color"
 
 [attr diffuse_intensity]
 desc STRING "The indirect diffuse intensity."
+soft.label STRING "Intensity"
 min FLOAT 0.0
 softmin FLOAT 0
 softmax FLOAT 1
 
-[attr backlighting]
-desc STRING "Intensity of backlight effect."
-min FLOAT 0.0
-softmin FLOAT 0
-softmax FLOAT 1
+[attr diffuse_use_background]
+desc STRING "Flag to select between using diffuse color or background color to tint the indirect diffuse."
+soft.label STRING "Use Background"
 
 [attr indirect_diffuse_enable]
 desc STRING "Add indirect diffuse lighting." 
@@ -1705,10 +1912,12 @@ soft.label STRING "Indirect Specular"
 
 [attr specular_color]
 desc STRING "A color to tint the indirect specular."
+soft.label STRING "Color"
 soft.disable_when STRING "{ indirect_specular_enable == 0 }"
 
 [attr specular_intensity]
 desc STRING "The indirect specular intensity."
+soft.label STRING "Intensity"
 min FLOAT 0.0
 softmin FLOAT 0
 softmax FLOAT 1
@@ -1716,9 +1925,22 @@ soft.disable_when STRING "{ indirect_specular_enable == 0 }"
 
 [attr specular_roughness]
 desc STRING "The indirect specular roughness."
+soft.label STRING "Roughness"
 min FLOAT 0.0
 max FLOAT 1.0 
 soft.disable_when STRING "{ indirect_specular_enable == 0 }"
+
+[attr specular_IOR]
+desc STRING "The index of refraction."
+soft.label STRING "IOR"
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 3
+soft.disable_when STRING "{ indirect_specular_enable == 0 }"
+
+# Lights group
+[attr aov_group]
+soft.label STRING "Light Group"
 
 # AOV group
 
@@ -1733,14 +1955,6 @@ soft.label STRING "Shadow Diff"
 [attr aov_shadow_mask]
 aov.type INT 4
 soft.label STRING "Shadow Mask"
-
-[attr aov_indirect_diffuse]
-aov.type INT 5
-soft.label STRING "Indirect Diffuse"
-
-[attr aov_indirect_specular]
-aov.type INT 5
-soft.label STRING "Indirect Specular"
 
 ##############################################################################
 [node shuffle]
@@ -1832,7 +2046,7 @@ soft.order STRING "BeginGroup Color base base_color melanin melanin_redness mela
 "BeginGroup Tint specular_tint specular2_tint transmission_tint EndGroup "
 "BeginGroup Diffuse diffuse diffuse_color EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
-"BeginGroup Advanced opacity indirect_diffuse indirect_specular extra_depth EndGroup"
+"BeginGroup Advanced opacity indirect_diffuse indirect_specular extra_depth extra_samples EndGroup"
 
 [attr base]
 desc STRING "Brightness of the hair, a multiplier for the base color."
@@ -1933,13 +2147,19 @@ desc STRING "Adds extra Specular Ray Depth just for this shader."
 min INT 0
 max INT 64
 
+[attr extra_samples]
+desc STRING "Adds additional GI samples on a per-shader basis (d'Eon BSDF Specular and Transmission (R, TT, and TRT paths)."
+min INT 0
+softmin INT 0
+softmax INT 8
+
 ##############################################################################
 [node standard_surface]
 soft.category STRING "Surface"
 soft.order STRING "BeginGroup Base base base_color diffuse_roughness metalness EndGroup "
 "BeginGroup Specular specular specular_color specular_roughness specular_IOR specular_anisotropy specular_rotation EndGroup "
-"BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness EndGroup "
-"BeginGroup Subsurface subsurface subsurface_color subsurface_radius subsurface_scale EndGroup "
+"BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness transmit_aovs EndGroup "
+"BeginGroup Subsurface subsurface subsurface_color subsurface_radius subsurface_scale subsurface_type subsurface_anisotropy EndGroup "
 "BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal coat_affect_color coat_affect_roughness EndGroup "
 "BeginGroup Thin_Film thin_film_thickness thin_film_IOR EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
@@ -2053,6 +2273,9 @@ soft.label STRING "Extra Roughness"
 min FLOAT 0
 max FLOAT 1
 
+[attr transmit_aovs]
+soft.label STRING "Transmit AOVs"
+
 [attr subsurface]
 desc STRING "The amount of sub-surface scattering. Multiplies SSS Color."
 soft.label STRING "Weight"
@@ -2074,6 +2297,15 @@ soft.label STRING "Scale"
 min     FLOAT 0
 softmin FLOAT 0
 softmax FLOAT 1
+
+[attr subsurface_type]
+soft.label STRING "Type"
+
+[attr subsurface_anisotropy]
+soft.label STRING "Anisotropy"
+min     FLOAT -1
+max     FLOAT 1
+soft.disable_when STRING "{ subsurface_type == diffusion }"
 
 [attr thin_walled]
 desc STRING "Provide the effect of a translucent object being lit from behind "
@@ -2551,6 +2783,9 @@ softmax FLOAT 5
 ##############################################################################
 [node triplanar]
 soft.category STRING "Texture"
+soft.order STRING "BeginGroup Main input coord_space pref_name blend EndGroup "
+"BeginGroup Transform scale rotate offset EndGroup "
+"BeginGroup Cell cell cell_rotate cell_blend EndGroup"
 
 [attr input]
 desc STRING "The image to be looked up by the computed projection."
@@ -2565,14 +2800,32 @@ desc STRING "Rotation applied to the projected UV"
 desc STRING "Offset applied to the projected UV"
 
 [attr coord_space]
+desc STRING "Specifies the coordinate space to use."
 soft.label STRING "Coordinate Space"
-desc STRING "Coordinate space"
 
-[attr P]
-desc STRING "If linked, the point at which the shader is evaluated."
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
+soft.disable_when STRING "{ coord_space != Pref }"
+
 
 [attr blend]
 desc STRING "Blending factor at the seems."
+min FLOAT 0
+max FLOAT 1
+
+[attr cell]
+desc STRING "Enable Voronoi cellular projection."
+soft.label STRING "Enable Cell"
+
+[attr cell_rotate]
+desc STRING "Controls rotation of the randomization."
+soft.label STRING "Rotate"
+softmin FLOAT -180
+softmax FLOAT 180
+
+[attr cell_blend]
+desc STRING "Controls the blending width."
+soft.label STRING "Blend"
 min FLOAT 0
 max FLOAT 1
 
