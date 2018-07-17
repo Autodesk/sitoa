@@ -473,7 +473,7 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
       m_sd.AddShaderFamily(siShaderFamilyVolume, true);
       // This is the only way a closure can be connected to output shader stack
       // Support for 'Global AOV Shaders'...
-      m_sd.AddShaderFamily(siShaderFamilyTexture, true);
+      m_sd.AddShaderFamily(siShaderFamilyOutput, true);
    }
    else
       m_sd.AddShaderFamily(m_is_camera_node ? siShaderFamilyLens : siShaderFamilyTexture, true);
