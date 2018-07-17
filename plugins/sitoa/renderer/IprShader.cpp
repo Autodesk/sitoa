@@ -299,21 +299,32 @@ void UpdatePassShaderStack(const Pass &in_pass, double in_frame)
    CRef outputStackRef;
    outputStackRef.Set(in_pass.GetFullName() + L".OutputShaderStack");
    ShaderArrayParameter arrayParam = ShaderArrayParameter(outputStackRef);
-   
+   CRefArray outputShadersArray;
+
    if (arrayParam.GetCount()>0)
-   {
-      AtArray* aovShadersArray = AiArrayAllocate(arrayParam.GetCount(), 1, AI_TYPE_NODE);   
+   {   
       for (LONG i=0; i<arrayParam.GetCount(); i++)
       {
          passParam = Parameter(arrayParam[i]);
          Shader outputShader = GetConnectedShader(passParam);
          if (outputShader.IsValid())
          {
+            outputShadersArray.Add(outputShader.GetRef());
+         }
+      }
+
+      if (outputShadersArray.GetCount()>0)
+      {
+         AtArray* aovShadersArray = AiArrayAllocate(outputShadersArray.GetCount(), 1, AI_TYPE_NODE);
+         for (LONG i=0; i<outputShadersArray.GetCount(); i++)
+         {
+            Shader outputShader(outputShadersArray[i]);
+
             AtNode* shaderNode = UpdateShader(outputShader, in_frame);
             AiArraySetPtr(aovShadersArray, i, shaderNode);
          }
+         AiNodeSetArray(options, "aov_shaders", aovShadersArray);
       }
-      AiNodeSetArray(options, "aov_shaders", aovShadersArray);
    }
    else
       CNodeSetter::SetPointer(options, "aov_shaders", NULL);
