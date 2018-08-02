@@ -301,7 +301,7 @@ void UpdatePassShaderStack(const Pass &in_pass, double in_frame)
    ShaderArrayParameter arrayParam = ShaderArrayParameter(outputStackRef);
    CRefArray outputShadersArray;
 
-   if (arrayParam.GetCount()>0)
+   if (arrayParam.GetCount() > 0)
    {   
       for (LONG i=0; i<arrayParam.GetCount(); i++)
       {
@@ -313,7 +313,7 @@ void UpdatePassShaderStack(const Pass &in_pass, double in_frame)
          }
       }
 
-      if (outputShadersArray.GetCount()>0)
+      if (outputShadersArray.GetCount() > 0)
       {
          AtArray* aovShadersArray = AiArrayAllocate(outputShadersArray.GetCount(), 1, AI_TYPE_NODE);
          for (LONG i=0; i<outputShadersArray.GetCount(); i++)

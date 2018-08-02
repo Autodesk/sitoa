@@ -391,7 +391,7 @@ CStatus LoadPassShaders(double in_frame, bool in_selectionOnly)
    ShaderArrayParameter arrayParam = ShaderArrayParameter(outputStackRef);
    CRefArray outputShadersArray;
 
-   if (arrayParam.GetCount()>0)
+   if (arrayParam.GetCount() > 0)
    {   
       for (LONG i=0; i<arrayParam.GetCount(); i++)
       {
@@ -403,7 +403,7 @@ CStatus LoadPassShaders(double in_frame, bool in_selectionOnly)
          }
       }
 
-      if (outputShadersArray.GetCount()>0)
+      if (outputShadersArray.GetCount() > 0)
       {
          AtArray* aovShadersArray = AiArrayAllocate(outputShadersArray.GetCount(), 1, AI_TYPE_NODE);
          for (LONG i=0; i<outputShadersArray.GetCount(); i++)
