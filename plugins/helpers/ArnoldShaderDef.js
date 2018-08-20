@@ -36,6 +36,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("cache", 1, 0);
    in_reg.RegisterShader("camera_projection", 1, 0);
    in_reg.RegisterShader("car_paint", 1, 0);
+   in_reg.RegisterShader("cell_noise", 1, 0);
    in_reg.RegisterShader("checkerboard", 1, 0);
    in_reg.RegisterShader("clamp", 1, 0);
    in_reg.RegisterShader("closure", 1, 0); // SItoA
@@ -170,6 +171,8 @@ function Arnold_camera_projection_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_camera_projection_1_0_Define(in_ctxt) { return true; }
 function Arnold_car_paint_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_car_paint_1_0_Define(in_ctxt) { return true; }
+function Arnold_cell_noise_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_cell_noise_1_0_Define(in_ctxt) { return true; }
 function Arnold_checkerboard_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_checkerboard_1_0_Define(in_ctxt) { return true; }
 function Arnold_clamp_1_0_DefineInfo(in_ctxt) { return true; }

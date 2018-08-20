@@ -446,6 +446,67 @@ soft.label STRING "Normal"
 soft.inspectable BOOL false
 
 ##############################################################################
+[node cell_noise]
+soft.category STRING "Texture"
+
+[attr pattern]
+desc STRING "Pattern"
+
+[attr additive]
+desc STRING "If Additive is true, all noise patterns are simply added. If this is false, the largest value is selected."
+
+[attr octaves]
+desc STRING "The number of octaves over which the noise function is calculated."
+softmin INT 1
+softmax INT 8
+
+[attr randomness]
+desc STRING "If randomness is greater than 0, feature point locations are jittered. If the value gets closer to 0, patterns have a more regular, axis aligned look."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr lacunarity]
+desc STRING "Controls the average size of gaps in the texture pattern produced."
+min FLOAT 0.0001
+softmin FLOAT 1
+softmax FLOAT 5
+
+[attr amplitude]
+desc STRING "Controls the amplitude, or range, of the output. Normally the output has values between 0 and 1; the amplitude control multiplies this."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr scale]
+desc STRING "Controls the scale of the noise function in x, y, and z directions."
+
+[attr offset]
+desc STRING "Offset the noise in x, y, or z directions."
+
+[attr coord_space]
+desc STRING "Specifies the coordinate space to use."
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array."
+
+[attr P]
+desc STRING "Input coordinates of the 4D fractal noise function."
+
+[attr time]
+desc STRING "The pattern of noise smoothly varies over time."
+
+[attr color]
+desc STRING "Multiply a specified color to the resulting noise pattern."
+
+[attr palette]
+desc STRING "The color of each Voronoi cell is randomly picked from the connected node. An arbitrary RGB node including image and ramp can be connected here. Note that this is different from simple texturing using UV."
+
+[attr density]
+desc STRING "This parameter can be used to create flake noise by decimating some cells. This only works with cell1/cell2 for now."
+softmin FLOAT 0
+softmax FLOAT 1
+
+##############################################################################
 [node checkerboard]
 soft.category STRING "Texture"
 
