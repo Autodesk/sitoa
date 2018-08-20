@@ -2624,6 +2624,7 @@ soft.order STRING "BeginGroup Base base base_color diffuse_roughness metalness E
 "BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness transmit_aovs EndGroup "
 "BeginGroup Subsurface subsurface subsurface_color subsurface_radius subsurface_scale subsurface_type subsurface_anisotropy EndGroup "
 "BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal coat_affect_color coat_affect_roughness EndGroup "
+"BeginGroup Sheen sheen sheen_color sheen_roughness EndGroup "
 "BeginGroup Thin_Film thin_film_thickness thin_film_IOR EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
 "BeginGroup Geometry thin_walled opacity normal tangent EndGroup "
@@ -2825,6 +2826,22 @@ max FLOAT 1
 [attr coat_affect_roughness]
 desc STRING "Affect Roughness."
 soft.label STRING "Affect Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr sheen]
+desc STRING "Sheen Weight"
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr sheen_color]
+desc STRING "Sheen Color"
+soft.label STRING "Color"
+
+[attr sheen_roughness]
+desc STRING "Sheen Roughness"
+soft.label STRING "Roughness"
 min FLOAT 0
 max FLOAT 1
 
