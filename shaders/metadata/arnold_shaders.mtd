@@ -1808,6 +1808,14 @@ desc STRING "Input to calcute logarithm of."
 desc STRING "Base for use in logarithm calculation."
 
 ##############################################################################
+[node matrix_multiply_vector]
+soft.category STRING "Math"
+
+##############################################################################
+[node matrix_transform]
+soft.category STRING "Math"
+
+##############################################################################
 [node matte]
 soft.category STRING "Surface"
 
