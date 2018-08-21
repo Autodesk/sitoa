@@ -164,6 +164,10 @@ function CreateRenderChannels()
    // toon
    aov_array.push({ name: "highlight",             type: siRenderChannelColorType });
    aov_array.push({ name: "rim_light",             type: siRenderChannelColorType });
+   // cryptomatte
+   aov_array.push({ name: "crypto_asset",          type: siRenderChannelColorType });
+   aov_array.push({ name: "crypto_object",         type: siRenderChannelColorType });
+   aov_array.push({ name: "crypto_material",       type: siRenderChannelColorType });
 
    var aov_name, aov_type;
 	for (var i = 0; i < aov_array.length; i++) 
