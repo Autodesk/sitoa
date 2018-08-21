@@ -155,6 +155,7 @@ function CreateRenderChannels()
    aov_array.push({ name: "volume_direct",         type: siRenderChannelColorType });
    aov_array.push({ name: "volume_indirect",       type: siRenderChannelColorType });
    aov_array.push({ name: "volume_opacity",        type: siRenderChannelColorType });
+   aov_array.push({ name: "volume_Z",              type: siRenderChannelGrayscaleType });
    aov_array.push({ name: "Z",                     type: siRenderChannelGrayscaleType });
    // shadow_matte shader
    aov_array.push({ name: "shadow",                type: siRenderChannelColorType });
