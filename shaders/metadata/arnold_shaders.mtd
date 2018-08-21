@@ -558,15 +558,27 @@ soft.label STRING "UV Set"
 [node clamp]
 soft.category STRING "Utility"
 
+[attr input]
+desc STRING "Input shader to apply the clamp to."
+
+[attr mode]
+desc STRING "Can be set to Scalar or RGB. When set to RGB the input result is clamped between Min Color and Max Color."
+
 [attr min]
 desc STRING "The minumum value that the input will be clamped to."
 softmin FLOAT 0
-softmax FLOAT 1
+softmax FLOAT 10
 
 [attr max]
 desc STRING "The maximum value that the input will be clamped to."
 softmin FLOAT 0
-softmax FLOAT 1
+softmax FLOAT 10
+
+[attr min_color]
+desc STRING "The minimum value for the color channels to be used in the output."
+
+[attr max_color]
+desc STRING "The maximum value for the color channels to be used in the output."
 
 # SItoA specific
 ##############################################################################
@@ -2263,28 +2275,51 @@ desc STRING "Produce a cheaper to compute, monochromatic noise."
 [node range]
 soft.category STRING "Math"
 
+[attr input]
+desc STRING "Input shader to apply the range to."
+
 [attr input_min]
 desc STRING "The minimum value of the input range."
 softmin FLOAT 0
-softmax FLOAT 3
+softmax FLOAT 10
 
 [attr input_max]
 desc STRING "The maximum value of the input range."
 softmin FLOAT 0
-softmax FLOAT 3
+softmax FLOAT 10
 
 [attr output_min]
 desc STRING "The minimum value of the output range. The Input Min will be mapped to this value."
 softmin FLOAT 0
-softmax FLOAT 3
+softmax FLOAT 10
 
 [attr output_max]
 desc STRING "The maximum value of the input range. The Input Max will be mapped to this value."
 softmin FLOAT 0
-softmax FLOAT 3
+softmax FLOAT 10
 
 [attr smoothstep]
 desc STRING "Interpolates the output range smoothly between the max and min output values. The returned value is clamped between these values."
+
+[attr contrast]
+desc STRING "Scales values around the Contrast Pivot."
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr contrast_pivot]
+desc STRING "The origin of the contrast scaling. The default is 0.18 which is the average perceptual mid-gray."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr bias]
+desc STRING "Push or pull values by altering the slope at the beginning of the range. Bias values below 0.5 decrease the slope and lower values overall.  Above 0.5, the slope is higher, and the value grow's more quickly. A value of 0.5 has no effect."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr gain]
+desc STRING "Increase or decrease the slope of the mid-range values. Gain values below 0.5 increase the contrast whereas values above 0.5 flatten the mid-range values. A value of 0.5 has no effect."
+softmin FLOAT 0
+softmax FLOAT 10
 
 ##############################################################################
 [node ray_switch_rgba]
