@@ -479,7 +479,7 @@ function AddParamsShape(in_prop)
    in_prop.AddParameter2("export_pref",               siBool, false, null, null, null, null);
    in_prop.AddParameter2("subdiv_smooth_derivs",      siBool, false, null, null, null, null);
    in_prop.AddParameter2("sss_setname", siString, "", null, null, null, null, 0, siPersistable|siAnimatable);
-   in_prop.AddParameter2("toon_id", siString, "", null, null, null, null, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("toon_id",     siString, "", null, null, null, null, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("trace_sets",  siString, "", null, null, null, null, 0, siPersistable|siAnimatable);
     //new per-object motion blur 
    in_prop.AddParameter2("motion_transform",           siBool,     true, null, null, null, null);
