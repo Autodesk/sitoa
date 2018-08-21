@@ -3306,7 +3306,7 @@ soft.label STRING "Internal IOR"
 soft.category STRING "Surface"
 soft.order STRING "BeginGroup Edge enable edge_color edge_tonemap edge_opacity edge_width_scale "
     "BeginGroup Edge_Detection id_difference shader_difference mask_color uv_threshold angle_threshold normal_type EndGroup "
-    "BeginGroup Advanced_Edge_Control priority ignore_throughput EndGroup "
+    "BeginGroup Advanced_Edge_Control priority ignore_throughput user_id EndGroup "
 "EndGroup "
 "BeginGroup Silhouette enable_silhouette silhouette_color silhouette_tonemap silhouette_opacity silhouette_width_scale EndGroup "
 "BeginGroup Base base base_color base_tonemap EndGroup "
@@ -3374,6 +3374,10 @@ softmax INT 10
 
 [attr ignore_throughput]
 desc STRING "By default, the contour color is affected by ray throughput. If a specific color is required for a reflected/refracted object, enable this and use a ray_switch shader."
+
+[attr user_id]
+desc STRING "Edge detection can be controlled using a STRING type user data called Toon ID."
+soft.label STRING "Use Toon ID"
 
 # Silhouette
 
