@@ -591,8 +591,6 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    // Set the maximum number of files open
    CNodeSetter::SetInt(in_optionsNode, "texture_max_open_files", GetRenderOptions()->m_texture_max_open_files);
    CNodeSetter::SetFloat(in_optionsNode, "texture_max_sharpen",    1.5f); // #1559
-   CNodeSetter::SetFloat(in_optionsNode, "texture_diffuse_blur",   GetRenderOptions()->m_texture_diffuse_blur);
-   CNodeSetter::SetFloat(in_optionsNode, "texture_specular_blur",    GetRenderOptions()->m_texture_specular_blur);
 
    CNodeSetter::SetBoolean(in_optionsNode, "texture_per_file_stats", GetRenderOptions()->m_texture_per_file_stats);
 

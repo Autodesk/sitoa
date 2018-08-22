@@ -116,6 +116,7 @@ function CreateRenderChannels()
    var aov_array = [];
 
    aov_array.push({ name: "A",                     type: siRenderChannelGrayscaleType });
+   aov_array.push({ name: "AA_inv_density",        type: siRenderChannelGrayscaleType });
    aov_array.push({ name: "albedo",                type: siRenderChannelColorType });
    aov_array.push({ name: "background",            type: siRenderChannelColorType });
    aov_array.push({ name: "coat",                  type: siRenderChannelColorType });
@@ -123,12 +124,16 @@ function CreateRenderChannels()
    aov_array.push({ name: "coat_direct",           type: siRenderChannelColorType });
    aov_array.push({ name: "coat_indirect",         type: siRenderChannelColorType });
    aov_array.push({ name: "cputime",               type: siRenderChannelGrayscaleType });
+   aov_array.push({ name: "crypto_asset",          type: siRenderChannelColorType });  // cryptomatte
+   aov_array.push({ name: "crypto_material",       type: siRenderChannelColorType });  // cryptomatte
+   aov_array.push({ name: "crypto_object",         type: siRenderChannelColorType });  // cryptomatte
    aov_array.push({ name: "diffuse",               type: siRenderChannelColorType });
    aov_array.push({ name: "diffuse_albedo",        type: siRenderChannelColorType });
    aov_array.push({ name: "diffuse_direct",        type: siRenderChannelColorType });
    aov_array.push({ name: "diffuse_indirect",      type: siRenderChannelColorType });
    aov_array.push({ name: "direct",                type: siRenderChannelColorType });
    aov_array.push({ name: "emission",              type: siRenderChannelColorType });
+   aov_array.push({ name: "highlight",             type: siRenderChannelColorType });  // toon shader
    aov_array.push({ name: "ID",                    type: siRenderChannelLabelType });
    aov_array.push({ name: "indirect",              type: siRenderChannelColorType });
    aov_array.push({ name: "motionvector",          type: siRenderChannelColorType });
@@ -137,6 +142,10 @@ function CreateRenderChannels()
    aov_array.push({ name: "P",                     type: siRenderChannelVectorType });
    aov_array.push({ name: "Pref",                  type: siRenderChannelVectorType });
    aov_array.push({ name: "raycount",              type: siRenderChannelGrayscaleType });
+   aov_array.push({ name: "rim_light",             type: siRenderChannelColorType });  // toon shader
+   aov_array.push({ name: "shadow",                type: siRenderChannelColorType });  // shadow_matte shader
+   aov_array.push({ name: "shadow_diff",           type: siRenderChannelColorType });  // shadow_matte shader
+   aov_array.push({ name: "shadow_mask",           type: siRenderChannelColorType });  // shadow_matte shader
    aov_array.push({ name: "shadow_matte",          type: siRenderChannelColorType });
    aov_array.push({ name: "specular",              type: siRenderChannelColorType });
    aov_array.push({ name: "specular_albedo",       type: siRenderChannelColorType });
@@ -155,14 +164,8 @@ function CreateRenderChannels()
    aov_array.push({ name: "volume_direct",         type: siRenderChannelColorType });
    aov_array.push({ name: "volume_indirect",       type: siRenderChannelColorType });
    aov_array.push({ name: "volume_opacity",        type: siRenderChannelColorType });
+   aov_array.push({ name: "volume_Z",              type: siRenderChannelGrayscaleType });
    aov_array.push({ name: "Z",                     type: siRenderChannelGrayscaleType });
-   // shadow_matte shader
-   aov_array.push({ name: "shadow",                type: siRenderChannelColorType });
-   aov_array.push({ name: "shadow_diff",           type: siRenderChannelColorType });
-   aov_array.push({ name: "shadow_mask",           type: siRenderChannelColorType });
-   // toon
-   aov_array.push({ name: "highlight",             type: siRenderChannelColorType });
-   aov_array.push({ name: "rim_light",             type: siRenderChannelColorType });
 
    var aov_name, aov_type;
 	for (var i = 0; i < aov_array.length; i++) 

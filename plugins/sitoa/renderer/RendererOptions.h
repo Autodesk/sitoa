@@ -152,8 +152,6 @@ public:
    bool  m_texture_accept_unmipped;
    bool  m_texture_automip;
    int   m_texture_filter;
-   float m_texture_diffuse_blur;
-   float m_texture_specular_blur;
    bool  m_texture_accept_untiled;
    bool  m_enable_autotile;
    int   m_texture_autotile;
@@ -317,8 +315,6 @@ public:
       m_texture_accept_unmipped(true),
       m_texture_automip(false),
       m_texture_filter(AI_TEXTURE_SMART_BICUBIC),
-      m_texture_diffuse_blur(0.03125f),
-      m_texture_specular_blur(0.0f), // note that Arnold's default is 0.015625
       m_texture_accept_untiled(true),
       m_enable_autotile(false),
       m_texture_autotile(64),

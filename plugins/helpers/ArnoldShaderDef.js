@@ -27,6 +27,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("aov_write_float", 1, 0);
    in_reg.RegisterShader("aov_write_int", 1, 0);
    in_reg.RegisterShader("aov_write_rgb", 1, 0);
+   in_reg.RegisterShader("aov_write_rgba", 1, 0);
    in_reg.RegisterShader("atan", 1, 0);
    in_reg.RegisterShader("atmosphere_volume", 1, 0);
    in_reg.RegisterShader("blackbody", 1, 0);
@@ -34,6 +35,8 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("bump3d", 1, 0);
    in_reg.RegisterShader("cache", 1, 0);
    in_reg.RegisterShader("camera_projection", 1, 0);
+   in_reg.RegisterShader("car_paint", 1, 0);
+   in_reg.RegisterShader("cell_noise", 1, 0);
    in_reg.RegisterShader("checkerboard", 1, 0);
    in_reg.RegisterShader("clamp", 1, 0);
    in_reg.RegisterShader("closure", 1, 0); // SItoA
@@ -45,6 +48,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("complex_ior", 1, 0);
    in_reg.RegisterShader("composite", 1, 0);
    in_reg.RegisterShader("cross", 1, 0);
+   in_reg.RegisterShader("cryptomatte", 1, 0);
    in_reg.RegisterShader("curvature", 1, 0);
    in_reg.RegisterShader("divide", 1, 0);
    in_reg.RegisterShader("dot", 1, 0);
@@ -67,6 +71,8 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("layer_shader", 1, 0);
    in_reg.RegisterShader("length", 1, 0);
    in_reg.RegisterShader("log", 1, 0);
+   in_reg.RegisterShader("matrix_multiply_vector", 1, 0);
+   in_reg.RegisterShader("matrix_transform", 1, 0);
    in_reg.RegisterShader("matte", 1, 0);
    in_reg.RegisterShader("max", 1, 0);
    in_reg.RegisterShader("min", 1, 0);
@@ -150,6 +156,8 @@ function Arnold_aov_write_int_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_aov_write_int_1_0_Define(in_ctxt) { return true; }
 function Arnold_aov_write_rgb_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_aov_write_rgb_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_write_rgba_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_write_rgba_1_0_Define(in_ctxt) { return true; }
 function Arnold_atan_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_atan_1_0_Define(in_ctxt) { return true; }
 function Arnold_atmosphere_volume_1_0_DefineInfo(in_ctxt) { return true; }
@@ -164,6 +172,10 @@ function Arnold_cache_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_cache_1_0_Define(in_ctxt) { return true; }
 function Arnold_camera_projection_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_camera_projection_1_0_Define(in_ctxt) { return true; }
+function Arnold_car_paint_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_car_paint_1_0_Define(in_ctxt) { return true; }
+function Arnold_cell_noise_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_cell_noise_1_0_Define(in_ctxt) { return true; }
 function Arnold_checkerboard_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_checkerboard_1_0_Define(in_ctxt) { return true; }
 function Arnold_clamp_1_0_DefineInfo(in_ctxt) { return true; }
@@ -186,6 +198,8 @@ function Arnold_composite_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_composite_1_0_Define(in_ctxt) { return true; }
 function Arnold_cross_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_cross_1_0_Define(in_ctxt) { return true; }
+function Arnold_cryptomatte_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_cryptomatte_1_0_Define(in_ctxt) { return true; }
 function Arnold_curvature_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_curvature_1_0_Define(in_ctxt) { return true; }
 function Arnold_divide_1_0_DefineInfo(in_ctxt) { return true; }
@@ -230,6 +244,10 @@ function Arnold_length_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_length_1_0_Define(in_ctxt) { return true; }
 function Arnold_log_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_log_1_0_Define(in_ctxt) { return true; }
+function Arnold_matrix_multiply_vector_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_matrix_multiply_vector_1_0_Define(in_ctxt) { return true; }
+function Arnold_matrix_transform_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_matrix_transform_1_0_Define(in_ctxt) { return true; }
 function Arnold_matte_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_matte_1_0_Define(in_ctxt) { return true; }
 function Arnold_max_1_0_DefineInfo(in_ctxt) { return true; }

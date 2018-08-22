@@ -249,6 +249,7 @@ function ArnoldShaders_Init(io_Context)
 
 function AddShadersSubMenu(in_menu)
 {
+   in_menu.AddCallbackItem("Car Paint",         "OnShadersMenu");
    in_menu.AddCallbackItem("Standard Surface",  "OnShadersMenu");
    in_menu.AddCallbackItem("Standard Hair",     "OnShadersMenu");
    in_menu.AddCallbackItem("Toon",              "OnShadersMenu");
@@ -439,6 +440,9 @@ function OnShadersMenu(in_ctxt)
    var item = in_ctxt.Source;
    switch (item.Name)
    {
+      case "Car Paint":
+         SITOA_AddShader("Arnold.car_paint.1.0", "surface");
+         break;
       case "Standard Surface":
          SITOA_AddShader("Arnold.standard_surface.1.0", "surface");
          break;

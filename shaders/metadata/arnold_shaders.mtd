@@ -446,6 +446,67 @@ soft.label STRING "Normal"
 soft.inspectable BOOL false
 
 ##############################################################################
+[node cell_noise]
+soft.category STRING "Texture"
+
+[attr pattern]
+desc STRING "Pattern"
+
+[attr additive]
+desc STRING "If Additive is true, all noise patterns are simply added. If this is false, the largest value is selected."
+
+[attr octaves]
+desc STRING "The number of octaves over which the noise function is calculated."
+softmin INT 1
+softmax INT 8
+
+[attr randomness]
+desc STRING "If randomness is greater than 0, feature point locations are jittered. If the value gets closer to 0, patterns have a more regular, axis aligned look."
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr lacunarity]
+desc STRING "Controls the average size of gaps in the texture pattern produced."
+min FLOAT 0.0001
+softmin FLOAT 1
+softmax FLOAT 5
+
+[attr amplitude]
+desc STRING "Controls the amplitude, or range, of the output. Normally the output has values between 0 and 1; the amplitude control multiplies this."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr scale]
+desc STRING "Controls the scale of the noise function in x, y, and z directions."
+
+[attr offset]
+desc STRING "Offset the noise in x, y, or z directions."
+
+[attr coord_space]
+desc STRING "Specifies the coordinate space to use."
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array."
+
+[attr P]
+desc STRING "Input coordinates of the 4D fractal noise function."
+
+[attr time]
+desc STRING "The pattern of noise smoothly varies over time."
+
+[attr color]
+desc STRING "Multiply a specified color to the resulting noise pattern."
+
+[attr palette]
+desc STRING "The color of each Voronoi cell is randomly picked from the connected node. An arbitrary RGB node including image and ramp can be connected here. Note that this is different from simple texturing using UV."
+
+[attr density]
+desc STRING "This parameter can be used to create flake noise by decimating some cells. This only works with cell1/cell2 for now."
+softmin FLOAT 0
+softmax FLOAT 1
+
+##############################################################################
 [node checkerboard]
 soft.category STRING "Texture"
 
@@ -497,15 +558,27 @@ soft.label STRING "UV Set"
 [node clamp]
 soft.category STRING "Utility"
 
+[attr input]
+desc STRING "Input shader to apply the clamp to."
+
+[attr mode]
+desc STRING "Can be set to Scalar or RGB. When set to RGB the input result is clamped between Min Color and Max Color."
+
 [attr min]
 desc STRING "The minumum value that the input will be clamped to."
 softmin FLOAT 0
-softmax FLOAT 1
+softmax FLOAT 10
 
 [attr max]
 desc STRING "The maximum value that the input will be clamped to."
 softmin FLOAT 0
-softmax FLOAT 1
+softmax FLOAT 10
+
+[attr min_color]
+desc STRING "The minimum value for the color channels to be used in the output."
+
+[attr max_color]
+desc STRING "The maximum value for the color channels to be used in the output."
 
 # SItoA specific
 ##############################################################################
@@ -886,6 +959,54 @@ soft.label STRING "Input 1"
 [attr input2]
 desc STRING "Second vector to use in cross product computation."
 soft.label STRING "Input 2"
+
+##############################################################################
+[node cryptomatte]
+soft.category STRING "AOV"
+
+[attr sidecar_manifests]
+desc STRING "Sets whether Cryptomatte should write the manifest to a sidecar .json file instead of the EXR header."
+
+[attr cryptomatte_depth]
+desc STRING "Set the cryptomatte depth (number of cryptomatte AOVs)"
+softmin INT 0
+softmax INT 10
+
+[attr strip_obj_namespaces]
+desc STRING "Strip namespaces from object names"
+
+[attr strip_mat_namespaces]
+desc STRING "Strip namespaces from material names"
+
+[attr user_crypto_aov_0]
+desc STRING "AOV name for user Cryptomatte 0"
+
+[attr user_crypto_src_0]
+desc STRING "Source user data name for user Cryptomatte 0"
+
+[attr user_crypto_aov_1]
+desc STRING "AOV name for user Cryptomatte 1"
+
+[attr user_crypto_src_1]
+desc STRING "Source user data name for user Cryptomatte 1"
+
+[attr user_crypto_aov_2]
+desc STRING "AOV name for user Cryptomatte 2"
+
+[attr user_crypto_src_2]
+desc STRING "Source user data name for user Cryptomatte 2"
+
+[attr user_crypto_aov_3]
+desc STRING "AOV name for user Cryptomatte 3"
+
+[attr user_crypto_src_3]
+desc STRING "Source user data name for user Cryptomatte 3"
+
+[attr aov_crypto_asset]
+
+[attr aov_crypto_object]
+
+[attr aov_crypto_material]
 
 ##############################################################################
 [node curvature]
@@ -1747,6 +1868,14 @@ desc STRING "Input to calcute logarithm of."
 desc STRING "Base for use in logarithm calculation."
 
 ##############################################################################
+[node matrix_multiply_vector]
+soft.category STRING "Math"
+
+##############################################################################
+[node matrix_transform]
+soft.category STRING "Math"
+
+##############################################################################
 [node matte]
 soft.category STRING "Surface"
 
@@ -2194,28 +2323,51 @@ desc STRING "Produce a cheaper to compute, monochromatic noise."
 [node range]
 soft.category STRING "Math"
 
+[attr input]
+desc STRING "Input shader to apply the range to."
+
 [attr input_min]
 desc STRING "The minimum value of the input range."
 softmin FLOAT 0
-softmax FLOAT 3
+softmax FLOAT 10
 
 [attr input_max]
 desc STRING "The maximum value of the input range."
 softmin FLOAT 0
-softmax FLOAT 3
+softmax FLOAT 10
 
 [attr output_min]
 desc STRING "The minimum value of the output range. The Input Min will be mapped to this value."
 softmin FLOAT 0
-softmax FLOAT 3
+softmax FLOAT 10
 
 [attr output_max]
 desc STRING "The maximum value of the input range. The Input Max will be mapped to this value."
 softmin FLOAT 0
-softmax FLOAT 3
+softmax FLOAT 10
 
 [attr smoothstep]
 desc STRING "Interpolates the output range smoothly between the max and min output values. The returned value is clamped between these values."
+
+[attr contrast]
+desc STRING "Scales values around the Contrast Pivot."
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr contrast_pivot]
+desc STRING "The origin of the contrast scaling. The default is 0.18 which is the average perceptual mid-gray."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr bias]
+desc STRING "Push or pull values by altering the slope at the beginning of the range. Bias values below 0.5 decrease the slope and lower values overall.  Above 0.5, the slope is higher, and the value grow's more quickly. A value of 0.5 has no effect."
+softmin FLOAT 0
+softmax FLOAT 1
+
+[attr gain]
+desc STRING "Increase or decrease the slope of the mid-range values. Gain values below 0.5 increase the contrast whereas values above 0.5 flatten the mid-range values. A value of 0.5 has no effect."
+softmin FLOAT 0
+softmax FLOAT 10
 
 ##############################################################################
 [node ray_switch_rgba]
@@ -2624,6 +2776,7 @@ soft.order STRING "BeginGroup Base base base_color diffuse_roughness metalness E
 "BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness transmit_aovs EndGroup "
 "BeginGroup Subsurface subsurface subsurface_color subsurface_radius subsurface_scale subsurface_type subsurface_anisotropy EndGroup "
 "BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal coat_affect_color coat_affect_roughness EndGroup "
+"BeginGroup Sheen sheen sheen_color sheen_roughness EndGroup "
 "BeginGroup Thin_Film thin_film_thickness thin_film_IOR EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
 "BeginGroup Geometry thin_walled opacity normal tangent EndGroup "
@@ -2825,6 +2978,22 @@ max FLOAT 1
 [attr coat_affect_roughness]
 desc STRING "Affect Roughness."
 soft.label STRING "Affect Roughness"
+min FLOAT 0
+max FLOAT 1
+
+[attr sheen]
+desc STRING "Sheen Weight"
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr sheen_color]
+desc STRING "Sheen Color"
+soft.label STRING "Color"
+
+[attr sheen_roughness]
+desc STRING "Sheen Roughness"
+soft.label STRING "Roughness"
 min FLOAT 0
 max FLOAT 1
 
@@ -3220,7 +3389,7 @@ soft.label STRING "Internal IOR"
 soft.category STRING "Surface"
 soft.order STRING "BeginGroup Edge enable edge_color edge_tonemap edge_opacity edge_width_scale "
     "BeginGroup Edge_Detection id_difference shader_difference mask_color uv_threshold angle_threshold normal_type EndGroup "
-    "BeginGroup Advanced_Edge_Control priority ignore_throughput EndGroup "
+    "BeginGroup Advanced_Edge_Control priority ignore_throughput user_id EndGroup "
 "EndGroup "
 "BeginGroup Silhouette enable_silhouette silhouette_color silhouette_tonemap silhouette_opacity silhouette_width_scale EndGroup "
 "BeginGroup Base base base_color base_tonemap EndGroup "
@@ -3288,6 +3457,10 @@ softmax INT 10
 
 [attr ignore_throughput]
 desc STRING "By default, the contour color is affected by ray throughput. If a specific color is required for a reflected/refracted object, enable this and use a ray_switch shader."
+
+[attr user_id]
+desc STRING "Edge detection can be controlled using a STRING type user data called Toon ID."
+soft.label STRING "Use Toon ID"
 
 # Silhouette
 

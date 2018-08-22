@@ -167,8 +167,6 @@ void CRenderOptions::Read(const Property &in_cp)
    m_texture_accept_unmipped = (bool)ParAcc_GetValue(in_cp,  L"texture_accept_unmipped", DBL_MAX);
    m_texture_automip         = (bool)ParAcc_GetValue(in_cp,  L"texture_automip",         DBL_MAX);
    m_texture_filter          = (int)ParAcc_GetValue(in_cp,   L"texture_filter",          DBL_MAX);
-   m_texture_diffuse_blur    = (float)ParAcc_GetValue(in_cp, L"texture_diffuse_blur",    DBL_MAX);
-   m_texture_specular_blur   = (float)ParAcc_GetValue(in_cp, L"texture_specular_blur",   DBL_MAX);
    m_texture_accept_untiled  = (bool)ParAcc_GetValue(in_cp,  L"texture_accept_untiled",  DBL_MAX);
    m_enable_autotile         = (bool)ParAcc_GetValue(in_cp,  L"enable_autotile",         DBL_MAX);
    m_texture_autotile        = (int)ParAcc_GetValue(in_cp,   L"texture_autotile",        DBL_MAX);
@@ -428,8 +426,6 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"texture_accept_unmipped", CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_automip",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_filter",          CValue::siInt4,   siPersistable, L"", L"", AI_TEXTURE_SMART_BICUBIC, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"texture_diffuse_blur",    CValue::siDouble, siPersistable, L"", L"", 0.03125, 0, 1, 0, 0.1, p);
-   cpset.AddParameter(L"texture_specular_blur",   CValue::siDouble, siPersistable, L"", L"", 0.0, 0, 1, 0, 0.1, p);
    cpset.AddParameter(L"texture_accept_untiled",  CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"enable_autotile",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_autotile",        CValue::siInt4,   siPersistable, L"", L"", 64, 16, 1024, 16, 512, p);
@@ -909,12 +905,6 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item = layout.AddEnumControl(L"texture_filter", textFilters, L"Filter", siControlCombo);
       item.PutAttribute(siUILabelMinPixels, 195);
       item.PutAttribute(siUILabelPercentage, 90);
-      item = layout.AddItem(L"texture_diffuse_blur", L"Diffuse Blur");
-      item.PutAttribute(siUILabelMinPixels, 195);
-      item.PutAttribute(siUILabelPercentage, 30);
-      item = layout.AddItem(L"texture_specular_blur", L"Specular Blur");
-      item.PutAttribute(siUILabelMinPixels, 195);
-      item.PutAttribute(siUILabelPercentage, 30);
    layout.EndGroup();
    layout.AddGroup(L"Tiling", true, 0);
       layout.AddItem(L"texture_accept_untiled", L"Accept Untiled Textures");

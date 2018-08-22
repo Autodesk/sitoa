@@ -18,7 +18,7 @@ under an Apache 2.0 open source license.
 #### Requirements
 
 * Softimage 2015 SP1
-* Arnold 5.1.0.0 or newer
+* Arnold 5.2.0.0 or newer
 * Python 2.6 or newer
 * Visual Studio 2012 (Windows)
 * GCC 4.2.4 (Linux)
@@ -365,9 +365,6 @@ With contributions by:
 - Holger Schoenberger
 - Frederic Servant
 - Jules Stevenson
-
-After open-sourcing, development has continued by:
-
 - Jens Lindgren
 
 Special thanks to all the users who passionately provided feedback, production

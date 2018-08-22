@@ -336,6 +336,19 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
          continue;
       }
 
+      if (!strcmp(charParamName, "toon_id"))
+      {
+         CString toonId = param.GetValue(); 
+         if (toonId.IsEmpty()) // Avoid exporting the toon_id if it is empty
+            continue;
+         if (!AiNodeLookUpUserParameter(in_node, "toon_id"))
+            AiNodeDeclare(in_node, "toon_id", "constant STRING");
+         if (AiNodeLookUpUserParameter(in_node, "toon_id"))
+            CNodeSetter::SetString(in_node, "toon_id", toonId.GetAsciiString());
+
+         continue;
+      }
+
       if (!strcmp(charParamName, "trace_sets")) // #783: Expose the trace sets string for shapes
       {
          CString traceSets = param.GetValue(); 
