@@ -320,7 +320,7 @@ if system.os() == 'windows':
                                projects = [os.path.join('plugins', 'sitoa', 'sitoa') + env['MSVS']['PROJECTSUFFIX'],
                                            os.path.join('shaders', 'src', 'sitoa_shaders') + env['MSVS']['PROJECTSUFFIX'],
                                            'install' + env['MSVS']['PROJECTSUFFIX']],  ## TODO: Find a clean way of getting these project paths
-                               dependencies = [[], [], [], ['sitoa', 'sitoa_shaders']],
+                               dependencies = [[], [], ['sitoa', 'sitoa_shaders']],
                                variant = ['Debug_MSVC|Win32',
                                           'Debug_ICC|Win32',
                                           'Opt_MSVC|Win32',
