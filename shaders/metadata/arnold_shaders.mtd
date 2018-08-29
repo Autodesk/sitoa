@@ -2661,7 +2661,16 @@ soft.order STRING "BeginGroup Color base base_color melanin melanin_redness mela
 "BeginGroup Tint specular_tint specular2_tint transmission_tint EndGroup "
 "BeginGroup Diffuse diffuse diffuse_color EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
-"BeginGroup Advanced opacity indirect_diffuse indirect_specular extra_depth extra_samples EndGroup"
+"BeginGroup Advanced opacity indirect_diffuse indirect_specular extra_depth extra_samples EndGroup "
+"AddTab ID_AOVs "
+"BeginGroup ID_1_AOV aov_id1 id1 EndGroup "
+"BeginGroup ID_2_AOV aov_id2 id2 EndGroup "
+"BeginGroup ID_3_AOV aov_id3 id3 EndGroup "
+"BeginGroup ID_4_AOV aov_id4 id4 EndGroup "
+"BeginGroup ID_5_AOV aov_id5 id5 EndGroup "
+"BeginGroup ID_6_AOV aov_id6 id6 EndGroup "
+"BeginGroup ID_7_AOV aov_id7 id7 EndGroup "
+"BeginGroup ID_8_AOV aov_id8 id8 EndGroup"
 
 [attr base]
 desc STRING "Brightness of the hair, a multiplier for the base color."
@@ -2768,6 +2777,54 @@ min INT 0
 softmin INT 0
 softmax INT 8
 
+[attr aov_id1]
+soft.label STRING "AOV Name 1"
+
+[attr id1]
+soft.label STRING "ID 1"
+
+[attr aov_id2]
+soft.label STRING "AOV Name 2"
+
+[attr id2]
+soft.label STRING "ID 2"
+
+[attr aov_id3]
+soft.label STRING "AOV Name 3"
+
+[attr id3]
+soft.label STRING "ID 3"
+
+[attr aov_id4]
+soft.label STRING "AOV Name 4"
+
+[attr id4]
+soft.label STRING "ID 4"
+
+[attr aov_id5]
+soft.label STRING "AOV Name 5"
+
+[attr id5]
+soft.label STRING "ID 5"
+
+[attr aov_id6]
+soft.label STRING "AOV Name 6"
+
+[attr id6]
+soft.label STRING "ID 6"
+
+[attr aov_id7]
+soft.label STRING "AOV Name 7"
+
+[attr id7]
+soft.label STRING "ID 7"
+
+[attr aov_id8]
+soft.label STRING "AOV Name 8"
+
+[attr id8]
+soft.label STRING "ID 8"
+
 ##############################################################################
 [node standard_surface]
 soft.category STRING "Surface"
@@ -2780,7 +2837,16 @@ soft.order STRING "BeginGroup Base base base_color diffuse_roughness metalness E
 "BeginGroup Thin_Film thin_film_thickness thin_film_IOR EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
 "BeginGroup Geometry thin_walled opacity normal tangent EndGroup "
-"BeginGroup Advanced caustics internal_reflections exit_to_background indirect_diffuse indirect_specular EndGroup"
+"BeginGroup Advanced caustics internal_reflections exit_to_background indirect_diffuse indirect_specular EndGroup "
+"AddTab ID_AOVs "
+"BeginGroup ID_1_AOV aov_id1 id1 EndGroup "
+"BeginGroup ID_2_AOV aov_id2 id2 EndGroup "
+"BeginGroup ID_3_AOV aov_id3 id3 EndGroup "
+"BeginGroup ID_4_AOV aov_id4 id4 EndGroup "
+"BeginGroup ID_5_AOV aov_id5 id5 EndGroup "
+"BeginGroup ID_6_AOV aov_id6 id6 EndGroup "
+"BeginGroup ID_7_AOV aov_id7 id7 EndGroup "
+"BeginGroup ID_8_AOV aov_id8 id8 EndGroup"
 
 [attr base]
 desc STRING "Scales the diffuse component."
@@ -3052,6 +3118,54 @@ desc STRING "Scales the indirect specular component."
 soft.label STRING "Indirect Specular"
 min FLOAT 0
 max FLOAT 1
+
+[attr aov_id1]
+soft.label STRING "AOV Name 1"
+
+[attr id1]
+soft.label STRING "ID 1"
+
+[attr aov_id2]
+soft.label STRING "AOV Name 2"
+
+[attr id2]
+soft.label STRING "ID 2"
+
+[attr aov_id3]
+soft.label STRING "AOV Name 3"
+
+[attr id3]
+soft.label STRING "ID 3"
+
+[attr aov_id4]
+soft.label STRING "AOV Name 4"
+
+[attr id4]
+soft.label STRING "ID 4"
+
+[attr aov_id5]
+soft.label STRING "AOV Name 5"
+
+[attr id5]
+soft.label STRING "ID 5"
+
+[attr aov_id6]
+soft.label STRING "AOV Name 6"
+
+[attr id6]
+soft.label STRING "ID 6"
+
+[attr aov_id7]
+soft.label STRING "AOV Name 7"
+
+[attr id7]
+soft.label STRING "ID 7"
+
+[attr aov_id8]
+soft.label STRING "AOV Name 8"
+
+[attr id8]
+soft.label STRING "ID 8"
 
 ##############################################################################
 [node standard_volume]
