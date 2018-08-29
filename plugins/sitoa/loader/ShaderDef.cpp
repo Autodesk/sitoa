@@ -609,15 +609,29 @@ void CShaderDefShader::Layout()
       LONG order_array_count = order_array.GetCount();
 
       bool begin_group = false;
+      bool add_tab = false;
       CString group_name;
+      CString tab_name;
       for (LONG i = 0; i < order_array_count; i++)
       {
          CString p_s = order_array[i];
+         if (add_tab)
+         {
+            tab_name = CStringUtilities().ReplaceString(L"_", L" ", p_s);
+            layout.AddTab(tab_name);
+            add_tab = false;
+            continue;
+         }
          if (begin_group)
          {
             group_name = CStringUtilities().ReplaceString(L"_", L" ", p_s);
             layout.AddGroup(group_name);
             begin_group = false;
+            continue;
+         }
+         if (p_s == L"AddTab")
+         {
+            add_tab = true;
             continue;
          }
          if (p_s == L"BeginGroup")
