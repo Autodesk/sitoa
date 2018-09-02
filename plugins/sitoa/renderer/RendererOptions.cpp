@@ -392,7 +392,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"AA_sample_clamp",         CValue::siDouble, siPersistable, L"", L"", 10, 0.001, 100, 0.001, 100, p);
    cpset.AddParameter(L"indirect_sample_clamp",   CValue::siDouble, siPersistable, L"", L"", 10, 0.0, 100, 0.0, 100, p);
    cpset.AddParameter(L"output_filter",           CValue::siString, siPersistable, L"", L"", L"gaussian", 0, 10, 0, 10, p);
-   cpset.AddParameter(L"output_filter_width",     CValue::siDouble, siPersistable, L"", L"", 2, 0, 10, 1, 6, p);
+   cpset.AddParameter(L"output_filter_width",     CValue::siDouble, siPersistable, L"", L"", 2, 0, 100, 1, 6, p);
    cpset.AddParameter(L"filter_color_AOVs",       CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"filter_numeric_AOVs",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
 
