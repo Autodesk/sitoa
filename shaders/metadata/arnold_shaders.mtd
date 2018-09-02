@@ -3540,6 +3540,8 @@ soft.label STRING "Tonemap"
 
 [attr lights]
 desc STRING "Specify the name of the key light to be used for the stylized highlight. You can specify multiple lights using a semicolon-delimited string as lightShape1;lightShape2. The supported light types are Distant, Point, Spot, and Photometric."
+soft.label STRING "Lights"
+soft.node_type STRING "light array"
 
 [attr highlight_color]
 desc STRING "An arbitrary texture (or RGB type node) can be used to create a stylized highlight on an object. If nothing is connected, the stylized highlight is disabled."
@@ -3556,6 +3558,7 @@ max FLOAT 1
 [attr rim_light]
 desc STRING "Specify the name of the light to be used here. Rim lighting is affected by the shadow of this light. The supported light types are: Distant, Point, Spot, and Photometric."
 soft.label STRING "Light"
+soft.node_type STRING "light"
 
 [attr rim_light_color]
 desc STRING "The color of the rim light. Connect a ramp here to get a rim lighting effect."

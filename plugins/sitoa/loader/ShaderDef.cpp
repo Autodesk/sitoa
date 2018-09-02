@@ -94,6 +94,32 @@ siShaderParameterDataType GetParamSdType(int in_type)
    return siShaderDataTypeUnknown;
 }
 
+// Return the Softimage reference filter type for the input metadata node_type
+//
+// @param in_type   The node_type
+//
+// @return          The Softimage data type
+//
+siShaderReferenceFilterType GetShaderReferenceFilterType(CString in_type)
+{
+   if (in_type == L"object")
+      return siObjectReferenceFilter;
+   else if (in_type == L"camera")
+      return siCameraReferenceFilter;
+   else if (in_type == L"light")
+      return siLightReferenceFilter;
+   else if (in_type == L"material")
+      return siMaterialReferenceFilter;
+   else if (in_type == L"shader")
+      return siShaderReferenceFilter;
+   else if (in_type == L"geometric")
+      return siGeometryReferenceFilter;
+   else if (in_type == L"userdata")
+      return siUserDataBlobReferenceFilter;
+   else
+      return siUnknownReferenceFilter;
+}
+
 
 // Constructor for the CShaderDefParameter class, from the parameter entry
 //
@@ -124,6 +150,7 @@ CShaderDefParameter::CShaderDefParameter(const AtParamEntry* in_paramEntry, cons
    m_has_linkable      = AiMetaDataGetBool  (in_node_entry, c, ATSTRING::linkable, &m_linkable);
    m_has_inspectable   = AiMetaDataGetBool  (in_node_entry, c, ATSTRING::soft_inspectable, &m_inspectable);
    m_has_viewport_guid = MetaDataGetCStr    (in_node_entry, c, ATSTRING::soft_viewport_guid, m_viewport_guid);
+   m_has_node_type     = MetaDataGetCStr    (in_node_entry, c, ATSTRING::soft_node_type, m_node_type);
 }
 
 
@@ -205,7 +232,32 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
    if (m_type == AI_TYPE_CLOSURE)
       pDef = in_paramDef.AddParamDef(m_name, L"closure", defOptions);
    else
-      pDef = in_paramDef.AddParamDef(m_name, GetParamSdType(paramType), defOptions);
+   {
+      // adds the ability for string types to have a node picker
+      // also implements filter for the node types
+      if ((m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE) && m_has_node_type)
+      {
+         CStringArray nodeTypes = CStringUtilities().ToLower(m_node_type).Split(L" ");
+         defOptions.SetAttribute(siReferenceFilterAttribute, GetShaderReferenceFilterType(nodeTypes[0]));
+
+         if (nodeTypes.GetCount() > 1)
+         {
+            if (nodeTypes[1] == L"array")
+            {
+               // shaderarrays doesn't use the label but uses SetLongName instead
+               // label has to be specified in .mtd or else it will just show the parameter name
+               if (m_has_label)
+                  defOptions.SetLongName(m_label);
+
+               pDef = in_paramDef.AddArrayParamDef(m_name, siShaderDataTypeReference, defOptions);
+            }
+         }
+         else
+            pDef = in_paramDef.AddParamDef(m_name, siShaderDataTypeReference, defOptions);
+      }
+      else
+         pDef = in_paramDef.AddParamDef(m_name, GetParamSdType(paramType), defOptions);
+   }
 
    // setting the default for the struct parameters
    if (pDef.IsStructure())
