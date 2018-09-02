@@ -197,11 +197,7 @@ function main(path)
    try {
    SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "%s", null);}
    catch(e) {}
-   
-   try {
-   SetValue("Passes.Arnold_Render_Options.shaders_path", "%s", null);}
-   catch(e) {}
-   
+
    try 
    {
       SetValue("Passes.Arnold_Render_Options.textures_path", "%s", null);
@@ -217,7 +213,6 @@ function main(path)
 	   get_escaped_path(os.path.abspath('test.scn')),
        get_escaped_path(os.path.abspath(test_env['OUTPUT_IMAGE'])),
        get_escaped_path(os.getcwd()),
-       get_escaped_path(os.path.join(ROOT_DIR, os.path.dirname(str(SITOA_SHADERS[0])))),
        get_escaped_path(os.path.abspath(os.path.join(ROOT_DIR,'testsuite', 'XSIProject', 'Pictures')))))
    file.close()
 
