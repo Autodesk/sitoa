@@ -3497,6 +3497,7 @@ max FLOAT 1
 [attr base_color]
 desc STRING ""
 soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC72-082C-11D0-91DE-00A024C78EE3}"
 
 [attr base_tonemap]
 desc STRING "Connect a ramp node here to create a cell look (regarded as a tone map)."
@@ -3513,6 +3514,7 @@ max FLOAT 1
 [attr specular_color]
 desc STRING "The color the specular reflection will be modulated with. Use this color to 'tint' the specular highlight."
 soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC73-082C-11D0-91DE-00A024C78EE3}"
 
 [attr specular_roughness]
 desc STRING "Controls the glossiness of the specular reflections."
