@@ -434,7 +434,7 @@ SItoA testsuite
 <tr>
 <td>
 <font face="Arial"><h1>SItoA %s testsuite</h1>
-%s<br>%s</font>
+<a href="%s">%s</a></font>
 </td>
 <td>
 <pre>
@@ -451,7 +451,7 @@ SItoA testsuite
 </tr>
 </table>
 <br>
-''' % (SITOA_VERSION, REVISION, URL, str(PATTERNS + TAGS), len(source), passed, (100.0 * passed) / (passed + failed), failed, (100.0 * failed) / (passed + failed), TOTAL_RUNNING_TIME))
+''' % (SITOA_VERSION, URL, REVISION, str(PATTERNS + TAGS), len(source), passed, (100.0 * passed) / (passed + failed), failed, (100.0 * failed) / (passed + failed), TOTAL_RUNNING_TIME))
    outfile.write('''
 <table border="0" cellpadding="0">
 <tr>
