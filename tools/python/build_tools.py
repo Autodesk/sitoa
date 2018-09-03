@@ -154,7 +154,7 @@ def get_arnold_version(path, components = 4):
       version += '.' + FIX_VERSION
    return version      
 
-## This function will give us the information we need about the latest snv revision of the root arnold directory
+## This function will give us the information we need about the latest git commit
 def get_latest_revision():
    revision = 'not found'
    url      = 'not found'
