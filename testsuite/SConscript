@@ -197,7 +197,7 @@ function main(path)
    try {
    SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "%s", null);}
    catch(e) {}
-
+   
    try 
    {
       SetValue("Passes.Arnold_Render_Options.textures_path", "%s", null);
