@@ -96,6 +96,7 @@ namespace ATSTRING
    const AtString soft_skip("soft.skip");
    const AtString soft_inspectable("soft.inspectable");
    const AtString soft_viewport_guid("soft.viewport_guid");
+   const AtString soft_node_type("soft.node_type");
    //
    const AtString closure("closure");
 };

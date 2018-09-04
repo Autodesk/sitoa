@@ -185,38 +185,71 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
    {
       ShaderArrayParameter paramArray(in_param.GetRef());
 
-      AtArray *values(NULL);
-      if (in_entryName == L"BooleanSwitch")
-         values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_BOOLEAN);
-      else if (in_entryName == L"Color4Switch")
-         values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_RGBA);
-      else if (in_entryName == L"IntegerSwitch")
-         values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_INT);
-      else if (in_entryName == L"ScalarSwitch")
-         values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_FLOAT);
-      else if (in_entryName == L"Vector3Switch")
-         values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_VECTOR);
-
-      // entering here for the "values" parameter only. Together with "values", we also push the "index" array
-      if (values)
+      // in certain cases, like 'lights' in the toon shader,
+      // we have an array parameter in the shaderdef but the node input in Arnold is a string
+      // let's itterate over the array and build a semicolon separated string of the objects
+      int paramType = GetArnoldParameterType(in_node, in_param.GetScriptName().GetAsciiString());
+      if (paramType == AI_TYPE_STRING)
       {
-         AtArray *index  = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_INT);
-         AiNodeSetArray(in_node, "values", values);
-         AiNodeSetArray(in_node, "index", index);
+         const char* aiParamName = in_param.GetScriptName().GetAsciiString();
+         CString paramValue = L"";
+
+         for (LONG i=0; i<paramArray.GetCount(); i++)
+         {
+            Parameter theParam(paramArray[i]);
+            CValue value = theParam.GetValue(in_frame);
+
+            X3DObject xsiObj(value);
+            if (xsiObj.IsValid())
+            {
+               // Add semicolon before every item except the first
+               if (i > 0)
+                  paramValue += L";";
+
+               AtNode* objNode = GetRenderInstance()->NodeMap().GetExportedNode(xsiObj, in_frame);
+               if (objNode)
+                  paramValue += CNodeUtilities().GetName(objNode);
+               else
+                  paramValue += xsiObj.GetFullName();
+            }
+         }
+         CNodeSetter::SetString(in_node, aiParamName, paramValue.GetAsciiString());
       }
       else
       {
-         // array type
-         int paramType = GetArnoldParameterType(in_node, in_param.GetScriptName().GetAsciiString(), true);
-         AtArray* entries = AiArrayAllocate(paramArray.GetCount(), 1, (uint8_t)paramType);
-         AiNodeSetArray(in_node, in_param.GetScriptName().GetAsciiString(), entries);
-      }
-
-      // Iterate through all the parameters of the parameters array
-      for (LONG i=0; i<paramArray.GetCount(); i++)
-      {
-         Parameter theParam(paramArray[i]);
-         LoadShaderParameter(in_node, in_entryName, theParam, in_frame, in_ref, in_recursively, paramArray.GetScriptName(), i);
+         AtArray *values(NULL);
+         if (in_entryName == L"BooleanSwitch")
+            values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_BOOLEAN);
+         else if (in_entryName == L"Color4Switch")
+            values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_RGBA);
+         else if (in_entryName == L"IntegerSwitch")
+            values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_INT);
+         else if (in_entryName == L"ScalarSwitch")
+            values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_FLOAT);
+         else if (in_entryName == L"Vector3Switch")
+            values = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_VECTOR);
+   
+         // entering here for the "values" parameter only. Together with "values", we also push the "index" array
+         if (values)
+         {
+            AtArray *index  = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_INT);
+            AiNodeSetArray(in_node, "values", values);
+            AiNodeSetArray(in_node, "index", index);
+         }
+         else
+         {
+            // array type
+            int paramType = GetArnoldParameterType(in_node, in_param.GetScriptName().GetAsciiString(), true);
+            AtArray* entries = AiArrayAllocate(paramArray.GetCount(), 1, (uint8_t)paramType);
+            AiNodeSetArray(in_node, in_param.GetScriptName().GetAsciiString(), entries);
+         }
+   
+         // Iterate through all the parameters of the parameters array
+         for (LONG i=0; i<paramArray.GetCount(); i++)
+         {
+            Parameter theParam(paramArray[i]);
+            LoadShaderParameter(in_node, in_entryName, theParam, in_frame, in_ref, in_recursively, paramArray.GetScriptName(), i);
+         }
       }
    }
    // ImageClips are not shaders so we need to parse it with a different method

@@ -3611,6 +3611,7 @@ max FLOAT 1
 [attr base_color]
 desc STRING ""
 soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC72-082C-11D0-91DE-00A024C78EE3}"
 
 [attr base_tonemap]
 desc STRING "Connect a ramp node here to create a cell look (regarded as a tone map)."
@@ -3627,6 +3628,7 @@ max FLOAT 1
 [attr specular_color]
 desc STRING "The color the specular reflection will be modulated with. Use this color to 'tint' the specular highlight."
 soft.label STRING "Color"
+soft.viewport_guid STRING "{3515CC73-082C-11D0-91DE-00A024C78EE3}"
 
 [attr specular_roughness]
 desc STRING "Controls the glossiness of the specular reflections."
@@ -3654,6 +3656,8 @@ soft.label STRING "Tonemap"
 
 [attr lights]
 desc STRING "Specify the name of the key light to be used for the stylized highlight. You can specify multiple lights using a semicolon-delimited string as lightShape1;lightShape2. The supported light types are Distant, Point, Spot, and Photometric."
+soft.label STRING "Lights"
+soft.node_type STRING "light array"
 
 [attr highlight_color]
 desc STRING "An arbitrary texture (or RGB type node) can be used to create a stylized highlight on an object. If nothing is connected, the stylized highlight is disabled."
@@ -3670,6 +3674,7 @@ max FLOAT 1
 [attr rim_light]
 desc STRING "Specify the name of the light to be used here. Rim lighting is affected by the shadow of this light. The supported light types are: Distant, Point, Spot, and Photometric."
 soft.label STRING "Light"
+soft.node_type STRING "light"
 
 [attr rim_light_color]
 desc STRING "The color of the rim light. Connect a ramp here to get a rim lighting effect."

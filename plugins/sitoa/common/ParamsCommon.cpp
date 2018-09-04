@@ -300,6 +300,22 @@ CStatus LoadParameterValue(AtNode *in_node, const CString &in_entryName, const C
                   resolvedPath.ResolveTokensInPlace(in_frame);
                   paramValue = resolvedPath;
                }
+
+               // Translate a CRef to SItoA name
+               // https://github.com/Autodesk/sitoa/issues/24
+               if (in_param.GetValueType() == CValue::siEmpty)  // CRef comes in as siEmpty ?!
+               {
+                  // this is just the same code as the one below
+                  X3DObject xsiObj(value);
+                  if (xsiObj.IsValid())
+                  {
+                     AtNode* objNode = GetRenderInstance()->NodeMap().GetExportedNode(xsiObj, in_frame);
+                     if (objNode)
+                        paramValue = CNodeUtilities().GetName(objNode);
+                     else
+                        paramValue = xsiObj.GetFullName();
+                  }
+               }
             }
 
             CNodeSetter::SetString(in_node, aiParamName, paramValue.GetAsciiString());
