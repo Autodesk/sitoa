@@ -44,13 +44,11 @@ SITOA_CALLBACK XSILoadPlugin(PluginRegistrar& in_reg)
          // check so that pluginPath isn't already in PATH
          if (currentPath.FindString(pluginPath) == UINT_MAX)
          {
-            // add pluginPath to begining of PATH
-            string envPath = pluginPath.GetAsciiString();
-            envPath += ";";
-            envPath += currentPath.GetAsciiString();
+            // add pluginPath to beginning of PATH
+            CString envPath = pluginPath + L";" + currentPath;
 
             // set the new path
-            err = _putenv_s("PATH", envPath.c_str());
+            err = _putenv_s("PATH", envPath.GetAsciiString());
             if (err)
                 GetMessageQueue()->LogMsg(L"[sitoa] Failed to add Arnold path to PATH environment.", siErrorMsg);
          }
@@ -154,10 +152,10 @@ SITOA_CALLBACK XSIUnloadPlugin(PluginRegistrar& in_reg)
          if (currentPath.FindString(pluginPath) == 0)
          {
             // remove pluginPath; from currentPath
-            string envPath = currentPath.GetSubString(pluginPath.Length()+1).GetAsciiString();
+            CString envPath = currentPath.GetSubString(pluginPath.Length()+1);
 
             // set the new PATH
-            err = _putenv_s("PATH", envPath.c_str());
+            err = _putenv_s("PATH", envPath.GetAsciiString());
             if (err)
                 Application().LogMessage(L"[sitoa] Failed to remove Arnold path from PATH environment.", siErrorMsg);
          }
