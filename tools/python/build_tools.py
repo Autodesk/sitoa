@@ -154,19 +154,26 @@ def get_arnold_version(path, components = 4):
       version += '.' + FIX_VERSION
    return version      
 
-## This function will give us the information we need about the latest snv revision of the root arnold directory
+## This function will give us the information we need about the latest git commit
 def get_latest_revision():
-   p = subprocess.Popen('svn info .', shell=True, stdout = subprocess.PIPE)
-   retcode = p.wait()
-  
    revision = 'not found'
    url      = 'not found'
+
+   p = subprocess.Popen('git status -b --porcelain=2', shell=True, stdout = subprocess.PIPE)
+   retcode = p.wait()
    
    for line in p.stdout:
-      if line.startswith('URL:'):
-         url = line[5:].strip()
-      elif line.startswith('Last Changed Rev:'):
-         revision = 'r' + line[18:].strip()
+      if line.startswith('# branch.oid '):
+         revision = line.split()[-1]
+
+   p = subprocess.Popen('git remote get-url origin', shell=True, stdout = subprocess.PIPE)
+   retcode = p.wait()
+   
+   for line in p.stdout:
+      if line.startswith('https://'):
+         url = line.strip()
+         url = url[:-4]
+         url += '/commit/' + revision
 
    return (revision, url)
 
