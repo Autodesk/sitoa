@@ -22,6 +22,41 @@ using namespace XSI;
 
 SITOA_CALLBACK XSILoadPlugin(PluginRegistrar& in_reg)
 {
+   // the arnold path needs to be in PATH for optix_denoiser.dll to be found
+   // we don't know if Linux is affected so lets just implement it for Windows right now
+   // https://github.com/Autodesk/sitoa/issues/8
+   #ifdef _WINDOWS
+      // get pluginPath and remove trailing slash
+      CString pluginPath = in_reg.GetOriginPath();
+      pluginPath.TrimRight(L"\\");
+
+      // get PATH env
+      char *pValue;
+      size_t envBufSize;
+      int err = _dupenv_s(&pValue, &envBufSize, "PATH");
+      if (err)
+         GetMessageQueue()->LogMsg(L"[sitoa] Failed to retrieve PATH environment.", siErrorMsg);
+      else
+      {
+         const CString currentPath = pValue;
+         free(pValue);
+
+         // check so that pluginPath isn't already in PATH
+         if (currentPath.FindString(pluginPath) == UINT_MAX)
+         {
+            // add pluginPath to begining of PATH
+            string envPath = pluginPath.GetAsciiString();
+            envPath += ";";
+            envPath += currentPath.GetAsciiString();
+
+            // set the new path
+            err = _putenv_s("PATH", envPath.c_str());
+            if (err)
+                GetMessageQueue()->LogMsg(L"[sitoa] Failed to add Arnold path to PATH environment.", siErrorMsg);
+         }
+      }
+   #endif
+
    // Plugins names are referenced from other cpps so
    // DO NOT change their names. (ex: GetPlugin("Arnold Render"))
    in_reg.PutAuthor(L"SolidAngle");
@@ -97,6 +132,38 @@ SITOA_CALLBACK XSILoadPlugin(PluginRegistrar& in_reg)
 
 SITOA_CALLBACK XSIUnloadPlugin(PluginRegistrar& in_reg)
 {
+   // lets remove pluginPath from PATH
+   // https://github.com/Autodesk/sitoa/issues/8
+   #ifdef _WINDOWS
+      // get pluginPath and remove trailing slash
+      CString pluginPath = in_reg.GetOriginPath();
+      pluginPath.TrimRight(L"\\");
+
+      // get PATH env
+      char *pValue;
+      size_t envBufSize;
+      int err = _dupenv_s(&pValue, &envBufSize, "PATH");
+      if (err)
+         Application().LogMessage(L"[sitoa] Failed to retrieve PATH environment.", siErrorMsg);
+      else
+      {
+         const CString currentPath = pValue;
+         free(pValue);
+
+         // check so that pluginPath is in beginning of PATH
+         if (currentPath.FindString(pluginPath) == 0)
+         {
+            // remove pluginPath; from currentPath
+            string envPath = currentPath.GetSubString(pluginPath.Length()+1).GetAsciiString();
+
+            // set the new PATH
+            err = _putenv_s("PATH", envPath.c_str());
+            if (err)
+                Application().LogMessage(L"[sitoa] Failed to remove Arnold path from PATH environment.", siErrorMsg);
+         }
+      }
+   #endif
+
    Application().LogMessage(L"[sitoa] SItoA " + GetSItoAVersion() + L" has been unloaded.");
    return CStatus::OK;
 }
