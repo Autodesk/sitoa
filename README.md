@@ -65,7 +65,7 @@ VS_HOME             = r'C:/Program Files (x86)/Microsoft Visual Studio 11.0/VC'
 WINDOWS_KIT         = r'C:/Program Files (x86)/Windows Kits/8.0'
 
 XSISDK_ROOT         = r'C:/Program Files/Autodesk/Softimage 2015/XSISDK'
-ARNOLD_HOME         = r'C:/SolidAngle/Arnold-5.0.1.1/win64'
+ARNOLD_HOME         = r'C:/SolidAngle/Arnold-5.2.0.1/win64'
 
 TARGET_WORKGROUP_PATH  = r'./Softimage_2015/Addons/SItoA'
 
@@ -337,6 +337,12 @@ RendererContext g_renderContext;
 ```
 
 For anything else not in these rules, use common sense, but keep it consistent. If you are modifying an existing function or method, respect its original coding style. The same applies to adding code to an existing file: **respect the coding style around you**.
+
+
+#### Versioning
+
+Before SItoA was open-sourced it had it's own versioning scheme, with the last official version being 4.1.0. This is similar to how the other Arnold plugins are versioned.
+Because of the probability of releases being less and less frequent now, and mostly just being compatibility fixes with a new Arnold core, a decision was made to change versioning to partly match the Arnold Core. This should make it easier and more apparent which Arnold version SItoA is prepared for. The new open-source versioning will therefore be `ARNOLD_MAJOR.ARNOLD_POINT.SITOA_VERSION`.
 
 
 ### Acknowledgments
