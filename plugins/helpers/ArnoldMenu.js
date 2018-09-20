@@ -146,7 +146,18 @@ function AddShaderStack_Execute(in_shaderName, in_connectionPoint)
 {
    var pass = ActiveProject.ActiveScene.ActivePass;
    var shader = CreateShaderFromProgID(in_shaderName, pass, null);
-   SIConnectShaderToCnxPoint(shader, pass + "." + in_connectionPoint, false);
+   // we only want to add a closure shader when it's needed
+   // closures have 20 as OutputType value so we test for that 
+   if (shader.OutputType == 20)
+   {
+      var closure = CreateShaderFromProgID("Arnold.closure.1.0", pass, null);
+      SIConnectShaderToCnxPoint(shader, closure + ".closure", false);
+      SIConnectShaderToCnxPoint(closure, pass + "." + in_connectionPoint, false);
+   }
+   else
+   {
+      SIConnectShaderToCnxPoint(shader, pass + "." + in_connectionPoint, false);
+   }
    InspectObj(shader);
 }
 
@@ -269,6 +280,18 @@ function AddShadersSubMenu(in_menu)
    in_menu.AddCallbackItem("Physical Sky",      "OnShadersMenu");   
 }
 
+
+// pass sub-menu
+function ArnoldPassShaders_Init(io_Context)
+{
+   var xsiMenu = io_Context.Source;
+   xsiMenu.AddCallbackItem("Atmosphere Volume", "OnShadersMenu");
+   xsiMenu.AddCallbackItem("Fog",               "OnShadersMenu");
+   xsiMenu.AddSeparatorItem();
+   xsiMenu.AddCallbackItem("Physical Sky",      "OnShadersMenu");
+   xsiMenu.AddSeparatorItem();
+   xsiMenu.AddCallbackItem("Cryptomatte",       "OnShadersMenu");
+}
 
 // lights sub-menu
 function ArnoldLights_Init(io_Context)
@@ -482,8 +505,17 @@ function OnShadersMenu(in_ctxt)
       case "Standard Volume":
          SITOA_AddShader("Arnold.standard_volume.1.0", "surface");
          break;
+      case "Atmosphere Volume":
+         SITOA_AddShaderStack("Arnold.atmosphere_volume.1.0", "VolumeShaderStack");
+         break;
+      case "Fog":
+         SITOA_AddShaderStack("Arnold.fog.1.0", "EnvironmentShaderStack");
+         break;
       case  "Physical Sky":
          SITOA_AddShaderStack("Arnold.physical_sky.1.0", "EnvironmentShaderStack");
+         break;
+      case  "Cryptomatte":
+         SITOA_AddShaderStack("Arnold.cryptomatte.1.0", "OutputShaderStack");
          break;
     }
 }
