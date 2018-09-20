@@ -522,10 +522,13 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
    if (m_is_passthrough_closure)
    {
       m_sd.AddShaderFamily(siShaderFamilySurfaceMat, true);
-      m_sd.AddShaderFamily(siShaderFamilyVolume, true);
+      // Allow the closer node to connect to the environment shader stack
+      // github issue #36
+      m_sd.AddShaderFamily(siShaderFamilyEnvironment, true);
       // This is the only way a closure can be connected to output shader stack
-      // Support for 'Global AOV Shaders'...
+      // Support for 'Global AOV Shaders'... github issue #13
       m_sd.AddShaderFamily(siShaderFamilyOutput, true);
+      m_sd.AddShaderFamily(siShaderFamilyVolume, true);
    }
    else
       m_sd.AddShaderFamily(m_is_camera_node ? siShaderFamilyLens : siShaderFamilyTexture, true);
