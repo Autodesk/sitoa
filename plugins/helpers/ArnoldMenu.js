@@ -509,7 +509,7 @@ function OnShadersMenu(in_ctxt)
          SITOA_AddShaderStack("Arnold.atmosphere_volume.1.0", "VolumeShaderStack");
          break;
       case "Fog":
-         SITOA_AddShaderStack("Arnold.fog.1.0", "EnvironmentShaderStack");
+         SITOA_AddShaderStack("Arnold.fog.1.0", "VolumeShaderStack");
          break;
       case  "Physical Sky":
          SITOA_AddShaderStack("Arnold.physical_sky.1.0", "EnvironmentShaderStack");
