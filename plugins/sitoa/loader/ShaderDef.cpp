@@ -745,9 +745,10 @@ void CShaderDefShader::Layout()
       // github issue #33
       // for closure connector node whenever it's inspected show the shader connected to it
       layout.PutLogic(
-         L"function OnInit() {"
-         L"var src = PPG.closure.Source;"
-         L"if (src != null) InspectObj(src.Parent)};"
+         L"function OnInit() {\n"
+         L"   var src = PPG.closure.Source;"
+         L"   if (src != null) InspectObj(src.Parent);\n"
+         L"}"
          );
    }
 }
