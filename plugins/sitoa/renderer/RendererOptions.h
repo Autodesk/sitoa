@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and limitations 
 
 #include "sitoa.h"
 
+#include <xsi_ppgeventcontext.h>
 #include <xsi_customproperty.h>
 #include <xsi_color4f.h>
 #include <xsi_utils.h>
@@ -158,6 +159,13 @@ public:
    bool  m_use_existing_tx_files;
    int   m_texture_max_memory_MB;
    int   m_texture_max_open_files;
+
+   // color managers
+   CString m_color_manager;
+   CString m_ocio_config;
+   CString m_ocio_color_space_narrow;
+   CString m_ocio_color_space_linear;
+   CString m_ocio_linear_chromaticities;
 
    // diagnostic
    bool         m_enable_log_console;
@@ -322,6 +330,13 @@ public:
       m_texture_max_memory_MB(2048),
       m_texture_max_open_files(100),
 
+      // color managers
+      m_color_manager(L"none"),
+      m_ocio_config(L""),
+      m_ocio_color_space_narrow(L""),
+      m_ocio_color_space_linear(L""),
+      m_ocio_linear_chromaticities(L""),
+
       // diagnostic
       m_enable_log_console(true),
       m_enable_log_file(false),
@@ -392,6 +407,8 @@ void SystemTabLogic(CustomProperty &in_cp);
 void OutputTabLogic(CustomProperty &in_cp);
 // Logic for the textures tab
 void TexturesTabLogic(CustomProperty &in_cp);
+// Logic for the color managers tab
+void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt);
 // Logic for the subdivision tab
 void SubdivisionTabLogic(CustomProperty &in_cp);
 // Logic for the diagnostics tab
@@ -400,6 +417,6 @@ void DiagnosticsTabLogic(CustomProperty &in_cp);
 void AssOutputTabLogic(CustomProperty &in_cp);
 
 // Reset the default values of all the parameters
-void ResetToDefault(CustomProperty &in_cp);
+void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt);
 
 

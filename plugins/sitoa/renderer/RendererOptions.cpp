@@ -174,6 +174,13 @@ void CRenderOptions::Read(const Property &in_cp)
    m_texture_max_memory_MB   = (int)ParAcc_GetValue(in_cp,   L"texture_max_memory_MB",   DBL_MAX);
    m_texture_max_open_files  = (int)ParAcc_GetValue(in_cp,   L"texture_max_open_files",  DBL_MAX);
 
+   // color managers
+   m_color_manager              = ParAcc_GetValue(in_cp, L"color_manager",              DBL_MAX).GetAsText();
+   m_ocio_config                = ParAcc_GetValue(in_cp, L"ocio_config",                DBL_MAX).GetAsText();
+   m_ocio_color_space_narrow    = ParAcc_GetValue(in_cp, L"ocio_color_space_narrow",    DBL_MAX).GetAsText();
+   m_ocio_color_space_linear    = ParAcc_GetValue(in_cp, L"ocio_color_space_linear",    DBL_MAX).GetAsText();
+   m_ocio_linear_chromaticities = ParAcc_GetValue(in_cp, L"ocio_linear_chromaticities", DBL_MAX).GetAsText();
+
    // diagnostic
    m_enable_log_console     = (bool)ParAcc_GetValue(in_cp, L"enable_log_console",     DBL_MAX);
    m_enable_log_file        = (bool)ParAcc_GetValue(in_cp, L"enable_log_file",        DBL_MAX);
@@ -432,6 +439,14 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"use_existing_tx_files",   CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_max_memory_MB",   CValue::siInt4,   siPersistable, L"", L"", 2048, 128, CValue(), 128, 4096, p);
    cpset.AddParameter(L"texture_max_open_files",  CValue::siInt4,   siPersistable, L"", L"", 0, 0, 10000, 0, 2000, p);
+
+   // color managers
+   cpset.AddParameter(L"color_manager",              CValue::siString, siPersistable, L"", L"", L"none", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_config",                CValue::siString, siPersistable, L"", L"", L"",     CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_config_message",        CValue::siString, siPersistable, L"", L"", L"",     CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_color_space_narrow",    CValue::siString, siPersistable, L"", L"", L"",     CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_color_space_linear",    CValue::siString, siPersistable, L"", L"", L"",     CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_linear_chromaticities", CValue::siString, siPersistable, L"", L"", L"",     CValue(), CValue(), CValue(), CValue(), p);
 
    // diagnostic:
    cpset.AddParameter(L"enable_log_console",     CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
@@ -928,6 +943,32 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.EndRow();
    layout.EndGroup();
 
+   layout.AddTab(L"Color Management");
+   layout.AddGroup(L"Color Manager");
+      CValueArray color_managers;
+      color_managers.Add(L"None"); color_managers.Add(L"none");
+      color_managers.Add(L"OCIO"); color_managers.Add(L"color_manager_ocio");
+      item = layout.AddEnumControl(L"color_manager", color_managers, L"Color Manager", siControlCombo);
+      item.PutAttribute(siUINoLabel, true);
+   layout.EndGroup();
+   layout.AddGroup(L"OCIO");
+      layout.AddGroup(L"Config");
+         item = layout.AddItem(L"ocio_config", L"Config", siControlFilePath);
+         item.PutAttribute(siUINoLabel, true);
+         //item.PutAttribute(siUILabelMinPixels, 40);
+         item = layout.AddItem(L"ocio_config_message", L"", siControlStatic);
+      layout.EndGroup();
+      item = layout.AddEnumControl(L"ocio_color_space_narrow", CValueArray(), L"sRGB Color Space", siControlCombo);
+      item.PutAttribute(siUILabelMinPixels, 120);
+      item.PutAttribute(siUILabelPercentage, 60);
+      item = layout.AddEnumControl(L"ocio_color_space_linear", CValueArray(), L"Rendering Color Space", siControlCombo);
+      item.PutAttribute(siUILabelMinPixels, 120);
+      item.PutAttribute(siUILabelPercentage, 60);
+      item = layout.AddItem(L"ocio_linear_chromaticities", L"Chromaticities");
+      item.PutAttribute(siUILabelMinPixels, 120);
+      item.PutAttribute(siUILabelPercentage, 60);
+   layout.EndGroup();
+
    layout.AddTab(L"Diagnostics");
    layout.AddGroup(L"Logs");
       layout.AddRow();
@@ -1050,6 +1091,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       SystemTabLogic(cpset);
       OutputTabLogic(cpset);
       TexturesTabLogic(cpset);
+      ColorManagersTabLogic(cpset, ctxt);
       SubdivisionTabLogic(cpset);
       DiagnosticsTabLogic(cpset);
       AssOutputTabLogic(cpset);
@@ -1140,7 +1182,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
          if (app.GetUIToolkit().MsgBox(L"Are You Sure ?", siMsgOkCancel, L"Reset Options", okPressed) == CStatus::OK)
          {
             if (okPressed == 1)
-               ResetToDefault(cpset);
+               ResetToDefault(cpset, ctxt);
          }
       }
       else if (buttonName.IsEqualNoCase(L"AddMetadata"))
@@ -1223,6 +1265,10 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       else if (paramName == L"enable_autotile" || 
                paramName == L"texture_accept_untiled")
          TexturesTabLogic(cpset);
+
+      else if (paramName == L"color_manager" ||
+               paramName == L"ocio_config")
+         ColorManagersTabLogic(cpset, ctxt);
 
       else if (paramName == L"use_dicing_camera")
          SubdivisionTabLogic(cpset);
@@ -1367,6 +1413,80 @@ void TexturesTabLogic(CustomProperty &in_cp)
 }
 
 
+// Logic for the color managers tab
+//
+// @param in_cp       The arnold rendering options property
+//
+void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
+{
+   bool hasOcioEnv = (getenv("OCIO") != NULL);
+   bool ocioManager = (bool)(ParAcc_GetValue(in_cp, L"color_manager", DBL_MAX) == L"color_manager_ocio");
+   bool ocioLoaded = false;
+   CString ocioConfig = ParAcc_GetValue(in_cp, L"ocio_config", DBL_MAX);
+
+   ParAcc_GetParameter(in_cp, L"ocio_config").PutCapabilityFlag(siReadOnly, !ocioManager);
+   ParAcc_GetParameter(in_cp, L"ocio_config_message").PutCapabilityFlag(siReadOnly, !ocioManager);
+   ParAcc_GetParameter(in_cp, L"ocio_color_space_narrow").PutCapabilityFlag(siReadOnly, !ocioManager);
+   ParAcc_GetParameter(in_cp, L"ocio_color_space_linear").PutCapabilityFlag(siReadOnly, !ocioManager);
+   ParAcc_GetParameter(in_cp, L"ocio_linear_chromaticities").PutCapabilityFlag(siReadOnly, !ocioManager);
+
+   if (hasOcioEnv && ocioConfig == L"") {
+      in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using OCIO config from environment."));
+      ocioLoaded = true;
+   }
+   else if (ocioConfig != L"") {
+      in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using the above OCIO config."));
+      ocioLoaded = true;
+   }
+   else
+      in_cp.PutParameterValue(L"ocio_config_message", CString(L"No OCIO in environment.\nLoad a config manually to use OCIO."));
+
+   if (ocioLoaded) {
+      // we need to create an arnold universe and the ocio node so that we can get all the color spaces
+      AiBegin();
+      AtNode* ocioNode = AiNode("color_manager_ocio");
+      CNodeSetter::SetString(ocioNode, "config", GetRenderOptions()->m_ocio_config.GetAsciiString());
+   
+      // get all colorspaces in the current OCIO config
+      int numColorSpaces = AiColorManagerGetNumColorSpaces(ocioNode);
+      CValueArray colorSpaces((numColorSpaces+1)*2);
+      CString colorSpace;
+
+      colorSpaces[0] = L"Auto"; colorSpaces[1] = L"";
+
+      for (LONG i=0; i<numColorSpaces; i++) {
+         colorSpace = CString(AiColorManagerGetColorSpaceNameByIndex(ocioNode, i));
+         colorSpaces[i*2+2]   = colorSpace;
+         colorSpaces[i*2+3] = colorSpace;
+      }
+
+      // get the default color spaces
+      AtString defaultsRGB;
+      AtString defaultLinear;
+      AiColorManagerGetDefaults(ocioNode, defaultsRGB, defaultLinear);
+
+      AiEnd();
+
+      // update the PPGs
+      PPGLayout layout = in_cp.GetPPGLayout();
+      PPGItem item;
+
+      // add the default sRGB color space
+      colorSpaces[0] = L"Auto (" + CString(defaultsRGB) + ")";
+      item = layout.GetItem(L"ocio_color_space_narrow");
+      item.PutUIItems(colorSpaces);
+
+      // add the default linear color space
+      colorSpaces[0] = L"Auto (" + CString(defaultLinear) + ")";
+      item = layout.GetItem(L"ocio_color_space_linear");
+      item.PutUIItems(colorSpaces);
+
+      // redraw the PPG so the new Enum items are showing
+      in_ctxt.PutAttribute(L"Refresh", true);
+   }
+}
+
+
 // Logic for the subdivision tab
 //
 // @param in_cp       The arnold rendering options property
@@ -1438,7 +1558,7 @@ void AssOutputTabLogic(CustomProperty &in_cp)
 //
 // @param in_cp       The arnold rendering options property
 //
-void ResetToDefault(CustomProperty &in_cp)
+void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt)
 {
    CParameterRefArray params = in_cp.GetParameters();
    for (LONG i=0; i<params.GetCount(); i++)
@@ -1452,6 +1572,7 @@ void ResetToDefault(CustomProperty &in_cp)
    SystemTabLogic(in_cp);
    OutputTabLogic(in_cp);
    TexturesTabLogic(in_cp);
+   ColorManagersTabLogic(in_cp, in_ctxt);
    SubdivisionTabLogic(in_cp);
    DiagnosticsTabLogic(in_cp);
    AssOutputTabLogic(in_cp);
