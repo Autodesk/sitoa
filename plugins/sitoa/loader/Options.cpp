@@ -192,6 +192,40 @@ bool LoadFilters()
 }
 
 
+// Load the color manager
+//
+// @param in_optionsNode     the Arnold options node
+// @param in_frame           the frame time
+//
+// @return true if the color manager was well created, else false
+//
+bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
+{
+   CString colorManager = GetRenderOptions()->m_color_manager;
+   if (colorManager == L"color_manager_ocio")
+   {
+      AtNode* ocioNode = AiNode("color_manager_ocio");
+      if (!ocioNode)
+            return false;
+      CNodeUtilities().SetName(ocioNode, "sitoa_color_manager_ocio");
+
+      CNodeSetter::SetString(ocioNode, "config",                GetRenderOptions()->m_ocio_config.GetAsciiString());
+      CNodeSetter::SetString(ocioNode, "color_space_narrow",    GetRenderOptions()->m_ocio_color_space_narrow.GetAsciiString());
+      CNodeSetter::SetString(ocioNode, "color_space_linear",    GetRenderOptions()->m_ocio_color_space_linear.GetAsciiString());
+      //AtArray* ocioChromaticities = AiArray(8, 1, AI_TYPE_FLOAT,
+      //0.713f, 0.293f,
+      //0.165f, 0.830f,
+      //0.128f, 0.044f,
+      //0.32168f, 0.33767f
+      //);
+      //AiNodeSetArray(ocioNode, "linear_chromaticities", ocioChromaticities);
+
+      CNodeSetter::SetPointer(in_optionsNode, "color_manager", ocioNode);
+   }
+   return true;
+}
+
+
 // class used to store the layers associated with a driver
 //
 class CDeepExrLayersDrivers
@@ -646,6 +680,10 @@ CStatus LoadOptions(const Property& in_arnoldOptions, double in_frame, bool in_f
 
    // load rendering options
    LoadOptionsParameters(optionsNode, in_arnoldOptions, in_frame);
+
+   // load color manager
+   if (!LoadColorManager(optionsNode, in_frame))
+      return CStatus::Fail;
 
    if (!in_flythrough)
    {
