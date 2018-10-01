@@ -104,7 +104,7 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
    // Compute the node mask
    // With a temporary Checking until it is completelly instaurated 
    // in all production scenes (for backward compatibility). Initializating to true
-   int output_options         = AI_NODE_OPTIONS;
+   int output_options         = AI_NODE_OPTIONS + AI_NODE_COLOR_MANAGER;
    int output_drivers_filters = AI_NODE_DRIVER + AI_NODE_FILTER;
    int output_geometry        = AI_NODE_SHAPE;
    int output_cameras         = AI_NODE_CAMERA;
@@ -114,7 +114,7 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
    CPathString outputAssDir, assOutputName;
    bool useTranslation;
 
-   output_options  = toRender || GetRenderOptions()->m_output_options ? AI_NODE_OPTIONS: 0;
+   output_options  = toRender || GetRenderOptions()->m_output_options ? AI_NODE_OPTIONS + AI_NODE_COLOR_MANAGER: 0;
    output_drivers_filters = toRender || GetRenderOptions()->m_output_drivers_filters ? AI_NODE_DRIVER + AI_NODE_FILTER : 0;
    output_geometry = toRender || GetRenderOptions()->m_output_geometry  ? AI_NODE_SHAPE : 0;
    output_cameras  = toRender || GetRenderOptions()->m_output_cameras ? AI_NODE_CAMERA : 0;
@@ -246,7 +246,7 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
          // and for the same reason deny filters and drivers
          output_drivers_filters = 0;
       }
-      else if (output_options == AI_NODE_OPTIONS)
+      else if (output_options != 0)
       {
          AiMsgDebug("[sitoa] Loading Options");
          status = LoadOptions(in_arnoldOptions, iframe);
