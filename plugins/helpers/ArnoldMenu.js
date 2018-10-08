@@ -288,8 +288,6 @@ function ArnoldPassShaders_Init(io_Context)
    xsiMenu.AddCallbackItem("Atmosphere Volume", "OnShadersMenu");
    xsiMenu.AddCallbackItem("Fog",               "OnShadersMenu");
    xsiMenu.AddSeparatorItem();
-   xsiMenu.AddCallbackItem("Physical Sky",      "OnShadersMenu");
-   xsiMenu.AddSeparatorItem();
    xsiMenu.AddCallbackItem("Cryptomatte",       "OnShadersMenu");
 }
 
@@ -509,10 +507,10 @@ function OnShadersMenu(in_ctxt)
          SITOA_AddShaderStack("Arnold.atmosphere_volume.1.0", "VolumeShaderStack");
          break;
       case "Fog":
-         SITOA_AddShaderStack("Arnold.fog.1.0", "EnvironmentShaderStack");
+         SITOA_AddShaderStack("Arnold.fog.1.0", "VolumeShaderStack");
          break;
       case  "Physical Sky":
-         SITOA_AddShaderStack("Arnold.physical_sky.1.0", "EnvironmentShaderStack");
+         SITOA_AddShaderStack("Arnold.physical_sky.1.0", null);
          break;
       case  "Cryptomatte":
          SITOA_AddShaderStack("Arnold.cryptomatte.1.0", "OutputShaderStack");
