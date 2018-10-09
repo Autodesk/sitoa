@@ -193,6 +193,7 @@ bool LoadFilters()
 
 
 // Load the color manager
+// https://github.com/Autodesk/sitoa/issues/31
 //
 // @param in_optionsNode     the Arnold options node
 // @param in_frame           the frame time
@@ -209,17 +210,25 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
             return false;
       CNodeUtilities().SetName(ocioNode, "sitoa_color_manager_ocio");
 
-      CNodeSetter::SetString(ocioNode, "config",                GetRenderOptions()->m_ocio_config.GetAsciiString());
-      CNodeSetter::SetString(ocioNode, "color_space_narrow",    GetRenderOptions()->m_ocio_color_space_narrow.GetAsciiString());
-      CNodeSetter::SetString(ocioNode, "color_space_linear",    GetRenderOptions()->m_ocio_color_space_linear.GetAsciiString());
-      //AtArray* ocioChromaticities = AiArray(8, 1, AI_TYPE_FLOAT,
-      //0.713f, 0.293f,
-      //0.165f, 0.830f,
-      //0.128f, 0.044f,
-      //0.32168f, 0.33767f
-      //);
-      //AiNodeSetArray(ocioNode, "linear_chromaticities", ocioChromaticities);
+      CNodeSetter::SetString(ocioNode, "config",             GetRenderOptions()->m_ocio_config.GetAsciiString());
+      CNodeSetter::SetString(ocioNode, "color_space_narrow", GetRenderOptions()->m_ocio_color_space_narrow.GetAsciiString());
+      CNodeSetter::SetString(ocioNode, "color_space_linear", GetRenderOptions()->m_ocio_color_space_linear.GetAsciiString());
 
+      // only export chromaticities if color_space_linear ise set
+      if (GetRenderOptions()->m_ocio_color_space_linear != L"") {
+         CString ocioChromaticitiesString = GetRenderOptions()->m_ocio_linear_chromaticities;
+         CStringArray ocioChromaticitiesStrings = ocioChromaticitiesString.Split(L" ");
+         if (ocioChromaticitiesStrings.GetCount() == 8) {
+            AtArray* ocioChromaticities = AiArrayAllocate(8, 1, AI_TYPE_FLOAT);
+            for (int i=0; i<8; i++) {
+               AiArraySetFlt(ocioChromaticities, i, (float)atof(ocioChromaticitiesStrings[i].GetAsciiString()));
+            }
+            AiNodeSetArray(ocioNode, "linear_chromaticities", ocioChromaticities);
+         }
+         else {
+            GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticities could not be parsed: " + CString(ocioChromaticitiesString), siWarningMsg);
+         }
+      }
       CNodeSetter::SetPointer(in_optionsNode, "color_manager", ocioNode);
    }
    return true;
@@ -683,7 +692,8 @@ CStatus LoadOptions(const Property& in_arnoldOptions, double in_frame, bool in_f
 
    // load color manager
    if (!LoadColorManager(optionsNode, in_frame))
-      return CStatus::Fail;
+      GetMessageQueue()->LogMsg(L"[sitoa] Failed to create a Color Manager.", siWarningMsg);
+      return CStatus::Abort;
 
    if (!in_flythrough)
    {
