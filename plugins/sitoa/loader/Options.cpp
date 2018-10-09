@@ -220,13 +220,19 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
          CStringArray ocioChromaticitiesStrings = ocioChromaticitiesString.Split(L" ");
          if (ocioChromaticitiesStrings.GetCount() == 8) {
             AtArray* ocioChromaticities = AiArrayAllocate(8, 1, AI_TYPE_FLOAT);
+            float chromaticitySample;
             for (int i=0; i<8; i++) {
-               AiArraySetFlt(ocioChromaticities, i, (float)atof(ocioChromaticitiesStrings[i].GetAsciiString()));
+               chromaticitySample = atof(ocioChromaticitiesStrings[i].GetAsciiString());
+
+               // if a sample is 0.0 and is not green x (ACES uses 0.0 as green x) then issue a warning
+               if (chromaticitySample == 0.0f && i != 2)
+                  GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticity sample " + CString(i) + L" is 0.0", siWarningMsg);
+               AiArraySetFlt(ocioChromaticities, i, chromaticitySample);
             }
             AiNodeSetArray(ocioNode, "linear_chromaticities", ocioChromaticities);
          }
          else {
-            GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticities could not be parsed: " + CString(ocioChromaticitiesString), siWarningMsg);
+            GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticities could not be parsed. It needs to be 8 values separated by spaces. Unparsable: '" + CString(ocioChromaticitiesString) + L"'", siWarningMsg);
          }
       }
       CNodeSetter::SetPointer(in_optionsNode, "color_manager", ocioNode);
