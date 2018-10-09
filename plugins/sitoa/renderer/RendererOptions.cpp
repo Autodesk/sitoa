@@ -955,7 +955,9 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.AddGroup(L"Config");
          item = layout.AddItem(L"ocio_config", L"Config", siControlFilePath);
          item.PutAttribute(siUINoLabel, true);
-         //item.PutAttribute(siUILabelMinPixels, 40);
+         item.PutAttribute(siUIOpenFile, true);
+         item.PutAttribute(siUIFileMustExist, true);
+         item.PutAttribute(siUIFileFilter, L"OCIO config files (*.ocio)|*.ocio||");
          item = layout.AddItem(L"ocio_config_message", L"", siControlStatic);
       layout.EndGroup();
       CValueArray colorSpaces(2);
@@ -1470,12 +1472,17 @@ void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
          // we need to have an arnold universe with the ocio node so that we can get all the color spaces
          bool defaultUniverseExist = AiUniverseIsActive();
          AtUniverse* ocioUniverse;
-         if (defaultUniverseExist)
-            ocioUniverse = AiUniverse();
-         else
-            AiBegin();
+         AtNode* ocioNode;
 
-         AtNode* ocioNode = AiNode("color_manager_ocio");
+         if (defaultUniverseExist) {
+            ocioUniverse = AiUniverse();
+            ocioNode = AiNode(ocioUniverse, "color_manager_ocio");
+         }
+         else {
+            AiBegin();
+            ocioNode = AiNode("color_manager_ocio");
+         }
+
          CNodeSetter::SetString(ocioNode, "config", GetRenderOptions()->m_ocio_config.GetAsciiString());
 
          int numColorSpaces = AiColorManagerGetNumColorSpaces(ocioNode);
@@ -1495,7 +1502,7 @@ void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
 
          }
          else {
-            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Error: No color spaces found in current config!"));
+            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Error: No color spaces found!"));
          }
 
          // destroy the universe
