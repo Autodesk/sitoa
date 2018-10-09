@@ -246,7 +246,7 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
          // and for the same reason deny filters and drivers
          output_drivers_filters = 0;
       }
-      else if (output_options != 0)
+      else if ((output_options & AI_NODE_OPTIONS) == AI_NODE_OPTIONS)
       {
          AiMsgDebug("[sitoa] Loading Options");
          status = LoadOptions(in_arnoldOptions, iframe);

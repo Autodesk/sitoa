@@ -207,7 +207,7 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
    {
       AtNode* ocioNode = AiNode("color_manager_ocio");
       if (!ocioNode)
-            return false;
+         return false;
       CNodeUtilities().SetName(ocioNode, "sitoa_color_manager_ocio");
 
       CNodeSetter::SetString(ocioNode, "config",             GetRenderOptions()->m_ocio_config.GetAsciiString());
@@ -691,9 +691,10 @@ CStatus LoadOptions(const Property& in_arnoldOptions, double in_frame, bool in_f
    LoadOptionsParameters(optionsNode, in_arnoldOptions, in_frame);
 
    // load color manager
-   if (!LoadColorManager(optionsNode, in_frame))
+   if (!LoadColorManager(optionsNode, in_frame)) {
       GetMessageQueue()->LogMsg(L"[sitoa] Failed to create a Color Manager.", siWarningMsg);
       return CStatus::Abort;
+   }
 
    if (!in_flythrough)
    {
