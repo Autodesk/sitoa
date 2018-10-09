@@ -224,8 +224,8 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
             for (int i=0; i<8; i++) {
                chromaticitySample = atof(ocioChromaticitiesStrings[i].GetAsciiString());
 
-               // if a sample is 0.0 and is not green x (ACES uses 0.0 as green x) then issue a warning
-               if (chromaticitySample == 0.0f && i != 2)
+               // if a sample is 0.0 and is not green or blue x (ACES uses 0.0 as green x) then issue a warning
+               if (chromaticitySample == 0.0f && i != 2 && i != 4)
                   GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticity sample " + CString(i) + L" is 0.0", siWarningMsg);
                AiArraySetFlt(ocioChromaticities, i, chromaticitySample);
             }
