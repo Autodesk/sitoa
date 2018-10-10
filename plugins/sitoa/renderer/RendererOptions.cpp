@@ -958,7 +958,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
          item.PutAttribute(siUIOpenFile, true);
          item.PutAttribute(siUIFileMustExist, true);
          item.PutAttribute(siUIFileFilter, L"OCIO config files (*.ocio)|*.ocio||");
-         item = layout.AddItem(L"ocio_config_message", L"", siControlStatic);
+         item = layout.AddItem(L"ocio_config_message", L"\n", siControlStatic);
       layout.EndGroup();
       CValueArray colorSpaces(2);
       colorSpaces[0] = L""; colorSpaces[1] = L"";
@@ -1449,18 +1449,18 @@ void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
    if (paramName != L"ocio_color_space_linear") {
       if (ocioManager) {
          if (hasOcioEnv && ocioConfig == L"") {
-            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using OCIO config from environment."));
+            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using OCIO config from environment.\n"));
             ocioLoaded = true;
          }
          else if (ocioConfig != L"") {
-            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using the specified OCIO config."));
+            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using the specified OCIO config.\n"));
             ocioLoaded = true;
          }
          else
             in_cp.PutParameterValue(L"ocio_config_message", CString(L"No OCIO in environment.\nLoad a config manually to use OCIO."));
       }
       else
-         in_cp.PutParameterValue(L"ocio_config_message", CString(L""));
+         in_cp.PutParameterValue(L"ocio_config_message", CString(L"\n"));
 
       if (ocioLoaded) {
          // init strings to get default colorspaces
@@ -1502,7 +1502,7 @@ void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
 
          }
          else {
-            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Error: No color spaces found!"));
+            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Error: No color spaces found!\n"));
          }
 
          // destroy the universe
