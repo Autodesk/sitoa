@@ -593,14 +593,9 @@ void LoadCameraOptions(const Camera &in_xsiCamera, AtNode* in_node, const Proper
          CNodeSetter::SetFloat(in_node, "aperture_blade_curvature", apertureBladeCurvature); 
          CNodeSetter::SetFloat(in_node, "aperture_rotation",        apertureRotation); 
          CNodeSetter::SetFloat(in_node, "aperture_aspect_ratio",    apertureAspectRatio);       
-      }
-      else
-      {
-         aperture_size = AiArrayAllocate(1, 1, AI_TYPE_FLOAT);
-         AiArraySetFlt(aperture_size, 0, 0.0f);
-      }
 
-      AiNodeSetArray(in_node, "aperture_size", aperture_size);
+         AiNodeSetArray(in_node, "aperture_size", aperture_size);
+      }
    }
 
    if (focus_distance)
