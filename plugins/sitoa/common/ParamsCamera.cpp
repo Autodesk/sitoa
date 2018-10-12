@@ -47,6 +47,8 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
       fov = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_FLOAT);     
 
    AtArray* matrices = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_MATRIX);
+   AtArray* screenWindowMins = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_VECTOR2);
+   AtArray* screenWindowMaxs = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_VECTOR2);
    
    for (LONG ikey=0; ikey<nbTransfKeys; ikey++)
    {
@@ -101,6 +103,66 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
          }
       }
       AiArraySetMtx(matrices, ikey, matrix);
+
+      // Set the screen_window values which are default arnold camera properties
+      // This was broken in SItoA 4.1, but fixed on Github: https://github.com/Autodesk/sitoa/issues/42
+      // It moved in to the for loop to support motion blur at the same time it was fixed
+      AtVector2 screenWindowMin;
+      AtVector2 screenWindowMax;
+      if (ParAcc_GetValue(in_xsiCamera, L"proj", in_frame) == 0)
+      {
+         // Orthographic camera
+         float width  = (float)ParAcc_GetValue(in_xsiCamera, L"planewidth", frame);
+         float height = (float)ParAcc_GetValue(in_xsiCamera, L"orthoheight", frame);
+         float aspect = (float)ParAcc_GetValue(in_xsiCamera, L"aspect", frame);
+   
+         screenWindowMin.x = -width/2;
+         screenWindowMin.y = -height/2*aspect;
+         screenWindowMax.x =  width/2;
+         screenWindowMax.y =  height/2*aspect;
+      }
+      else // Optical Center Shift (only in perspective cameras)
+      {
+         float factorX(0.0f), factorY(0.0f);
+         
+         if ((bool)ParAcc_GetValue(in_xsiCamera, L"projplane", in_frame))
+         {
+            float offsetX = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffx", frame);
+            float offsetY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffy", frame);
+            
+            if (offsetX!=0.0f || offsetY!=0.0f)
+            {
+               float apertureX = (float)ParAcc_GetValue(in_xsiCamera, L"projplanewidth", frame);
+               float apertureY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneheight", frame);
+   
+               factorX = (offsetX / apertureX) * 2;
+               factorY = (offsetY / apertureY) * 2;
+            }
+         }
+
+         // Perspective camera - so let's just set defaults
+         screenWindowMin.x = -1.0f + factorX;
+         screenWindowMin.y = -1.0f + factorY;
+         screenWindowMax.x =  1.0f + factorX;
+         screenWindowMax.y =  1.0f + factorY;
+      }
+
+      // The subpixelzoom mode should only affects a render region mode
+      if (GetRenderInstance()->GetRenderType() == L"Region" && (bool)ParAcc_GetValue(in_xsiCamera, L"subpixelzoom", in_frame))
+      {
+         float subfrustumleft   = ParAcc_GetValue(in_xsiCamera, L"subfrustumleft",   frame);
+         float subfrustumright  = ParAcc_GetValue(in_xsiCamera, L"subfrustumright",  frame);
+         float subfrustumtop    = ParAcc_GetValue(in_xsiCamera, L"subfrustumtop",    frame);
+         float subfrustumbottom = ParAcc_GetValue(in_xsiCamera, L"subfrustumbottom", frame);
+
+         screenWindowMin.x += subfrustumleft * 2.0f;
+         screenWindowMin.y += subfrustumbottom * 2.0f;
+         screenWindowMax.x += (subfrustumright - 1.0f) * 2.0f;
+         screenWindowMax.y += (subfrustumtop - 1.0f) * 2.0f;
+      }
+
+      AiArraySetVec2(screenWindowMins, ikey, screenWindowMin);
+      AiArraySetVec2(screenWindowMaxs, ikey, screenWindowMax);
    }
 
    if (hasFOV)
@@ -109,56 +171,9 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
    // Setting the camera matrix - this is a default arnold camera parameter
    AiNodeSetArray(in_cameraNode, "matrix", matrices);
 
-   // Set the screen_window values which are default arnold camera properties
-   // The subpixelzoom mode should only affects a render region mode
-   if (GetRenderInstance()->GetRenderType() == L"Region" && (bool)ParAcc_GetValue(in_xsiCamera, L"subpixelzoom", in_frame))
-   {
-      float subfrustumleft   = ParAcc_GetValue(in_xsiCamera, L"subfrustumleft",   in_frame);
-      float subfrustumright  = ParAcc_GetValue(in_xsiCamera, L"subfrustumright",  in_frame);
-      float subfrustumtop    = ParAcc_GetValue(in_xsiCamera, L"subfrustumtop",    in_frame);
-      float subfrustumbottom = ParAcc_GetValue(in_xsiCamera, L"subfrustumbottom", in_frame);
-
-      float screenWindowMinX = (subfrustumleft - 0.5f) * 2.0f;
-      float screenWindowMinY = (subfrustumbottom - 0.5f) * 2.0f;
-      float screenWindowMaxX = (subfrustumright - 0.5f) * 2.0f;
-      float screenWindowMaxY = (subfrustumtop -0.5f) * 2.0f;
-
-      CNodeSetter::SetVector2(in_cameraNode, "screen_window_min", screenWindowMinX, screenWindowMinY);
-      CNodeSetter::SetVector2(in_cameraNode, "screen_window_max", screenWindowMaxX, screenWindowMaxY);   
-   }
-   else if (ParAcc_GetValue(in_xsiCamera, L"proj", in_frame) == 0)
-   {
-      // Orthographic camera
-      float width  = (float)ParAcc_GetValue(in_xsiCamera, L"planewidth", in_frame);
-      float height = (float)ParAcc_GetValue(in_xsiCamera, L"orthoheight", in_frame);
-      float aspect = (float)ParAcc_GetValue(in_xsiCamera, L"aspect", in_frame);
-
-      CNodeSetter::SetVector2(in_cameraNode, "screen_window_min", -width/2, -height/2*aspect);
-      CNodeSetter::SetVector2(in_cameraNode, "screen_window_max", width/2, height/2*aspect);
-   }
-   else // Optical Center Shift (only in perspective cameras)
-   {
-      float factorX(0.0f), factorY(0.0f);
-      
-      if ((bool)ParAcc_GetValue(in_xsiCamera, L"projplane", in_frame))
-      {
-         float offsetX = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffx", in_frame);
-         float offsetY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffy", in_frame);
-         
-         if (offsetX!=0.0f || offsetY!=0.0f)
-         {
-            float apertureX = (float)ParAcc_GetValue(in_xsiCamera, L"projplanewidth", in_frame);
-            float apertureY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneheight", in_frame);
-
-            factorX = (offsetX / apertureX) * 2;
-            factorY = (offsetY / apertureY) * 2;
-         }
-      }
-
-      // Perspective camera - so let's just set defaults
-      CNodeSetter::SetVector2(in_cameraNode, "screen_window_min", (-1.0f + factorX), (-1.0f + factorY));
-      CNodeSetter::SetVector2(in_cameraNode, "screen_window_max", (1.0f + factorX), (1.0f + factorY));
-   }
+   // Set the screen_windows
+   AiNodeSetArray(in_cameraNode, "screen_window_min", screenWindowMins);
+   AiNodeSetArray(in_cameraNode, "screen_window_max", screenWindowMaxs);
 
    // Set the clipping - this is a default arnold camera property
    float near_clip = ParAcc_GetValue(in_xsiCamera, L"near", in_frame);
