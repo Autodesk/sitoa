@@ -109,12 +109,14 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
       // It moved in to the for loop to support motion blur at the same time it was fixed
       AtVector2 screenWindowMin;
       AtVector2 screenWindowMax;
+      float orthoSubpixelMultiplier = 1.0f;
       if (ParAcc_GetValue(in_xsiCamera, L"proj", in_frame) == 0)
       {
          // Orthographic camera
          float width  = (float)ParAcc_GetValue(in_xsiCamera, L"planewidth", frame);
          float height = (float)ParAcc_GetValue(in_xsiCamera, L"orthoheight", frame);
          float aspect = (float)ParAcc_GetValue(in_xsiCamera, L"aspect", frame);
+         orthoSubpixelMultiplier = height/2*aspect;
    
          screenWindowMin.x = -width/2;
          screenWindowMin.y = -height/2*aspect;
@@ -155,10 +157,10 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
          float subfrustumtop    = ParAcc_GetValue(in_xsiCamera, L"subfrustumtop",    frame);
          float subfrustumbottom = ParAcc_GetValue(in_xsiCamera, L"subfrustumbottom", frame);
 
-         screenWindowMin.x += subfrustumleft * 2.0f;
-         screenWindowMin.y += subfrustumbottom * 2.0f;
-         screenWindowMax.x += (subfrustumright - 1.0f) * 2.0f;
-         screenWindowMax.y += (subfrustumtop - 1.0f) * 2.0f;
+         screenWindowMin.x += subfrustumleft * orthoSubpixelMultiplier * 2.0f;
+         screenWindowMin.y += subfrustumbottom * orthoSubpixelMultiplier * 2.0f;
+         screenWindowMax.x += (subfrustumright - 1.0f) * orthoSubpixelMultiplier * 2.0f;
+         screenWindowMax.y += (subfrustumtop - 1.0f) * orthoSubpixelMultiplier * 2.0f;
       }
 
       AiArraySetVec2(screenWindowMins, ikey, screenWindowMin);
