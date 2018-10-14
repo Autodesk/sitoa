@@ -946,7 +946,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
    layout.AddTab(L"Color Management");
    layout.AddGroup(L"Color Manager");
       CValueArray color_managers;
-      color_managers.Add(L"None"); color_managers.Add(L"");
+      color_managers.Add(L"Built-in"); color_managers.Add(L"");
       color_managers.Add(L"OCIO"); color_managers.Add(L"color_manager_ocio");
       item = layout.AddEnumControl(L"color_manager", color_managers, L"Color Manager", siControlCombo);
       item.PutAttribute(siUINoLabel, true);
