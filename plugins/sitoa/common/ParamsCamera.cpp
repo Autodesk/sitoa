@@ -106,16 +106,17 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
 
       // Set the screen_window values which are default arnold camera properties
       // This was broken in SItoA 4.1, but fixed on Github: https://github.com/Autodesk/sitoa/issues/42
-      // It moved in to the for loop to support motion blur at the same time it was fixed
+      // It moved in to the for-loop because these values are of array type even though they doesn't support motion blur (yet?)
+      // IF it supports motion blur in the future, we can simply change in_frame to frame in all the (float)ParAcc_GetValue() below
       AtVector2 screenWindowMin;
       AtVector2 screenWindowMax;
       float orthoSubpixelMultiplier = 1.0f;
       if (ParAcc_GetValue(in_xsiCamera, L"proj", in_frame) == 0)
       {
          // Orthographic camera
-         float width  = (float)ParAcc_GetValue(in_xsiCamera, L"planewidth", frame);
-         float height = (float)ParAcc_GetValue(in_xsiCamera, L"orthoheight", frame);
-         float aspect = (float)ParAcc_GetValue(in_xsiCamera, L"aspect", frame);
+         float width  = (float)ParAcc_GetValue(in_xsiCamera, L"planewidth", in_frame);
+         float height = (float)ParAcc_GetValue(in_xsiCamera, L"orthoheight", in_frame);
+         float aspect = (float)ParAcc_GetValue(in_xsiCamera, L"aspect", in_frame);
          orthoSubpixelMultiplier = height/2*aspect;
    
          screenWindowMin.x = -width/2;
@@ -129,13 +130,13 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
          
          if ((bool)ParAcc_GetValue(in_xsiCamera, L"projplane", in_frame))
          {
-            float offsetX = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffx", frame);
-            float offsetY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffy", frame);
+            float offsetX = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffx", in_frame);
+            float offsetY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffy", in_frame);
             
             if (offsetX!=0.0f || offsetY!=0.0f)
             {
-               float apertureX = (float)ParAcc_GetValue(in_xsiCamera, L"projplanewidth", frame);
-               float apertureY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneheight", frame);
+               float apertureX = (float)ParAcc_GetValue(in_xsiCamera, L"projplanewidth", in_frame);
+               float apertureY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneheight", in_frame);
    
                factorX = (offsetX / apertureX) * 2;
                factorY = (offsetY / apertureY) * 2;
@@ -152,10 +153,10 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
       // The subpixelzoom mode should only affects a render region mode
       if (GetRenderInstance()->GetRenderType() == L"Region" && (bool)ParAcc_GetValue(in_xsiCamera, L"subpixelzoom", in_frame))
       {
-         float subfrustumleft   = ParAcc_GetValue(in_xsiCamera, L"subfrustumleft",   frame);
-         float subfrustumright  = ParAcc_GetValue(in_xsiCamera, L"subfrustumright",  frame);
-         float subfrustumtop    = ParAcc_GetValue(in_xsiCamera, L"subfrustumtop",    frame);
-         float subfrustumbottom = ParAcc_GetValue(in_xsiCamera, L"subfrustumbottom", frame);
+         float subfrustumleft   = ParAcc_GetValue(in_xsiCamera, L"subfrustumleft",   in_frame);
+         float subfrustumright  = ParAcc_GetValue(in_xsiCamera, L"subfrustumright",  in_frame);
+         float subfrustumtop    = ParAcc_GetValue(in_xsiCamera, L"subfrustumtop",    in_frame);
+         float subfrustumbottom = ParAcc_GetValue(in_xsiCamera, L"subfrustumbottom", in_frame);
 
          screenWindowMin.x += subfrustumleft * orthoSubpixelMultiplier * 2.0f;
          screenWindowMin.y += subfrustumbottom * orthoSubpixelMultiplier * 2.0f;
