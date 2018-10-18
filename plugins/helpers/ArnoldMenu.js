@@ -584,7 +584,8 @@ function About()
                           "Eric Mootz",
                           "Holger Schoenberger",
                           "Frederic Servant",
-                          "Jules Stevenson"
+                          "Jules Stevenson",
+                          "Jens Lindgren"
                           );
                          
    var layout = prop.PPGLayout;

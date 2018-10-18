@@ -58,6 +58,8 @@ public:
 void LoadPlayControlData(AtNode* in_optionsNode, double in_frame);
 // Load the output filters
 bool LoadFilters();
+// Load the color manager
+bool LoadColorManager(AtNode* in_optionsNode, double in_frame);
 // Load the drivers
 bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in_flythrough);
 // Load the options parameters
