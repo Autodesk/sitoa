@@ -43,7 +43,6 @@ cmake-build-debug
 .DS_Store
 
 # Softimage testsuite
-*.scntoc
 testsuite/XSIProject/Backup/*
 testsuite/XSIProject/Cache/*
 testsuite/XSIProject/system/*
