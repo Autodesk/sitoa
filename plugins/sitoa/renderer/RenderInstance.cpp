@@ -225,8 +225,11 @@ int CRenderInstance::RenderProgressiveScene()
       aa_steps.insert(-2);
    if ((aa_max > -1) && GetRenderOptions()->m_progressive_minus1)
       aa_steps.insert(-1);
-   if ((aa_max > 1) && GetRenderOptions()->m_progressive_plus1)
-      aa_steps.insert(1);
+   if (!GetRenderOptions()->m_enable_progressive_render)
+   {
+      if ((aa_max > 1) && GetRenderOptions()->m_progressive_plus1)
+         aa_steps.insert(1);
+   }
 
    aa_steps.insert(aa_max); // the main value for aa, so aa_steps is never empty, and aaMax will always be the final step used
    
