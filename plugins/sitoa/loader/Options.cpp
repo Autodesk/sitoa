@@ -489,7 +489,7 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
             deepExrLayersDrivers.push_back(CDeepExrLayersDrivers(masterFb.m_fullName, thisFb.m_layerName, thisFb.m_driverBitDepth));
       }
 
-      // if layerName ends with "_denoise"
+      // if layerName ends with "_denoise", we add a denoise filter named after the layer and then add the output
       if (thisFb.m_layerName.ReverseFindString(L"_denoise") == (thisFb.m_layerName.Length() - CString(L"_denoise").Length()))
       {
          // OptiX denoise needs a separete filter for each AOV, so we create them here instad of in LoadFilters()

@@ -374,7 +374,7 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
       if (layerdataType.IsEqualNoCase(L""))
          layerdataType = GetDriverLayerChannelType((LONG)renderchannel.GetChannelType());
 
-      // if layerName ends with "_denoise"
+      // if layerName ends with "_denoise", we connect the driver to the optix filter for that layer
       if (layerName.ReverseFindString(L"_denoise") == (layerName.Length() - CString(L"_denoise").Length()))
       {
          displayDriver = layerName + L" " + layerdataType + L" sitoa_" + layerName + L"_optix_filter xsi_driver";
