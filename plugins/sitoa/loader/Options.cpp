@@ -188,6 +188,9 @@ bool LoadFilters()
       return false;
 
    CNodeUtilities().SetName(closestFilterNode, "sitoa_closest_filter");
+
+   // optix denoise filters are added in the LoadDrivers() function because they have to be unique for each AOV
+
    return true;
 }
 
@@ -486,8 +489,18 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
             deepExrLayersDrivers.push_back(CDeepExrLayersDrivers(masterFb.m_fullName, thisFb.m_layerName, thisFb.m_driverBitDepth));
       }
 
+      // if layerName ends with "_denoise"
+      if (thisFb.m_layerName.ReverseFindString(L"_denoise") == (thisFb.m_layerName.Length() - CString(L"_denoise").Length()))
+      {
+         // OptiX denoise needs a separete filter for each AOV, so we create them here instad of in LoadFilters()
+         AtNode* optixFilterNode = AiNode("denoise_optix_filter");
+         if (!optixFilterNode)
+            continue;
+         CNodeUtilities().SetName(optixFilterNode, CString(L"sitoa_" + thisFb.m_layerName + L"_optix_filter").GetAsciiString());
+         AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" sitoa_" + thisFb.m_layerName + L"_optix_filter " + masterFb.m_fullName).GetAsciiString());
+      }
       // Adding to outputs. masterFb differs from thisFb if they are both exr and share the same filename
-      if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
+      else if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + colorFilter + " " + masterFb.m_fullName).GetAsciiString());
       else
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + numericFilter + " " + masterFb.m_fullName).GetAsciiString());
