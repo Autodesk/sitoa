@@ -99,6 +99,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("rgb_to_float", 1, 0);
    in_reg.RegisterShader("rgb_to_vector", 1, 0);
    in_reg.RegisterShader("rgba_to_float", 1, 0);
+   in_reg.RegisterShader("round_corners", 1, 0);
    in_reg.RegisterShader("shadow_matte", 1, 0);
    in_reg.RegisterShader("shuffle", 1, 0);
    in_reg.RegisterShader("sign", 1, 0);
@@ -300,6 +301,8 @@ function Arnold_rgb_to_vector_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_rgb_to_vector_1_0_Define(in_ctxt) { return true; }
 function Arnold_rgba_to_float_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_rgba_to_float_1_0_Define(in_ctxt) { return true; }
+function Arnold_round_corners_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_round_corners_1_0_Define(in_ctxt) { return true; }
 function Arnold_shadow_matte_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_shadow_matte_1_0_Define(in_ctxt) { return true; }
 function Arnold_shuffle_1_0_DefineInfo(in_ctxt) { return true; }

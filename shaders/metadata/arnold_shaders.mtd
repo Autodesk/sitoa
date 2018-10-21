@@ -2462,6 +2462,30 @@ desc STRING "The input color."
 desc STRING "min: Minimum component. max: Maximum component. average: Average of the components. sum: Sum of the components. luminance: Rec.709/sRGB luminance."
 
 ##############################################################################
+[node round_corners]
+soft.category STRING "Utility"
+
+[attr samples]
+
+[attr radius]
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+default FLOAT 0.1
+
+[attr normal]
+soft.inspectable BOOL false
+
+[attr trace_set]
+
+[attr inclusive]
+
+[attr self_only]
+
+[attr object_space]
+soft.inspectable BOOL false
+
+##############################################################################
 [node shadow_matte]
 soft.category STRING "Surface"
 soft.order STRING "BeginGroup Background background background_color EndGroup "
