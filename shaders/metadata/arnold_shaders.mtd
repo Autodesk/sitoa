@@ -1542,7 +1542,8 @@ soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 operation1 mix1 alpha
 "BeginGroup Layer_5 enable5 name5 input5 operation5 mix5 alpha_operation5 EndGroup "
 "BeginGroup Layer_6 enable6 name6 input6 operation6 mix6 alpha_operation6 EndGroup "
 "BeginGroup Layer_7 enable7 name7 input7 operation7 mix7 alpha_operation7 EndGroup "
-"BeginGroup Layer_8 enable8 name8 input8 operation8 mix8 alpha_operation8 EndGroup"
+"BeginGroup Layer_8 enable8 name8 input8 operation8 mix8 alpha_operation8 EndGroup "
+"BeginGroup Clamp clamp EndGroup"
 
 [attr enable1]
 soft.label STRING "Enable"
