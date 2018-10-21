@@ -1386,7 +1386,7 @@ desc STRING "If linked, the normal to use."
 
 ##############################################################################
 [node layer_float]
-soft.category STRING "Utility"
+soft.category STRING "Texture"
 soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 mix1 EndGroup "
 "BeginGroup Layer_2 enable2 name2 input2 mix2 EndGroup "
 "BeginGroup Layer_3 enable3 name3 input3 mix3 EndGroup "
@@ -1534,7 +1534,7 @@ softmax FLOAT 1
 
 ##############################################################################
 [node layer_rgba]
-soft.category STRING "Utility"
+soft.category STRING "Texture"
 soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 operation1 mix1 alpha_operation1 EndGroup "
 "BeginGroup Layer_2 enable2 name2 input2 operation2 mix2 alpha_operation2 EndGroup "
 "BeginGroup Layer_3 enable3 name3 input3 operation3 mix3 alpha_operation3 EndGroup "
@@ -1718,7 +1718,7 @@ soft.label STRING "Clamp Result"
 
 ##############################################################################
 [node layer_shader]
-soft.category STRING "Utility"
+soft.category STRING "Surface"
 soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 mix1 EndGroup "
 "BeginGroup Layer_2 enable2 name2 input2 mix2 EndGroup "
 "BeginGroup Layer_3 enable3 name3 input3 mix3 EndGroup "
