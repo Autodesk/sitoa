@@ -34,6 +34,10 @@ void CRenderOptions::Read(const Property &in_cp)
    // system
    m_autodetect_threads    = (bool)ParAcc_GetValue(in_cp, L"autodetect_threads",    DBL_MAX);
    m_threads               = (int) ParAcc_GetValue(in_cp, L"threads",               DBL_MAX);
+
+   m_gpu_default_names         = ParAcc_GetValue(in_cp,       L"gpu_default_names",         DBL_MAX).GetAsText();
+   m_gpu_default_min_memory_MB = (int) ParAcc_GetValue(in_cp, L"gpu_default_min_memory_MB", DBL_MAX);
+
    m_bucket_scanning       = ParAcc_GetValue(in_cp,       L"bucket_scanning",       DBL_MAX).GetAsText();
    m_bucket_size           = (int)ParAcc_GetValue(in_cp,  L"bucket_size",           DBL_MAX);
    m_progressive_minus3    = (bool)ParAcc_GetValue(in_cp, L"progressive_minus3",    DBL_MAX);
@@ -293,6 +297,10 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    // system
    cpset.AddParameter(L"autodetect_threads",     CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"threads",                CValue::siInt4,   siPersistable, L"", L"", 4, -AI_MAX_THREADS, AI_MAX_THREADS, 1, AI_MAX_THREADS, p);
+
+   cpset.AddParameter(L"gpu_default_names",         CValue::siString, siPersistable, L"", L"",  L"*", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"gpu_default_min_memory_MB", CValue::siInt4,   siPersistable, L"", L"", 512, 0, 10000000, 256, 1024, p);
+
    cpset.AddParameter(L"bucket_scanning",        CValue::siString, siPersistable, L"", L"", L"spiral", CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"bucket_size",            CValue::siInt4,   siPersistable, L"", L"",  64, 16, 256, 16, 256, p);
    cpset.AddParameter(L"progressive_minus3",     CValue::siBool,   siPersistable, L"", L"",  true, CValue(), CValue(), CValue(), CValue(), p);
@@ -574,6 +582,12 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.AddItem(L"autodetect_threads", L"Autodetect");
       item = layout.AddItem(L"threads", L"Number of Threads");
       item.PutAttribute(siUILabelPercentage, 100);
+   layout.EndGroup();
+   layout.AddGroup(L"Devices");
+      item = layout.AddItem(L"gpu_default_names", L"GPU Names");
+      item.PutAttribute(siUILabelMinPixels, 100);
+      item = layout.AddItem(L"gpu_default_min_memory_MB", L"Min. Memory (MB)");
+      item.PutAttribute(siUILabelMinPixels, 100);
    layout.EndGroup();
    layout.AddGroup(L"Buckets", true, 0);
       CValueArray scanning;

@@ -46,6 +46,8 @@ public:
    // system
    bool     m_autodetect_threads;
    int      m_threads;
+   CString  m_gpu_default_names;
+   int      m_gpu_default_min_memory_MB;
    CString  m_bucket_scanning;
    int      m_bucket_size;
    bool     m_progressive_minus3;
@@ -219,6 +221,8 @@ public:
       // system
       m_autodetect_threads(true),
       m_threads(4),
+      m_gpu_default_names(L"*"),
+      m_gpu_default_min_memory_MB(512),
       m_bucket_scanning(L"spiral"),
       m_bucket_size(64),
       m_progressive_minus3(true),

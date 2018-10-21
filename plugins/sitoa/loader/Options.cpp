@@ -688,6 +688,10 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    int nb_threads = GetRenderOptions()->m_autodetect_threads ? 0 : GetRenderOptions()->m_threads;
    CNodeSetter::SetInt(in_optionsNode, "threads", nb_threads); 
 
+   // GPU devices
+   CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
+   CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
+
    // #680
    LoadUserOptions(in_optionsNode, in_arnoldOptions, in_frame);
 }
