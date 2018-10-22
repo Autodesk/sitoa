@@ -237,14 +237,14 @@ int CRenderInstance::RenderProgressiveScene()
    AtNode* options = AiUniverseGetOptions();
    // override the aspect ratio, for the viewport is always 1.0
    CNodeSetter::SetFloat(options, "pixel_aspect_ratio", 1.0);   
-   // disable adaptive sampling during progressive rendering
+   // disable adaptive sampling during negative aa passes
    CNodeSetter::SetBoolean(options, "enable_adaptive_sampling", false);
-   // Disable random dithering during progressive rendering, for speed
+   // Disable random dithering during negative aa passes, for speed
    m_displayDriver.SetDisplayDithering(false);
    // loop the aa steps
    for (set<int>::iterator aa_it = aa_steps.begin(); aa_it != aa_steps.end(); aa_it++)
    {
-      // Enable dithering for the final pass of the progressive rendering
+      // Enable dithering for the final pass of the rendering
       if (*aa_it == aa_max)
       {
          // restore adaptive sampling again on final aa pass
