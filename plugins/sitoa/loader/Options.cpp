@@ -568,7 +568,11 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetInt(in_optionsNode, "GI_transmission_samples", GetRenderOptions()->m_GI_transmission_samples);
    CNodeSetter::SetInt(in_optionsNode, "GI_sss_samples",          GetRenderOptions()->m_GI_sss_samples);
    CNodeSetter::SetInt(in_optionsNode, "GI_volume_samples",       GetRenderOptions()->m_GI_volume_samples);
-   CNodeSetter::SetBoolean(in_optionsNode, "enable_progressive_render", GetRenderOptions()->m_enable_progressive_render);
+
+   // only export progressive if in interactive mode but not if exporting .ass
+   CString renderType = GetRenderInstance()->GetRenderType();
+   if (Application().IsInteractive() && (renderType != L"Export"))
+      CNodeSetter::SetBoolean(in_optionsNode, "enable_progressive_render", GetRenderOptions()->m_enable_progressive_render);
 
    CNodeSetter::SetBoolean(in_optionsNode, "enable_adaptive_sampling", GetRenderOptions()->m_enable_adaptive_sampling);
    CNodeSetter::SetInt(in_optionsNode, "AA_samples_max",               GetRenderOptions()->m_AA_samples_max);
