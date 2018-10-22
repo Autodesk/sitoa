@@ -1386,7 +1386,7 @@ desc STRING "If linked, the normal to use."
 
 ##############################################################################
 [node layer_float]
-soft.category STRING "Utility"
+soft.category STRING "Texture"
 soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 mix1 EndGroup "
 "BeginGroup Layer_2 enable2 name2 input2 mix2 EndGroup "
 "BeginGroup Layer_3 enable3 name3 input3 mix3 EndGroup "
@@ -1534,7 +1534,7 @@ softmax FLOAT 1
 
 ##############################################################################
 [node layer_rgba]
-soft.category STRING "Utility"
+soft.category STRING "Texture"
 soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 operation1 mix1 alpha_operation1 EndGroup "
 "BeginGroup Layer_2 enable2 name2 input2 operation2 mix2 alpha_operation2 EndGroup "
 "BeginGroup Layer_3 enable3 name3 input3 operation3 mix3 alpha_operation3 EndGroup "
@@ -1542,7 +1542,8 @@ soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 operation1 mix1 alpha
 "BeginGroup Layer_5 enable5 name5 input5 operation5 mix5 alpha_operation5 EndGroup "
 "BeginGroup Layer_6 enable6 name6 input6 operation6 mix6 alpha_operation6 EndGroup "
 "BeginGroup Layer_7 enable7 name7 input7 operation7 mix7 alpha_operation7 EndGroup "
-"BeginGroup Layer_8 enable8 name8 input8 operation8 mix8 alpha_operation8 EndGroup"
+"BeginGroup Layer_8 enable8 name8 input8 operation8 mix8 alpha_operation8 EndGroup "
+"BeginGroup Clamp clamp EndGroup"
 
 [attr enable1]
 soft.label STRING "Enable"
@@ -1717,7 +1718,7 @@ soft.label STRING "Clamp Result"
 
 ##############################################################################
 [node layer_shader]
-soft.category STRING "Utility"
+soft.category STRING "Surface"
 soft.order STRING "BeginGroup Layer_1 enable1 name1 input1 mix1 EndGroup "
 "BeginGroup Layer_2 enable2 name2 input2 mix2 EndGroup "
 "BeginGroup Layer_3 enable3 name3 input3 mix3 EndGroup "
@@ -2459,6 +2460,30 @@ desc STRING "The input color."
 
 [attr mode]
 desc STRING "min: Minimum component. max: Maximum component. average: Average of the components. sum: Sum of the components. luminance: Rec.709/sRGB luminance."
+
+##############################################################################
+[node round_corners]
+soft.category STRING "Utility"
+
+[attr samples]
+
+[attr radius]
+min FLOAT 0
+softmin FLOAT 0
+softmax FLOAT 10
+default FLOAT 0.1
+
+[attr normal]
+soft.inspectable BOOL false
+
+[attr trace_set]
+
+[attr inclusive]
+
+[attr self_only]
+
+[attr object_space]
+soft.inspectable BOOL false
 
 ##############################################################################
 [node shadow_matte]
