@@ -526,7 +526,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
 
    CNodeSetter::SetInt(in_optionsNode, "xres", width);
    CNodeSetter::SetInt(in_optionsNode, "yres", height);
-   if (aspectRatio > 0.0f)
+   if (aspectRatio > 0.0f && (fabs(aspectRatio-1.0f) > AI_EPSILON))
       CNodeSetter::SetFloat(in_optionsNode, "pixel_aspect_ratio", 1.0f / aspectRatio);
 
    // cropping
