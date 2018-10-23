@@ -177,12 +177,25 @@ driver_process_bucket
    CRenderInstance* renderInstance = GetRenderInstance();
    DisplayDriver* displayDriver = renderInstance->GetDisplayDriver();
    
+   // get parameters necessary for progressive progress bar
+   AtNode* options = AiUniverseGetOptions();
+   bool progressive = AiNodeGetBool(options, "enable_progressive_render");
+   int aaSamples = AiNodeGetInt(options, "AA_samples");
+   bool adaptiveSampling = AiNodeGetBool(options, "enable_adaptive_sampling");
+   int aaSamplesMax = AiNodeGetInt(options, "AA_samples_max");
+   int progressivePasses = aaSamples * aaSamples;
+   if (adaptiveSampling && (aaSamplesMax > aaSamples))
+      progressivePasses = aaSamplesMax * aaSamplesMax;
+
    if (renderInstance->InterruptRenderSignal())
       return;
 
    // Progress bar
    displayDriver->m_paintedDisplayArea += (bucket_size_x * bucket_size_y);
    int percent = (int)((displayDriver->m_paintedDisplayArea / (float)displayDriver->m_displayArea) * 100.0f);
+   // if in progressive render mode we need to divide percent by number of progressive passes
+   if (progressive && (progressivePasses > 1))
+      percent = percent / progressivePasses;
    displayDriver->m_renderContext.ProgressUpdate(CValue(percent).GetAsText() + L"%   Rendered", L"Rendering", percent);
 
    if (!AiOutputIteratorGetNext(iterator, NULL, &pixel_type, &bucket_data))
@@ -374,7 +387,21 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
       if (layerdataType.IsEqualNoCase(L""))
          layerdataType = GetDriverLayerChannelType((LONG)renderchannel.GetChannelType());
 
-      if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
+      // if layerName ends with "_denoise", we connect the driver to the optix filter for that layer
+      if (layerName.ReverseFindString(L"_denoise") == (layerName.Length() - CString(L"_denoise").Length()))
+      {
+         // we need to check if the optix filter exist. If it doesn't exist, we create one.
+         CString optixFilterName = L"sitoa_" + layerName + L"_optix_filter";
+         AtNode* optixFilterNode = AiNodeLookUpByName(optixFilterName.GetAsciiString());
+         if (!optixFilterNode)
+         {
+            optixFilterNode = AiNode("denoise_optix_filter");
+            if (optixFilterNode)
+               CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
+         }
+         displayDriver = layerName + L" " + layerdataType + L" " + optixFilterName + " xsi_driver";
+      }
+      else if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
       {
          if (in_filterColorAov)
             displayDriver = layerName + L" " + layerdataType + L" sitoa_output_filter xsi_driver";

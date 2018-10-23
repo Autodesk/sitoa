@@ -46,6 +46,8 @@ public:
    // system
    bool     m_autodetect_threads;
    int      m_threads;
+   CString  m_gpu_default_names;
+   int      m_gpu_default_min_memory_MB;
    CString  m_bucket_scanning;
    int      m_bucket_size;
    bool     m_progressive_minus3;
@@ -104,6 +106,7 @@ public:
    int     m_GI_transmission_samples;
    int     m_GI_sss_samples;
    int     m_GI_volume_samples;
+   bool     m_enable_progressive_render;
 
    bool    m_enable_adaptive_sampling;
    int     m_AA_samples_max;
@@ -226,6 +229,8 @@ public:
       // system
       m_autodetect_threads(true),
       m_threads(4),
+      m_gpu_default_names(L"*"),
+      m_gpu_default_min_memory_MB(512),
       m_bucket_scanning(L"spiral"),
       m_bucket_size(64),
       m_progressive_minus3(true),
@@ -280,6 +285,7 @@ public:
       m_GI_transmission_samples(2),
       m_GI_sss_samples(2),
       m_GI_volume_samples(2),
+      m_enable_progressive_render(false),
 
       m_enable_adaptive_sampling(false),
       m_AA_samples_max(8),
