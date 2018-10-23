@@ -175,6 +175,13 @@ public:
    bool         m_texture_per_file_stats;
    CString      m_output_file_tagdir_log;
    // output_file_dir_log; not read, just used to display the path
+
+   bool         m_enable_stats;
+   CString      m_stats_file;
+   int          m_stats_mode;
+   bool         m_enable_profile;
+   CString      m_profile_file;
+
    bool         m_ignore_textures;
    bool         m_ignore_shaders;
    bool         m_ignore_atmosphere;
@@ -344,6 +351,13 @@ public:
       m_max_log_warning_msgs(5),
       m_texture_per_file_stats(false),
       m_output_file_tagdir_log(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs")),
+
+      m_enable_stats(false),
+      m_stats_file(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"arnold_stats.json")),
+      m_stats_mode(1),
+      m_enable_profile(false),
+      m_profile_file(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"arnold_profile.json")),
+
       m_ignore_textures(false),
       m_ignore_shaders(false),
       m_ignore_atmosphere(false),
