@@ -104,6 +104,7 @@ public:
    int     m_GI_transmission_samples;
    int     m_GI_sss_samples;
    int     m_GI_volume_samples;
+   bool     m_enable_progressive_render;
 
    bool    m_enable_adaptive_sampling;
    int     m_AA_samples_max;
@@ -273,6 +274,7 @@ public:
       m_GI_transmission_samples(2),
       m_GI_sss_samples(2),
       m_GI_volume_samples(2),
+      m_enable_progressive_render(false),
 
       m_enable_adaptive_sampling(false),
       m_AA_samples_max(8),

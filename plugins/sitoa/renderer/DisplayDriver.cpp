@@ -177,12 +177,25 @@ driver_process_bucket
    CRenderInstance* renderInstance = GetRenderInstance();
    DisplayDriver* displayDriver = renderInstance->GetDisplayDriver();
    
+   // get parameters necessary for progressive progress bar
+   AtNode* options = AiUniverseGetOptions();
+   bool progressive = AiNodeGetBool(options, "enable_progressive_render");
+   int aaSamples = AiNodeGetInt(options, "AA_samples");
+   bool adaptiveSampling = AiNodeGetBool(options, "enable_adaptive_sampling");
+   int aaSamplesMax = AiNodeGetInt(options, "AA_samples_max");
+   int progressivePasses = aaSamples * aaSamples;
+   if (adaptiveSampling && (aaSamplesMax > aaSamples))
+      progressivePasses = aaSamplesMax * aaSamplesMax;
+
    if (renderInstance->InterruptRenderSignal())
       return;
 
    // Progress bar
    displayDriver->m_paintedDisplayArea += (bucket_size_x * bucket_size_y);
    int percent = (int)((displayDriver->m_paintedDisplayArea / (float)displayDriver->m_displayArea) * 100.0f);
+   // if in progressive render mode we need to divide percent by number of progressive passes
+   if (progressive && (progressivePasses > 1))
+      percent = percent / progressivePasses;
    displayDriver->m_renderContext.ProgressUpdate(CValue(percent).GetAsText() + L"%   Rendered", L"Rendering", percent);
 
    if (!AiOutputIteratorGetNext(iterator, NULL, &pixel_type, &bucket_data))

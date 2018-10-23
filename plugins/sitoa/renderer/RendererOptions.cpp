@@ -111,6 +111,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_GI_transmission_samples = (int)ParAcc_GetValue(in_cp, L"GI_transmission_samples", DBL_MAX);
    m_GI_sss_samples          = (int)ParAcc_GetValue(in_cp, L"GI_sss_samples",          DBL_MAX);
    m_GI_volume_samples       = (int)ParAcc_GetValue(in_cp, L"GI_volume_samples",       DBL_MAX);
+   m_enable_progressive_render = (bool)ParAcc_GetValue(in_cp, L"enable_progressive_render", DBL_MAX);
 
    m_enable_adaptive_sampling = (bool)ParAcc_GetValue(in_cp,  L"enable_adaptive_sampling", DBL_MAX);
    m_AA_samples_max           = (int)ParAcc_GetValue(in_cp,   L"AA_samples_max",           DBL_MAX);
@@ -384,6 +385,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"GI_transmission_samples", CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
    cpset.AddParameter(L"GI_sss_samples",          CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
    cpset.AddParameter(L"GI_volume_samples",       CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
+   cpset.AddParameter(L"enable_progressive_render", CValue::siBool, siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
 
    cpset.AddParameter(L"enable_adaptive_sampling", CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 8, -3, 100, 0, 10, p);
@@ -796,6 +798,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUILabelPercentage, 100);
       item = layout.AddItem(L"GI_volume_samples", L"Volume");
       item.PutAttribute(siUILabelPercentage, 100);
+      layout.AddItem(L"enable_progressive_render", L"Progressive Render");
    layout.EndGroup();
 
    layout.AddGroup(L"Adaptive Sampling");
