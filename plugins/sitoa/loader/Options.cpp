@@ -188,6 +188,9 @@ bool LoadFilters()
       return false;
 
    CNodeUtilities().SetName(closestFilterNode, "sitoa_closest_filter");
+
+   // optix denoise filters are added in the LoadDrivers() function because they have to be unique for each AOV
+
    return true;
 }
 
@@ -486,8 +489,18 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
             deepExrLayersDrivers.push_back(CDeepExrLayersDrivers(masterFb.m_fullName, thisFb.m_layerName, thisFb.m_driverBitDepth));
       }
 
+      // if layerName ends with "_denoise", we add a denoise filter named after the layer and then add the output
+      if (thisFb.m_layerName.ReverseFindString(L"_denoise") == (thisFb.m_layerName.Length() - CString(L"_denoise").Length()))
+      {
+         // OptiX denoise needs a separete filter for each AOV, so we create them here instad of in LoadFilters()
+         AtNode* optixFilterNode = AiNode("denoise_optix_filter");
+         if (!optixFilterNode)
+            continue;
+         CNodeUtilities().SetName(optixFilterNode, CString(L"sitoa_" + thisFb.m_layerName + L"_optix_filter").GetAsciiString());
+         AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" sitoa_" + thisFb.m_layerName + L"_optix_filter " + masterFb.m_fullName).GetAsciiString());
+      }
       // Adding to outputs. masterFb differs from thisFb if they are both exr and share the same filename
-      if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
+      else if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + colorFilter + " " + masterFb.m_fullName).GetAsciiString());
       else
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + numericFilter + " " + masterFb.m_fullName).GetAsciiString());
@@ -679,6 +692,10 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    // Asking for automatic threads or not
    int nb_threads = GetRenderOptions()->m_autodetect_threads ? 0 : GetRenderOptions()->m_threads;
    CNodeSetter::SetInt(in_optionsNode, "threads", nb_threads); 
+
+   // GPU devices
+   CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
+   CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
 
    // #680
    LoadUserOptions(in_optionsNode, in_arnoldOptions, in_frame);

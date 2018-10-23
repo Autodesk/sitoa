@@ -387,7 +387,21 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
       if (layerdataType.IsEqualNoCase(L""))
          layerdataType = GetDriverLayerChannelType((LONG)renderchannel.GetChannelType());
 
-      if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
+      // if layerName ends with "_denoise", we connect the driver to the optix filter for that layer
+      if (layerName.ReverseFindString(L"_denoise") == (layerName.Length() - CString(L"_denoise").Length()))
+      {
+         // we need to check if the optix filter exist. If it doesn't exist, we create one.
+         CString optixFilterName = L"sitoa_" + layerName + L"_optix_filter";
+         AtNode* optixFilterNode = AiNodeLookUpByName(optixFilterName.GetAsciiString());
+         if (!optixFilterNode)
+         {
+            optixFilterNode = AiNode("denoise_optix_filter");
+            if (optixFilterNode)
+               CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
+         }
+         displayDriver = layerName + L" " + layerdataType + L" " + optixFilterName + " xsi_driver";
+      }
+      else if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
       {
          if (in_filterColorAov)
             displayDriver = layerName + L" " + layerdataType + L" sitoa_output_filter xsi_driver";
