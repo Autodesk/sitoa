@@ -212,6 +212,10 @@ public:
    bool m_output_lights;
    bool m_output_shaders;
 
+   // denoiser
+   bool m_use_optix_on_main;
+   bool m_only_show_denoise;
+
    //////////////////////////////////////
 
    void Read(const Property &in_cp);
@@ -382,7 +386,12 @@ public:
       m_output_geometry(false),
       m_output_cameras(false),
       m_output_lights(false),
-      m_output_shaders(false)
+      m_output_shaders(false),
+
+      // denoiser
+      m_use_optix_on_main(false),
+      m_only_show_denoise(true)
+
    {
       for (LONG i=0; i<NB_MAX_LAYERS; i++)
       {
@@ -421,6 +430,8 @@ void SubdivisionTabLogic(CustomProperty &in_cp);
 void DiagnosticsTabLogic(CustomProperty &in_cp);
 // Logic for the ass archives tab
 void AssOutputTabLogic(CustomProperty &in_cp);
+// Logic for the denoiser tab
+void DenoiserTabLogic(CustomProperty &in_cp);
 
 // Reset the default values of all the parameters
 void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt);
