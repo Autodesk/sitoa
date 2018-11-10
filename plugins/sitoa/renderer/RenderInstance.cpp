@@ -225,6 +225,7 @@ int CRenderInstance::RenderProgressiveScene()
       aa_steps.insert(-2);
    if ((aa_max > -1) && GetRenderOptions()->m_progressive_minus1)
       aa_steps.insert(-1);
+   // if progressive rendering, ignore the 1 aa step because that is already the first step in progressive
    if (!GetRenderOptions()->m_enable_progressive_render)
    {
       if ((aa_max > 1) && GetRenderOptions()->m_progressive_plus1)
