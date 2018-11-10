@@ -26,7 +26,8 @@ private:
    AtBBox2 m_data_window;    // can be negative if overscan enabled
 
 public:
-   CDisplayDriverData() : m_overscan(false)
+   CDisplayDriverData() : m_overscan(false),
+                          m_progressivePasses(1)
    {}
 
    // Initialize the driver data
@@ -44,6 +45,8 @@ public:
                                  const int in_bucket_size_x, const int in_bucket_size_y,
                                  unsigned int &out_bucket_xo, unsigned int &out_bucket_yo, 
                                  unsigned int &out_bucket_size_x, unsigned int &out_bucket_size_y);
+
+   int m_progressivePasses;
 };
 
 

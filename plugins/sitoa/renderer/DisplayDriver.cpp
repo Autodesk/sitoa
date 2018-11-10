@@ -34,6 +34,22 @@ void CDisplayDriverData::Init(const AtBBox2 &in_display_window, const AtBBox2 &i
    m_data_window    = in_data_window;
    m_overscan = m_display_window.minx != m_data_window.minx || m_display_window.miny != m_data_window.miny || 
                 m_display_window.maxx != m_data_window.maxx || m_display_window.maxy != m_data_window.maxy;
+
+   // get parameters necessary for progressive progress bar
+   AtNode* options = AiUniverseGetOptions();
+   bool progressive = AiNodeGetBool(options, "enable_progressive_render");
+   int aaSamples = AiNodeGetInt(options, "AA_samples");
+   bool adaptiveSampling = AiNodeGetBool(options, "enable_adaptive_sampling");
+   int aaSamplesMax = AiNodeGetInt(options, "AA_samples_max");
+
+   if (progressive)
+   {
+    if (adaptiveSampling && (aaSamplesMax > aaSamples))
+        m_progressivePasses = aaSamplesMax * aaSamplesMax;
+    else
+        m_progressivePasses = aaSamples * aaSamples;
+   }
+
 }
 
 
@@ -178,29 +194,27 @@ driver_process_bucket
    CRenderInstance* renderInstance = GetRenderInstance();
    DisplayDriver* displayDriver = renderInstance->GetDisplayDriver();
    
-   // get parameters necessary for progressive progress bar
-   AtNode* options = AiUniverseGetOptions();
-   bool progressive = AiNodeGetBool(options, "enable_progressive_render");
-   int aaSamples = AiNodeGetInt(options, "AA_samples");
-   bool adaptiveSampling = AiNodeGetBool(options, "enable_adaptive_sampling");
-   int aaSamplesMax = AiNodeGetInt(options, "AA_samples_max");
-   int progressivePasses = aaSamples * aaSamples;
-   if (adaptiveSampling && (aaSamplesMax > aaSamples))
-      progressivePasses = aaSamplesMax * aaSamplesMax;
 
    if (renderInstance->InterruptRenderSignal())
       return;
 
-   // Progress bar
-   displayDriver->m_paintedDisplayArea += (bucket_size_x * bucket_size_y);
-   int percent = (int)((displayDriver->m_paintedDisplayArea / (float)displayDriver->m_displayArea) * 100.0f);
-   // if in progressive render mode we need to divide percent by number of progressive passes
-   if (progressive && (progressivePasses > 1))
-      percent = percent / progressivePasses;
-   displayDriver->m_renderContext.ProgressUpdate(CValue(percent).GetAsText() + L"%   Rendered", L"Rendering", percent);
-
    if (!AiOutputIteratorGetNext(iterator, &aov_name, &pixel_type, &bucket_data))
       return;
+
+   // don't update progressbar if Main (RGBA) is being denoised
+   if (!displayDriver->m_useOptixOnMain ||
+         (displayDriver->m_useOptixOnMain &&
+          !strcmp(aov_name, "RGBA_denoise") == 0))
+   {
+      // Progress bar
+      displayDriver->m_paintedDisplayArea += (bucket_size_x * bucket_size_y);
+      int percent = (int)((displayDriver->m_paintedDisplayArea / (float)displayDriver->m_displayArea) * 100.0f);
+      // if in progressive render mode we need to divide percent by number of progressive passes
+      if (ddData->m_progressivePasses > 1)
+         percent = percent / ddData->m_progressivePasses;
+      displayDriver->m_renderContext.ProgressUpdate(CValue(percent).GetAsText() + L"%   Rendered", L"Rendering", percent);
+   }
+
    // if the Arnold bucket is completely in the overscan frame, don't
    // send it to the Softimage render view
    if (ddData->IsBucketOutsideView(bucket_xo, bucket_yo, bucket_size_x, bucket_size_y))
