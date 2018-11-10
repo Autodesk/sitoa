@@ -1264,7 +1264,8 @@ CStatus CRenderInstance::ProcessPass()
 
    if (enableDisplayDriver)
       m_displayDriver.UpdateDisplayDriver(m_renderContext, m_renderWidth*m_renderHeight, 
-                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs);
+                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs,
+                                          GetRenderOptions()->m_use_optix_on_main, GetRenderOptions()->m_only_show_denoise);
  
    // Check if the render has not been aborted just before render
    if (InterruptRenderSignal())
@@ -1515,7 +1516,8 @@ CStatus CRenderInstance::ProcessRegion()
       // for these new render options (1.12), let's check their existance. Else, filterColorAov defaults to false,
       // and all the previously saved scenes render aliased
       m_displayDriver.UpdateDisplayDriver(m_renderContext, displayArea, 
-                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs);
+                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs,
+                                          GetRenderOptions()->m_use_optix_on_main, GetRenderOptions()->m_only_show_denoise);
 
       SetLogSettings(L"Region", m_frame);
    }
