@@ -3539,7 +3539,8 @@ soft.order STRING "BeginGroup Edge enable edge_color edge_tonemap edge_opacity e
 "BeginGroup Emission emission emission_color EndGroup "
 "BeginGroup Geometry normal tangent bump_mode EndGroup "
 "BeginGroup AOVs aov_highlight aov_rim_light EndGroup "
-"BeginGroup Advanced indirect_diffuse indirect_specular energy_conserving EndGroup"
+"BeginGroup Advanced indirect_diffuse indirect_specular energy_conserving EndGroup "
+"BeginGroup Sheen sheen sheen_color sheen_roughness EndGroup"
 
 # Edge
 
@@ -3799,6 +3800,22 @@ max FLOAT 1
 
 [attr energy_conserving]
 desc STRING "The Toon shader is energy conserving by default. If this is disabled, the Toon shader simply adds Base, Specular, and Transmission. Care should be taken when disabling this option as it will affect indirect illumination with the Toon shader."
+
+[attr sheen]
+desc STRING "Sheen Weight"
+soft.label STRING "Weight"
+min FLOAT 0
+max FLOAT 1
+
+[attr sheen_color]
+desc STRING "Sheen Color"
+soft.label STRING "Color"
+
+[attr sheen_roughness]
+desc STRING "Sheen Roughness"
+soft.label STRING "Roughness"
+min FLOAT 0
+max FLOAT 1
 
 ##############################################################################
 [node trace_set]

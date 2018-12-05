@@ -147,6 +147,10 @@ function CreateRenderChannels()
    aov_array.push({ name: "shadow_diff",           type: siRenderChannelColorType });  // shadow_matte shader
    aov_array.push({ name: "shadow_mask",           type: siRenderChannelColorType });  // shadow_matte shader
    aov_array.push({ name: "shadow_matte",          type: siRenderChannelColorType });
+   aov_array.push({ name: "sheen",                 type: siRenderChannelColorType });
+   aov_array.push({ name: "sheen_direct",          type: siRenderChannelColorType });
+   aov_array.push({ name: "sheen_indirect",        type: siRenderChannelColorType });
+   aov_array.push({ name: "sheen_albedo",          type: siRenderChannelColorType });
    aov_array.push({ name: "specular",              type: siRenderChannelColorType });
    aov_array.push({ name: "specular_albedo",       type: siRenderChannelColorType });
    aov_array.push({ name: "specular_direct",       type: siRenderChannelColorType });
