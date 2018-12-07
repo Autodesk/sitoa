@@ -225,6 +225,7 @@ int CRenderInstance::RenderProgressiveScene()
       aa_steps.insert(-2);
    if ((aa_max > -1) && GetRenderOptions()->m_progressive_minus1)
       aa_steps.insert(-1);
+   // if progressive rendering, ignore the 1 aa step because that is already the first step in progressive
    if (!GetRenderOptions()->m_enable_progressive_render)
    {
       if ((aa_max > 1) && GetRenderOptions()->m_progressive_plus1)
@@ -1263,7 +1264,8 @@ CStatus CRenderInstance::ProcessPass()
 
    if (enableDisplayDriver)
       m_displayDriver.UpdateDisplayDriver(m_renderContext, m_renderWidth*m_renderHeight, 
-                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs);
+                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs,
+                                          GetRenderOptions()->m_use_optix_on_main, GetRenderOptions()->m_only_show_denoise);
  
    // Check if the render has not been aborted just before render
    if (InterruptRenderSignal())
@@ -1514,7 +1516,8 @@ CStatus CRenderInstance::ProcessRegion()
       // for these new render options (1.12), let's check their existance. Else, filterColorAov defaults to false,
       // and all the previously saved scenes render aliased
       m_displayDriver.UpdateDisplayDriver(m_renderContext, displayArea, 
-                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs);
+                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs,
+                                          GetRenderOptions()->m_use_optix_on_main, GetRenderOptions()->m_only_show_denoise);
 
       SetLogSettings(L"Region", m_frame);
    }

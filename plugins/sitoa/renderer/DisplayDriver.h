@@ -26,7 +26,8 @@ private:
    AtBBox2 m_data_window;    // can be negative if overscan enabled
 
 public:
-   CDisplayDriverData() : m_overscan(false)
+   CDisplayDriverData() : m_overscan(false),
+                          m_progressivePasses(1)
    {}
 
    // Initialize the driver data
@@ -44,6 +45,8 @@ public:
                                  const int in_bucket_size_x, const int in_bucket_size_y,
                                  unsigned int &out_bucket_xo, unsigned int &out_bucket_yo, 
                                  unsigned int &out_bucket_size_x, unsigned int &out_bucket_size_y);
+
+   int m_progressivePasses;
 };
 
 
@@ -56,7 +59,9 @@ public:
    void ResetAreaRendered();
    // Update the render context in order to reuse the same Arnold driver
    // with another render session
-   void UpdateDisplayDriver(RendererContext& in_rendererContext, unsigned int in_displayArea, const bool in_filterColorAov, const bool in_filterNumericAov);
+   void UpdateDisplayDriver(RendererContext& in_rendererContext, unsigned int in_displayArea,
+                            const bool in_filterColorAov, const bool in_filterNumericAov,
+                            const bool in_useOptixOnMain, const bool in_onlyShowDenoise);
    // Sets the dithering
    void SetDisplayDithering(bool in_dither);
 
@@ -65,6 +70,8 @@ public:
    int   m_renderHeight;
    int   m_displayArea;
    int   m_paintedDisplayArea;
+   bool  m_useOptixOnMain;
+   bool  m_onlyShowDenoise;
 };
 
 

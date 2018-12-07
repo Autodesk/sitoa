@@ -346,6 +346,10 @@ public:
    CString GetSoftimageNameFromSItoAName(CString &in_nane);
    // Return the name of the master node of a ginstance or a cloned light
    CString GetMasterBaseNodeName(CString &in_name);
+   // Checks if string starts with substring
+   bool StartsWith(CString in_string, CString in_subString);
+   // Checks if string ends with substring
+   bool EndsWith(CString in_string, CString in_subString);
 
 private:
    // Build the name for an Arnold node (overload for a CString input type)

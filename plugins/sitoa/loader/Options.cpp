@@ -490,14 +490,15 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       }
 
       // if layerName ends with "_denoise", we add a denoise filter named after the layer and then add the output
-      if (thisFb.m_layerName.ReverseFindString(L"_denoise") == (thisFb.m_layerName.Length() - CString(L"_denoise").Length()))
+      if (CStringUtilities().EndsWith(thisFb.m_layerName, L"_denoise"))
       {
          // OptiX denoise needs a separete filter for each AOV, so we create them here instad of in LoadFilters()
+         CString optixFilterName = L"sitoa_" + thisFb.m_layerName + L"_optix_filter";
          AtNode* optixFilterNode = AiNode("denoise_optix_filter");
          if (!optixFilterNode)
             continue;
-         CNodeUtilities().SetName(optixFilterNode, CString(L"sitoa_" + thisFb.m_layerName + L"_optix_filter").GetAsciiString());
-         AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" sitoa_" + thisFb.m_layerName + L"_optix_filter " + masterFb.m_fullName).GetAsciiString());
+         CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
+         AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + optixFilterName + L" " + masterFb.m_fullName).GetAsciiString());
       }
       // Adding to outputs. masterFb differs from thisFb if they are both exr and share the same filename
       else if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
