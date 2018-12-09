@@ -496,7 +496,10 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          CString optixFilterName = L"sitoa_" + thisFb.m_layerName + L"_optix_filter";
          AtNode* optixFilterNode = AiNode("denoise_optix_filter");
          if (!optixFilterNode)
+         {
+            GetMessageQueue()->LogMsg(L"[sitoa] Couldn't create denoise_optix_filter for layer " + thisFb.m_layerName, siErrorMsg);
             continue;
+         }
          CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + optixFilterName + L" " + masterFb.m_fullName).GetAsciiString());
       }
