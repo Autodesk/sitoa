@@ -189,6 +189,20 @@ bool LoadFilters()
 
    CNodeUtilities().SetName(closestFilterNode, "sitoa_closest_filter");
 
+   // if we're outputting denoising aovs we need a variance filter
+   // https://github.com/Autodesk/sitoa/issues/34
+   if (GetRenderOptions()->m_output_denoising_aovs && !(filterType.IsEqualNoCase(L"variance") || filterType.IsEqualNoCase(L"contour")))
+   {
+      // create a variance filter
+      AtNode* varianceFilterNode = AiNode("variance_filter");
+      if (!varianceFilterNode)
+         return false;
+      CNodeUtilities().SetName(varianceFilterNode, "sitoa_variance_filter");
+      CNodeSetter::SetFloat(varianceFilterNode, "width", GetRenderOptions()->m_output_filter_width);  // width of output_filter
+      CNodeSetter::SetBoolean(varianceFilterNode, "scalar_mode", false);
+      CNodeSetter::SetString(varianceFilterNode, "filter_weights", filterType.GetAsciiString());  // type of output_filter
+   }
+
    // optix denoise filters are added in the LoadDrivers() function because they have to be unique for each AOV
 
    return true;
@@ -510,6 +524,43 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + numericFilter + " " + masterFb.m_fullName).GetAsciiString());
 
       activeBuffer++;
+   }
+
+   // Setup the AOVs for Arnold Denoising (noice)
+   // https://github.com/Autodesk/sitoa/issues/34
+   if (GetRenderOptions()->m_output_denoising_aovs)
+   {
+      // get the main framebuffer, we're gonna need some data from it
+      Framebuffer frameBuffer(in_pass.GetFramebuffers().GetItem(L"Main"));
+      CFrameBuffer mainFb(frameBuffer, in_frame, false);
+      if (mainFb.m_driverName.IsEqualNoCase(L"driver_exr"))
+      {
+         CString fullName = CString(mainFb.m_fullName + L"_Noice_Input");
+
+         // we create the path by modifying the filename of the framebuffer
+         CString orgFileName = ParAcc_GetValue(frameBuffer, L"Filename", in_frame);
+         frameBuffer.PutParameterValue(L"Filename", orgFileName + L"_Noice_Input", in_frame);
+         CString fileNamePath = CPathTranslator::TranslatePath(frameBuffer.GetResolvedPath(CTime(in_frame)).GetAsciiString(), false);
+         frameBuffer.PutParameterValue(L"Filename", orgFileName, in_frame);  // restore the framebuffer filename
+
+         // create the driver node that will output the denoising aovs
+         AtNode* driverNode = AiNode(mainFb.m_driverName.GetAsciiString());
+         if (driverNode)
+         {
+            CNodeUtilities().SetName(driverNode, fullName);
+            CNodeSetter::SetString(driverNode, "filename", fileNamePath.GetAsciiString());
+         }
+         
+         // add the denoising aovs
+         AiArrayResize(outputs, activeBuffers + 5, 1);
+         AiArraySetStr(outputs, activeBuffers,   CString(L"RGBA RGBA " + colorFilter + L" " + fullName).GetAsciiString());
+         AiArraySetStr(outputs, activeBuffers+1, CString(L"N VECTOR " + colorFilter + L" " + fullName).GetAsciiString());
+         AiArraySetStr(outputs, activeBuffers+2, CString(L"Z FLOAT " + colorFilter + L" " + fullName).GetAsciiString());
+         AiArraySetStr(outputs, activeBuffers+3, CString(L"diffuse_albedo RGB " + colorFilter + L" " + fullName).GetAsciiString());
+         AiArraySetStr(outputs, activeBuffers+4, CString(L"RGB RGB sitoa_variance_filter " + fullName + L" variance").GetAsciiString());
+      }
+      else
+         GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOVs can only be output to exr.", siWarningMsg);
    }
 
    // Setting outpus array only if there is at least one active framebuffer
