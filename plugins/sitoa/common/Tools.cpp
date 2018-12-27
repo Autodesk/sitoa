@@ -483,6 +483,33 @@ CString CStringUtilities::GetMasterBaseNodeName(CString &in_name)
    return splits[count-1];
 }
 
+
+// Return true or false if string starts with substring
+//
+// @param in_string        The input string
+// @param in_subString     The start string
+//
+// @return true or false
+//
+bool CStringUtilities::StartsWith(CString in_string, CString in_subString)
+{
+   return (in_string.FindString(in_subString) == 0);
+}
+
+
+// Return true or false if string ends with substring
+//
+// @param in_string        The input string
+// @param in_subString     The end string
+//
+// @return true or false
+//
+bool CStringUtilities::EndsWith(CString in_string, CString in_subString)
+{
+   return (in_string.ReverseFindString(in_subString) == (in_string.Length() - in_subString.Length()));
+}
+
+
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
