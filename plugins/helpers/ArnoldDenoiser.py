@@ -43,7 +43,7 @@ def XSILoadPlugin( in_reg ):
     h = Application.SItoAToolHelper()
     h.SetPluginInfo(in_reg, 'Arnold Denoiser')
 
-    in_reg.RegisterCommand('AddDenoiserProperty', 'SITOA_AddDenoiserProperty')
+    in_reg.RegisterCommand('OpenDenoiserProperty', 'SITOA_OpenDenoiserProperty')
     in_reg.RegisterProperty('arnold_denoiser')
     #RegistrationInsertionPoint - do not remove this line
 
@@ -52,13 +52,13 @@ def XSILoadPlugin( in_reg ):
 def XSIUnloadPlugin( in_reg ):
     return true
 
-def AddDenoiserProperty_Init( in_ctxt ):
+def OpenDenoiserProperty_Init( in_ctxt ):
     oCmd = in_ctxt.Source
     oArgs = oCmd.Arguments
     oArgs.Add("in_inspect")
     return true
 
-def AddDenoiserProperty_Execute(in_inspect):
+def OpenDenoiserProperty_Execute(in_inspect):
     inspect = True if in_inspect is None else in_inspect
 
     obj = Application.ActiveSceneRoot
@@ -136,7 +136,9 @@ def arnold_denoiser_DefineLayout( in_ctxt ):
     item = layout.AddItem('light_group_aovs', 'Light Group AOVs')
     item.SetAttribute(C.siUILabelMinPixels, 100)
 
-    layout.AddButton('denoise', 'Denoise')
+    item = layout.AddButton('denoise', 'Denoise')
+    item.SetAttribute(C.siUICX, 80)
+    item.SetAttribute(C.siUICY, 30)
     return true
 
 def arnold_denoiser_OnInit( ):
@@ -378,6 +380,9 @@ def runDenoise(start_frame, end_frame, inFile, outFile, temporal_frames, pixel_s
         else:
             if not run:
                 Application.LogMessage('[sitoa] Arnold Denoiser has stopped.')
+    else:
+        if run:
+            Application.LogMessage('[sitoa] Arnold Denoiser has finished.')
 
         i = pb.Increment()
         pb.StatusText = '{}/{}'.format(i, pb.Maximum)
@@ -401,5 +406,6 @@ def denoiseImage(inFile, outFile, f, temporal_frames, pixel_search_radius, pixel
         for light_group in light_group_split:
             cmd += ['-l', light_group]
 
+    Application.LogMessage('Starting Arnold Denoiser with command: ' + subprocess.list2cmdline(cmd), C.siVerbose)
     res = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, startupinfo=_no_window).communicate()[0]
     Application.LogMessage(res, C.siVerbose)

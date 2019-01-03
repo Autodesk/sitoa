@@ -1091,7 +1091,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.EndGroup();
       layout.AddGroup(L"Arnold Denoiser (noice)");
          layout.AddItem(L"output_denoising_aovs", L"Output Denoising AOVs");
-         layout.AddButton(L"OpenDenoiserProperties", L"Arnold Denoiser Properties...");
+         layout.AddButton(L"OpenDenoiserProperties", L"Open Arnold Denoiser Properties (Current Pass)");
       layout.EndGroup();
 
       layout.AddItem(L"sitoa_version", L"SItoA Version");
@@ -1282,7 +1282,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       else if (buttonName.IsEqualNoCase(L"OpenDenoiserProperties"))
       {
          CValue retval = false;
-         Application().ExecuteCommand(L"SITOA_AddDenoiserProperty", NULL, retval);
+         Application().ExecuteCommand(L"SITOA_OpenDenoiserProperty", NULL, retval);
       }
    }
    else if (eventID == PPGEventContext::siParameterChange)
