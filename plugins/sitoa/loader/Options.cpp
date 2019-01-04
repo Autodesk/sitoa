@@ -357,6 +357,7 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
 {
    Framebuffer frameBuffer(in_pass.GetFramebuffers().GetItem(L"Main"));
    CString mainFormat(ParAcc_GetValue(frameBuffer, L"Format", in_frame));
+   CFrameBuffer mainFb(frameBuffer, in_frame, false);
 
    CRefArray frameBuffers = in_pass.GetFramebuffers();
    LONG nbBuffers = frameBuffers.GetCount();
@@ -378,6 +379,13 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
 
    // vector of the drivers, each with theirs layers
    vector <CDeepExrLayersDrivers> deepExrLayersDrivers;
+
+   // vars to hold if and how to create AOVs for noice
+   // it's a string because it can be added in two ways.
+   // recognised values are "add", "add_rename" and "exist"
+   CString noiceDA = L"add";
+   CString noiceN  = L"add";
+   CString noiceZ  = L"add";
 
    unsigned int activeBuffer = 0;
    for (LONG i = 0; i<nbBuffers; i++)
@@ -523,6 +531,29 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       else
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + numericFilter + " " + masterFb.m_fullName).GetAsciiString());
 
+      // Do checks if Arnold Denoising AOVs already exist and if they have the right filter if they do
+      if (masterFb.m_fullName == mainFb.m_fullName) // only check if it's a layer in the same exr as main (multilayer-exr)
+      {
+         if (thisFb.m_layerName == L"diffuse_albedo")
+            noiceDA = L"exist";
+
+         if (thisFb.m_layerName == L"N")
+         {
+            if (numericFilter == colorFilter)
+               noiceN = L"exist";
+            else
+               noiceN = L"add_rename";
+         }
+
+         if (thisFb.m_layerName == L"Z")
+         {
+            if (numericFilter == colorFilter)
+               noiceZ = L"exist";
+            else
+               noiceZ = L"add_rename";
+         }
+      }
+
       activeBuffer++;
    }
 
@@ -530,40 +561,57 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
    // https://github.com/Autodesk/sitoa/issues/34
    if (GetRenderOptions()->m_output_denoising_aovs)
    {
-      // get the main framebuffer, we're gonna need some data from it
-      Framebuffer frameBuffer(in_pass.GetFramebuffers().GetItem(L"Main"));
-      CFrameBuffer mainFb(frameBuffer, in_frame, false);
       if (mainFb.m_driverName.IsEqualNoCase(L"driver_exr"))
       {
-         CString fullName = CString(mainFb.m_fullName + L"_Noice_Input");
+         // pre-calc number of additional framebuffers to add and resize output array
+         int nbNoiceBuffers = 4;
+         if (noiceDA == L"exist")
+            nbNoiceBuffers -= 1;
+         if (noiceN == L"exist")
+            nbNoiceBuffers -= 1;
+         if (noiceZ == L"exist")
+            nbNoiceBuffers -= 1;
+         AiArrayResize(outputs, activeBuffers + nbNoiceBuffers, 1);
 
-         // we create the path by modifying the filename of the framebuffer
-         CString orgFileName = ParAcc_GetValue(frameBuffer, L"Filename", in_frame);
-         frameBuffer.PutParameterValue(L"Filename", orgFileName + L"_Noice_Input", in_frame);
-         CString fileNamePath = CPathTranslator::TranslatePath(frameBuffer.GetResolvedPath(CTime(in_frame)).GetAsciiString(), false);
-         frameBuffer.PutParameterValue(L"Filename", orgFileName, in_frame);  // restore the framebuffer filename
-
-         // create the driver node that will output the denoising aovs
-         AtNode* driverNode = AiNode(mainFb.m_driverName.GetAsciiString());
-         if (driverNode)
+         // Set the name and issue a warning if it's renamed
+         CString nameN = L"";
+         CString nameZ = L"";
+         if (noiceN == L"add_rename")
          {
-            CNodeUtilities().SetName(driverNode, fullName);
-            CNodeSetter::SetString(driverNode, "filename", fileNamePath.GetAsciiString());
+            nameN = L" N_noice";
+            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"N\" has been renamed to \"N_noice\" because \"N\" already exist with \"closest_filter\".", siWarningMsg);
+         }
+         if (noiceZ == L"add_rename")
+         {
+            nameZ = L" Z_noice";
+            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"Z\" has been renamed to \"Z_noice\" because \"Z\" already exist with \"closest_filter\".", siWarningMsg);
+         }
+
+         // add the denoising aovs
+         int i = 0;
+         if (noiceDA != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"diffuse_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
+            i++;
+         }
+         if (noiceN != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"N VECTOR " + colorFilter + L" " + mainFb.m_fullName + nameN).GetAsciiString());
+            i++;
+         }
+         if (noiceZ != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"Z FLOAT " + colorFilter + L" " + mainFb.m_fullName + nameZ).GetAsciiString());
+            i++;
          }
          
-         // add the denoising aovs
-         AiArrayResize(outputs, activeBuffers + 5, 1);
-         AiArraySetStr(outputs, activeBuffers,   CString(L"RGBA RGBA " + colorFilter + L" " + fullName).GetAsciiString());
-         AiArraySetStr(outputs, activeBuffers+1, CString(L"N VECTOR " + colorFilter + L" " + fullName).GetAsciiString());
-         AiArraySetStr(outputs, activeBuffers+2, CString(L"Z FLOAT " + colorFilter + L" " + fullName).GetAsciiString());
-         AiArraySetStr(outputs, activeBuffers+3, CString(L"diffuse_albedo RGB " + colorFilter + L" " + fullName).GetAsciiString());
-         AiArraySetStr(outputs, activeBuffers+4, CString(L"RGB RGB sitoa_variance_filter " + fullName + L" variance").GetAsciiString());
+         AiArraySetStr(outputs, activeBuffers+i, CString(L"RGB RGB sitoa_variance_filter " + mainFb.m_fullName + L" variance").GetAsciiString());
       }
       else
          GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOVs can only be output to exr.", siWarningMsg);
    }
 
-   // Setting outpus array only if there is at least one active framebuffer
+   // Setting outputs array only if there is at least one active framebuffer
    if (activeBuffer > 0)
    {
       AiNodeSetArray(in_optionsNode, "outputs", outputs);
