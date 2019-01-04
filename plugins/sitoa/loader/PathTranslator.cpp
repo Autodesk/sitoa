@@ -27,10 +27,11 @@ CPathString CPathString::ResolveTokens(double in_frame, CString in_extraToken)
 {
    if (!in_extraToken.IsEmpty())
    {
-      if (in_extraToken == L"[Pass]")
+      if (in_extraToken.IsEqualNoCase(L"[Pass]"))
       {
          Pass pass(Application().GetActiveProject().GetActiveScene().GetActivePass());
          *this = CStringUtilities().ReplaceString(in_extraToken, pass.GetName(), *this);
+         *this = CStringUtilities().ReplaceString(L"[pass]", pass.GetName(), *this);  // lowercase quick fix
       }
    }
    return CUtils::ResolveTokenString(*this, CTime(in_frame), false);
