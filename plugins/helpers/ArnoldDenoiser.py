@@ -380,13 +380,14 @@ def runDenoise(start_frame, end_frame, inFile, outFile, temporal_frames, pixel_s
         else:
             if not run:
                 Application.LogMessage('[sitoa] Arnold Denoiser has stopped.')
-    else:
-        if run:
-            Application.LogMessage('[sitoa] Arnold Denoiser has finished.')
 
         i = pb.Increment()
         pb.StatusText = '{}/{}'.format(i, pb.Maximum)
         f += 1
+
+    else:
+        if run:
+            Application.LogMessage('[sitoa] Arnold Denoiser has finished.')
 
 
 def denoiseImage(inFile, outFile, f, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs):
