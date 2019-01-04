@@ -181,16 +181,18 @@ def frame_range_logic():
 def input_logic():
     # convert softimage file sequnce syntax
     inputFile = PPG.input.Value
-    inputSeq = ImageSequence(inputFile)
-    start_frame = inputSeq.start
-    end_frame = inputSeq.end
+    if inputFile != u'':
+        inputSeq = ImageSequence(inputFile)
+        start_frame = inputSeq.start
+        end_frame = inputSeq.end
 
-    outputSeq = ImageSequence(inputFile)
-    outputSeq.addFilebaseSuffix('_denoised')
+        PPG.start_frame.Value = start_frame
+        PPG.end_frame.Value = end_frame
 
-    PPG.start_frame.Value = start_frame
-    PPG.end_frame.Value = end_frame
-    PPG.output.Value = outputSeq.squares()
+        if PPG.output.Value == u'':
+            outputSeq = ImageSequence(inputFile)
+            outputSeq.addFilebaseSuffix('_denoised')
+            PPG.output.Value = outputSeq.squares()
 
 
 class ImageSequence(object):
@@ -274,6 +276,8 @@ class ImageSequence(object):
                 padding += 1
             elif padding > 0:
                 break # I already found numerical characters and they're finished now
+            elif c == os.sep:
+                break # don't search folders
             else:
                 # still haven't found a numerical parameter
                 head_length += 1
@@ -288,6 +292,11 @@ class ImageSequence(object):
             self.end = self.start
             self.padding = padding
             self.filebase = base[:-(head_length+padding)]
+            self.ext = ext
+
+        else:
+            self.padding = 0
+            self.filebase = base
             self.ext = ext
     
     
@@ -304,7 +313,10 @@ class ImageSequence(object):
         return (u'{}' + u'#' * self.padding + '{}{}').format(self.filebase, self.filehead, self.ext)
         
     def frame(self, frame):
-        return (u'{}{:0' + str(self.padding) + u'd}{}{}').format(self.filebase, frame, self.filehead, self.ext)
+        if self.padding > 0:
+            return (u'{}{:0' + str(self.padding) + u'd}{}{}').format(self.filebase, frame, self.filehead, self.ext)
+        else:
+            return (self.filebase + self.filehead + self.ext)
             
             
     def addFilebaseSuffix(self, suffix):
