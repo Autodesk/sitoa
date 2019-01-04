@@ -34,6 +34,11 @@ CPathString CPathString::ResolveTokens(double in_frame, CString in_extraToken)
          *this = CStringUtilities().ReplaceString(L"[pass]", pass.GetName(), *this);  // lowercase quick fix
       }
    }
+
+   // because of a bug? in Softimage SDK the [Frame] token is not using the scene padding settings
+   *this = CStringUtilities().ReplaceString(L"[Frame]", GetFramePadded(in_frame), *this);
+   *this = CStringUtilities().ReplaceString(L"[frame]", GetFramePadded(in_frame), *this);
+
    return CUtils::ResolveTokenString(*this, CTime(in_frame), false);
 }
 
