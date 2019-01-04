@@ -1374,8 +1374,8 @@ void SetLogSettings(const CString& in_renderType, double in_frame)
    if (enableStats)
    {
       CPathString statsFile = GetRenderOptions()->m_stats_file;
-      statsFile = statsFile.ResolveTokens(CTimeUtilities().GetCurrentFrame());
-      statsFile = statsFile.ResolvePath();
+      statsFile.ResolveTokensInPlace(CTimeUtilities().GetCurrentFrame(), L"[Pass]");
+      statsFile.ResolvePathInPlace();
       if (CUtils::EnsureFolderExists(statsFile, true))
       {
          AiStatsSetFileName(statsFile.GetAsciiString());
@@ -1393,8 +1393,8 @@ void SetLogSettings(const CString& in_renderType, double in_frame)
    if (enableProfile)
    {
       CPathString profileFile = GetRenderOptions()->m_profile_file;
-      profileFile = profileFile.ResolveTokens(CTimeUtilities().GetCurrentFrame());
-      profileFile = profileFile.ResolvePath();
+      profileFile.ResolveTokensInPlace(CTimeUtilities().GetCurrentFrame(), L"[Pass]");
+      profileFile.ResolvePathInPlace();
       if (CUtils::EnsureFolderExists(profileFile, true))
       {
          AiProfileSetFileName(profileFile.GetAsciiString());
