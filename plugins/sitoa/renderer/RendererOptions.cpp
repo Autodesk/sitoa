@@ -291,7 +291,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    CString defaultAssPath      = CUtils::BuildPath(L"[Project Path]", L"Arnold_Scenes"); // Ass Path
    CString defaultLogPath      = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs");   // Log Path
    CString defaultStatsPath    = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].stats.json");
-   CString defaultProfilePath  = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].[Host]_profile.json");
+   CString defaultProfilePath  = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].profile_[Host].json");
 
    // shaders path
    char* aux = getenv("SITOA_SHADERS_PATH");

@@ -362,7 +362,7 @@ public:
       m_stats_file(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].stats.json")),
       m_stats_mode(1),
       m_enable_profile(false),
-      m_profile_file(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].[Host]_profile.json")),
+      m_profile_file(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].profile_[Host].json")),
 
       m_ignore_textures(false),
       m_ignore_shaders(false),
