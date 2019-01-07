@@ -234,7 +234,7 @@ class ImageSequence(object):
         
         padding = re_result.group(4)
         if padding is None:
-            self.padding = 0
+            self.padding = 1
         else:
             self.padding = int(padding)
         
@@ -287,7 +287,7 @@ class ImageSequence(object):
                 # still haven't found a numerical parameter
                 head_length += 1
         
-        if padding > 1:
+        if padding > 0:
             if head_length > 0:
                 self.start = int(base[-(head_length+padding):-head_length])
                 self.filehead = base[-head_length:]
@@ -322,10 +322,10 @@ class ImageSequence(object):
         return (u'{}' + u'#' * max(self.padding, 1) + '{}{}').format(self.filebase, self.filehead, self.ext)
         
     def frame(self, frame):
-        if self.padding > 1:
+        if self.padding > 0:
             return (u'{}{:0' + str(self.padding) + u'd}{}{}').format(self.filebase, frame, self.filehead, self.ext)
         else:
-            return (self.filebase + str(frame) + self.filehead + self.ext)
+            return (self.filebase + self.filehead + self.ext)
             
             
     def addFilebaseSuffix(self, suffix):
