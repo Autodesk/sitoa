@@ -2682,7 +2682,7 @@ desc STRING "Input to calculate the square root of."
 [node standard_hair]
 soft.category STRING "Surface"
 soft.order STRING "BeginGroup Color base base_color melanin melanin_redness melanin_randomize EndGroup "
-"BeginGroup Specular roughness ior shift EndGroup "
+"BeginGroup Specular roughness roughness_anisotropic roughness_azimuthal ior shift EndGroup "
 "BeginGroup Tint specular_tint specular2_tint transmission_tint EndGroup "
 "BeginGroup Diffuse diffuse diffuse_color EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
@@ -2726,6 +2726,17 @@ max FLOAT 1
 
 [attr roughness]
 desc STRING "Roughness of hair specular reflections and transmission."
+min FLOAT 0
+max FLOAT 1
+
+[attr roughness_anisotropic]
+desc STRING "Enable this option to use Azimuthal Roughness. When disabled, Roughness controls both the azimuthal and longitudinal distributions."
+soft.label STRING "Anisotropic Roughness"
+
+[attr roughness_azimuthal]
+desc STRING "This parameter is used when Anisotropic Roughness is enabled. A smaller Azimuthal Roughness value lets rays go straight but a larger roughness allows more rays to travel inside the hair. The intensity becomes lower as the Azimuthal Roughness increases."
+soft.label STRING "Azimuthal Roughness"
+soft.disable_when STRING "{ roughness_anisotropic == 0 }"
 min FLOAT 0
 max FLOAT 1
 

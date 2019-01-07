@@ -1,58 +1,60 @@
 =======================================================
- Autodesk Softimage 11.1.57.0
+ Autodesk Softimage 13.2.163.0
 =======================================================
 
 License information: using [Processing]
-00:00:00   161MB         | log started Wed Jun  7 12:26:10 2017
-00:00:00   161MB         | Arnold 5.0.0.3 [baf78363] windows icc-17.0.2 oiio-1.7.12 osl-1.8.2 vdb-4.0.0 rlm-12.2.2 2017/05/31 10:45:24
-00:00:00   161MB         | running on cavallo, pid=17084
-00:00:00   161MB         |  1 x Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (4 cores, 8 logical) with 16334MB
-00:00:00   161MB         |  Windows 8 Professional (version 6.2, build 9200)
-00:00:00   161MB         |  soft limit for open files raised from 512 to 2048
-00:00:00   161MB         |  
-00:00:00   161MB         | loading plugins from C:\dev\Mia\Arnold\Extra_Shaders ...
-00:00:00   161MB         | loaded 1 plugins from 1 lib(s) and 1 OSL shaders in 0:00.00
-00:00:00   161MB         | loading plugins from C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
-00:00:00   162MB         | loaded 103 plugins from 1 lib(s) in 0:00.00
+00:00:00   201MB         | log started Fri Jan  4 13:15:22 2019
+00:00:00   201MB         | Arnold 5.2.2.0 [30b8ba14] windows icc-17.0.2 oiio-2.0.1 osl-1.10.1 vdb-4.0.0 clm-1.0.3.513 rlm-12.4.2 2018/12/04 22:02:04
+00:00:00   201MB         | running on Jenus, pid=2572
+00:00:00   201MB         |  1 x Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz (4 cores, 8 logical) with 16333MB
+00:00:00   201MB         |  Nvidia driver version 417.22
+00:00:00   201MB         |  GPU 0: GeForce GTX 1070 @ 1771MHz (compute 6.1) with 8192MB (7179MB available)
+00:00:00   201MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00   201MB         |  soft limit for open files raised from 512 to 2048
+00:00:00   201MB         |  
+00:00:00   201MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\..\plugins ...
+00:00:00   201MB         | loaded 4 plugins from 2 lib(s) in 0:00.00
+00:00:00   201MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
+00:00:00   201MB         | loaded 103 plugins from 1 lib(s) in 0:00.03
 
 
 
 
-00:00:00   167MB         |  
-00:00:00   167MB         | releasing resources
-00:00:00   166MB         | Arnold shutdown
-// INFO : [sitoa] SItoA 4.0.0 win loaded.
-// INFO : [sitoa] Arnold 5.0.0.3 detected.
-InstallCustomPreferences("ArnoldRenderPreferences", "Arnold Render");
+00:00:00   208MB         |  
+00:00:00   208MB         | releasing resources
+00:00:00   207MB         | Arnold shutdown
+# INFO : [sitoa] SItoA 5.2.0 win loaded.
+# INFO : [sitoa] Arnold 5.2.2.0 detected.
+Application.InstallCustomPreferences("ArnoldRenderPreferences", "Arnold Render")
 COMMAND: -processing -script "execute_test.js" -main main
-// INFO : C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
->Loading: C:\dev\Mia\Arnold\sitoa\build\windows_x86_64\msvc_opt\si_11000\testsuite\test_0255\test.scn...
-// INFO : 4034 - Loaded scene was created with build number: 10.1.62.0 - compatibility version: 1000
-// INFO : [sitoa] Loaded scene was created with SItoA 2.10 or older
-OpenScene("C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0255\\test.scn", null, null);
-SetValue("Passes.RenderOptions.ImageLockAspectRatio", false, null);
-SetValue("Passes.RenderOptions.ImageWidth", 160, null);
-SetValue("Passes.RenderOptions.ImageHeight", 120, null);
-SetValue("Passes.Default_Pass.Main.Filename", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0255\\testrender.####.tif", null);
-SetValue("Passes.Default_Pass.Main.Format", "tif", null);
-SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, null);
-SetValue("Passes.Arnold_Render_Options.enable_log_file", true, null);
-SetValue("Passes.Arnold_Render_Options.log_level", 1, null);
-SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0255", null);
-SetValue("Passes.Arnold_Render_Options.shaders_path", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\shaders", null);
-SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\dev\\Mia\\Arnold\\sitoa\\testsuite\\XSIProject\\Pictures", null);
-SetValue("Passes.Arnold_Render_Options.save_texture_paths", false, null);
-// INFO : Rendering pass 'Default_Pass'...
-// INFO : Rendering frame 35 (0.0% done)
-// WARNING : [arnold] node entry "volume_scattering" is deprecated, use "atmosphere_volume"
-// WARNING : [arnold] node entry "standard" is deprecated, and may be removed in the future
-// INFO : [sitoa] Frame 35 exported to Arnold in 0.029 sec.
-RenderAllPasses(null, null, null, null, siRenderVerbosityDefault);
+# INFO : C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
+>Loading: C:\Users\lindg\GitHub\sitoa\build\windows_x86_64\msvc_opt\si_13000\testsuite\test_0255\test.scn...
+# INFO : 4034 - Loaded scene was created with build number: 10.1.62.0 - compatibility version: 1000
+# INFO : [sitoa] Loaded scene was created with SItoA 2.10 or older
+Application.OpenScene("C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0255\\test.scn", "", "")
+Application.SetValue("Passes.RenderOptions.ImageLockAspectRatio", False, "")
+Application.SetValue("Passes.RenderOptions.ImageWidth", 160, "")
+Application.SetValue("Passes.RenderOptions.ImageHeight", 120, "")
+Application.SetValue("Passes.Default_Pass.Main.Filename", "C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0255\\testrender.####.tif", "")
+Application.SetValue("Passes.Default_Pass.Main.Format", "tif", "")
+Application.SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, "")
+Application.SetValue("Passes.Arnold_Render_Options.enable_log_file", True, "")
+Application.SetValue("Passes.Arnold_Render_Options.log_level", 1, "")
+Application.SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0255", "")
+Application.SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\Users\\lindg\\GitHub\\sitoa\\testsuite\\XSIProject\\Pictures", "")
+Application.SetValue("Passes.Arnold_Render_Options.save_texture_paths", False, "")
+# INFO : Rendering pass 'Default_Pass'...
+# INFO : Rendering frame 35 (0.0% done)
+# WARNING : [arnold] node entry "volume_scattering" is deprecated, use "atmosphere_volume"
+# WARNING : [arnold] node entry "standard" is deprecated, and may be removed in the future
+# INFO : [sitoa] Frame 35 exported to Arnold in 0.093 sec.
+# INFO : Render completed (100% done)
+Application.RenderAllPasses("", "", "", "", "siRenderVerbosityDefault")
 Warning: return value of the executed script is not an integer
-// INFO : Render completed (100% done)
-// INFO : Characters has been unloaded.
-// INFO : TransformUVsPlugin has been unloaded.
-// INFO : [sitoa] SItoA 4.0.0 win has been unloaded.
-// INFO : polymatricksPlugin has been unloaded.
-// INFO : FBX-XSI import/export Plug-in has been unloaded.
-// INFO : Unfold3D Plugin has been unloaded.
+# INFO : Characters has been unloaded.
+# INFO : polymatricksPlugin has been unloaded.
+# INFO : [sitoa] SItoA 5.2.0 win has been unloaded.
+# INFO : TransformUVsPlugin has been unloaded.
+# INFO : FBX-XSI import/export Plug-in has been unloaded.
+# INFO : Unfold3D Plugin has been unloaded.
+
