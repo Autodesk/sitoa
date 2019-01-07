@@ -193,6 +193,13 @@ void CRenderOptions::Read(const Property &in_cp)
    m_max_log_warning_msgs   = (int) ParAcc_GetValue(in_cp,  L"max_log_warning_msgs",  DBL_MAX);
    m_texture_per_file_stats = (bool)ParAcc_GetValue(in_cp, L"texture_per_file_stats", DBL_MAX);
    m_output_file_tagdir_log = ParAcc_GetValue(in_cp,       L"output_file_tagdir_log", DBL_MAX).GetAsText();
+
+   m_enable_stats           = (bool)ParAcc_GetValue(in_cp, L"enable_stats",           DBL_MAX);
+   m_stats_file             = ParAcc_GetValue(in_cp,       L"stats_file",             DBL_MAX).GetAsText();
+   m_stats_mode             = (int) ParAcc_GetValue(in_cp, L"stats_mode",             DBL_MAX);
+   m_enable_profile         = (bool)ParAcc_GetValue(in_cp, L"enable_profile",         DBL_MAX);
+   m_profile_file           = ParAcc_GetValue(in_cp,       L"profile_file",           DBL_MAX).GetAsText();
+
    m_ignore_textures        = (bool)ParAcc_GetValue(in_cp, L"ignore_textures",        DBL_MAX);
    m_ignore_shaders         = (bool)ParAcc_GetValue(in_cp, L"ignore_shaders",         DBL_MAX);
    m_ignore_atmosphere      = (bool)ParAcc_GetValue(in_cp, L"ignore_atmosphere",      DBL_MAX);
@@ -287,6 +294,8 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    CString defaultTexturesPath = CUtils::BuildPath(app.GetInstallationPath(siProjectPath), L"Pictures");
    CString defaultAssPath      = CUtils::BuildPath(L"[Project Path]", L"Arnold_Scenes"); // Ass Path
    CString defaultLogPath      = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs");   // Log Path
+   CString defaultStatsPath    = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].stats.json");
+   CString defaultProfilePath  = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].profile_[Host].json");
 
    // shaders path
    char* aux = getenv("SITOA_SHADERS_PATH");
@@ -470,6 +479,13 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"texture_per_file_stats", CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_file_tagdir_log", CValue::siString, siPersistable, L"", L"", defaultLogPath, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_file_dir_log",    CValue::siString, siPersistable, L"", L"", defaultLogPath, CValue(), CValue(), CValue(), CValue(), p);
+
+   cpset.AddParameter(L"enable_stats",           CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"stats_file",             CValue::siString, siPersistable, L"", L"", defaultStatsPath, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"stats_mode",             CValue::siInt4,   siPersistable, L"", L"", eSItoALogLevel_Warnings, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"enable_profile",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"profile_file",           CValue::siString, siPersistable, L"", L"", defaultProfilePath, CValue(), CValue(), CValue(), CValue(), p);
+
    cpset.AddParameter(L"ignore_textures",        CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_shaders",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_atmosphere",      CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
@@ -1030,6 +1046,18 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
          item.PutAttribute(siUINoLabel, true);
       layout.EndGroup();
    layout.EndGroup();
+   layout.AddGroup(L"Statistics & Profiling");
+      item = layout.AddItem(L"enable_stats", L"Output Statistics");
+      item = layout.AddItem(L"stats_file", L"Stats File", siControlFilePath);
+      item.PutAttribute(siUIFileFilter, L"JSON files (*.json)|*.json||");
+      CValueArray statsMode;
+      statsMode.Add(L"Owerwrite");   statsMode.Add((int)AI_STATS_MODE_OVERWRITE);
+      statsMode.Add(L"Append");      statsMode.Add((int)AI_STATS_MODE_APPEND);
+      item = layout.AddEnumControl(L"stats_mode", statsMode, L"Stats Mode", siControlCombo);
+      item = layout.AddItem(L"enable_profile", L"Output Profile");
+      item = layout.AddItem(L"profile_file", L"Profile File", siControlFilePath);
+      item.PutAttribute(siUIFileFilter, L"JSON files (*.json)|*.json||");
+   layout.EndGroup();
    layout.AddGroup(L"Ignore", true, 0);
       layout.AddItem(L"ignore_textures",     L"Texture Maps");
       layout.AddItem(L"ignore_shaders",      L"Shaders");
@@ -1314,7 +1342,9 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
 
       else if (paramName == L"enable_log_file" ||
                paramName == L"log_level"       || 
-               paramName == L"output_file_tagdir_log")
+               paramName == L"output_file_tagdir_log" ||
+               paramName == L"enable_stats" ||
+               paramName == L"enable_profile")
          DiagnosticsTabLogic(cpset);
 
       else if (paramName == L"output_file_tagdir_ass" || 
@@ -1614,6 +1644,14 @@ void DiagnosticsTabLogic(CustomProperty &in_cp)
 
    int log_level = (int)ParAcc_GetValue(in_cp, L"log_level", DBL_MAX);
    ParAcc_GetParameter(in_cp, L"texture_per_file_stats").PutCapabilityFlag(siReadOnly, log_level != eSItoALogLevel_Debug); 
+
+   // stats and profiling logic
+   bool stats = (bool)ParAcc_GetValue(in_cp, L"enable_stats", DBL_MAX);
+   ParAcc_GetParameter(in_cp, L"stats_file").PutCapabilityFlag(siReadOnly, !stats);
+   ParAcc_GetParameter(in_cp, L"stats_mode").PutCapabilityFlag(siReadOnly, !stats);
+
+   bool profile = (bool)ParAcc_GetValue(in_cp, L"enable_profile", DBL_MAX);
+   ParAcc_GetParameter(in_cp, L"profile_file").PutCapabilityFlag(siReadOnly, !profile);
 }
 
 

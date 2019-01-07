@@ -1393,6 +1393,47 @@ void SetLogSettings(const CString& in_renderType, double in_frame)
       else
          GetMessageQueue()->LogMsg(L"[sitoa] Logging path is not valid", siWarningMsg);
    }
+
+   // stats and profile
+   bool enableStats        = GetRenderOptions()->m_enable_stats;
+   bool enableProfile      = GetRenderOptions()->m_enable_profile;
+
+   if (enableStats)
+   {
+      CPathString statsFile = GetRenderOptions()->m_stats_file;
+      statsFile.ResolveTokensInPlace(CTimeUtilities().GetCurrentFrame(), L"[Pass]");
+      statsFile.ResolvePathInPlace();
+      if (CUtils::EnsureFolderExists(statsFile, true))
+      {
+         AiStatsSetFileName(statsFile.GetAsciiString());
+         AiStatsSetMode(AI_STATS_MODE_APPEND);
+      }
+      else
+      {
+         GetMessageQueue()->LogMsg(L"[sitoa] Logging Stats path is not valid", siWarningMsg);
+         AiStatsSetFileName("");
+      }
+   }
+   else
+      AiStatsSetFileName("");
+
+   if (enableProfile)
+   {
+      CPathString profileFile = GetRenderOptions()->m_profile_file;
+      profileFile.ResolveTokensInPlace(CTimeUtilities().GetCurrentFrame(), L"[Pass]");
+      profileFile.ResolvePathInPlace();
+      if (CUtils::EnsureFolderExists(profileFile, true))
+      {
+         AiProfileSetFileName(profileFile.GetAsciiString());
+      }
+      else
+      {
+         GetMessageQueue()->LogMsg(L"[sitoa] Logging Profile path is not valid", siWarningMsg);
+         AiProfileSetFileName("");
+      }
+   }
+   else
+      AiProfileSetFileName("");
 }
 
 
