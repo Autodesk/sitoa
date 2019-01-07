@@ -196,7 +196,7 @@ def input_logic():
 
 
 class ImageSequence(object):
-    si_re = re.compile(r'(.*)\[(\d+)\.{2}(\d+);(\d+)\](.*)(\..+)')
+    si_re = re.compile(r'(.*)\[(\d+)\.{2}(\d+)(?:;(\d+))?\](.*)(\..+)')
     square_re = re.compile(r'(.*?)(#+)(.*)(\..+)')
     def __init__(self, path=None):
         # Class that make conversions.
@@ -232,9 +232,14 @@ class ImageSequence(object):
     def parseSiSequence(self):
         re_result = self.si_re.search(self._creation_path)
         
+        padding = re_result.group(4)
+        if padding is None:
+            self.padding = 0
+        else:
+            self.padding = int(padding)
+        
         self.start = int(re_result.group(2))
         self.end = int(re_result.group(3))
-        self.padding = int(re_result.group(4))
         self.filebase = re_result.group(1)
         self.filehead = re_result.group(5)
         self.ext = re_result.group(6)
@@ -304,8 +309,12 @@ class ImageSequence(object):
         if self.start == self.end:
             # if start = end, return the single frame
             return self.frame(self.start)
-        return u'{}[{}..{};{}]{}{}'.format(self.filebase, self.start, self.end, self.padding, self.filehead, self.ext)
         
+        if self.padding > 1:
+            return u'{}[{}..{};{}]{}{}'.format(self.filebase, self.start, self.end, self.padding, self.filehead, self.ext)
+        else:
+            return u'{}[{}..{}]{}{}'.format(self.filebase, self.start, self.end, self.filehead, self.ext)
+    
     def squares(self):
         if self.start == self.end:
             # if start = end, return the single frame
