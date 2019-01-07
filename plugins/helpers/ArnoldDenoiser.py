@@ -203,7 +203,7 @@ class ImageSequence(object):
 
         self.start = 0
         self.end = 0
-        self.padding = 4
+        self.padding = Application.GetValue("Passes.RenderOptions.FramePadding")
         self.filebase = u''
         self.filehead = u''
         self.ext = u''
