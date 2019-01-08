@@ -279,7 +279,7 @@ class ImageSequence(object):
         
         for matchingFile in filesList:
             frame_token = int(matchingFile[begin_pos:end_pos])
-            if start_frame < 0 or frame_token < start_frame:
+            if start_frame <= 0 or frame_token < start_frame:
                 start_frame = frame_token
             if frame_token > end_frame:
                 end_frame = frame_token
