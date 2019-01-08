@@ -360,6 +360,9 @@ def doDenoise(cp):
         end_frame = start_frame
     elif frame_range == u'Start / End':
         end_frame = cp.end_frame.Value
+        if end_frame < start_frame:
+            XSIUIToolkit.MsgBox('End Frame can\'t be before Start Frame', C.siMsgOkOnly, 'Arnold Denoiser')
+            return False
     else: # complete sequence, need to check on disk all the existing input files
         start_frame, end_frame = inSeq.start, inSeq.end
 
