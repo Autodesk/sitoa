@@ -340,18 +340,19 @@ class ImageSequence(object):
 
 
 def doDenoise(cp):
-    inFile = cp.input.Value
     outFile = cp.output.Value
+    inFileStr = cp.input.Value
 
-    if inFile == '':
+    if inFileStr == '':
         XSIUIToolkit.MsgBox('An input file must be selected', C.siMsgOkOnly, 'Arnold Denoiser')
         return False
     if outFile == '':
         XSIUIToolkit.MsgBox('An output file must be selected', C.siMsgOkOnly, 'Arnold Denoiser')
         return False
 
-    inFile = ImageSequence(inFile)
     outFile = ImageSequence(outFile)
+    inSeq = ImageSequence(inFileStr)
+    outSeq = ImageSequence(outFile)
 
     start_frame = cp.start_frame.Value
     frame_range = cp.frame_range.Value
@@ -360,7 +361,7 @@ def doDenoise(cp):
     elif frame_range == u'Start / End':
         end_frame = cp.end_frame.Value
     else: # complete sequence, need to check on disk all the existing input files
-        start_frame, end_frame = inFile.start, inFile.end
+        start_frame, end_frame = inSeq.start, inSeq.end
 
     temporal_frames = cp.temporal_frames.Value
     pixel_search_radius = cp.pixel_search_radius.Value
@@ -368,12 +369,12 @@ def doDenoise(cp):
     variance = cp.variance.Value
     light_group_aovs = cp.light_group_aovs.Value
 
-    runDenoise(start_frame, end_frame, inFile, outFile, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs)
+    runDenoise(start_frame, end_frame, inSeq, outSeq, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs)
 
     return True
 
 
-def runDenoise(start_frame, end_frame, inFile, outFile, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs):
+def runDenoise(start_frame, end_frame, inSeq, outSeq, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs):
     pb = XSIUIToolkit.ProgressBar
     pb.Caption = 'Denoising ...'
     pb.Maximum = int(end_frame) - int(start_frame) + 1
@@ -383,19 +384,25 @@ def runDenoise(start_frame, end_frame, inFile, outFile, temporal_frames, pixel_s
     run = True
     f = start_frame
     while run and f <= end_frame:
-        Application.LogMessage('[sitoa] Denoising image {} '.format(inFile.frame(f)))
-        t = threading.Thread(target=denoiseImage, args=(inFile, outFile, f, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs))
-        t.start()
+        inFile = inSeq.frame(f)
+        outFile = outSeq.frame(f)
+        if os.path.isfile(inFile):
+            Application.LogMessage('[sitoa] Denoising image {} '.format(inFile))
+            t = threading.Thread(target=denoiseImage, args=(inFile, outFile, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs))
+            t.start()
 
-        while t.is_alive():
-            if pb.CancelPressed:
-                run = False
-                Application.LogMessage('[sitoa] Stopping Arnold Denoiser after the current frame is done...')
-            Application.Desktop.RedrawUI()
-            sleep(0.01)  # just to limit the RedrawUI a bit.
+            while t.is_alive():
+                if pb.CancelPressed:
+                    run = False
+                    Application.LogMessage('[sitoa] Stopping Arnold Denoiser after the current frame is done...')
+                Application.Desktop.RedrawUI()
+                sleep(0.01)  # just to limit the RedrawUI a bit.
+            else:
+                if not run:
+                    Application.LogMessage('[sitoa] Arnold Denoiser has stopped.')
+        
         else:
-            if not run:
-                Application.LogMessage('[sitoa] Arnold Denoiser has stopped.')
+            Application.LogMessage('[sitoa] Arnold Denoiser: Could not find input file {} '.format(inFile), C.siErrorMsg)
 
         i = pb.Increment()
         pb.StatusText = '{}/{}'.format(i, pb.Maximum)
@@ -406,10 +413,7 @@ def runDenoise(start_frame, end_frame, inFile, outFile, temporal_frames, pixel_s
             Application.LogMessage('[sitoa] Arnold Denoiser has finished.')
 
 
-def denoiseImage(inFile, outFile, f, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs):
-    inFile = inFile.frame(f)
-    outFile = outFile.frame(f)
-    
+def denoiseImage(inFile, outFile, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs):
     noice_binary = os.path.join(os.path.dirname(Application.Plugins('Arnold Render').Filename), 'noice')
     if sys.platform == 'win32':
         noice_binary += '.exe'
