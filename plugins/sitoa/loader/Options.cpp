@@ -579,12 +579,12 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          if (noiceN == L"add_rename")
          {
             nameN = L" N_noice";
-            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"N\" has been renamed to \"N_noice\" because \"N\" already exist with \"closest_filter\".", siWarningMsg);
+            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"N\" has been renamed to \"N_noice\" because \"N\" already exist with \"closest_filter\".", siInfoMsg);
          }
          if (noiceZ == L"add_rename")
          {
             nameZ = L" Z_noice";
-            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"Z\" has been renamed to \"Z_noice\" because \"Z\" already exist with \"closest_filter\".", siWarningMsg);
+            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"Z\" has been renamed to \"Z_noice\" because \"Z\" already exist with \"closest_filter\".", siInfoMsg);
          }
 
          // add the denoising aovs
