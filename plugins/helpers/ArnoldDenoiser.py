@@ -340,9 +340,6 @@ class ImageSequence(object):
 
 
 def doDenoise(cp):
-    #if self.running:
-    #    return
-
     inFile = cp.input.Value
     outFile = cp.output.Value
 
@@ -356,7 +353,6 @@ def doDenoise(cp):
     inFile = ImageSequence(inFile)
     outFile = ImageSequence(outFile)
 
-    #self.running = True
     start_frame = cp.start_frame.Value
     frame_range = cp.frame_range.Value
     if frame_range == u'Single Frame':
@@ -365,7 +361,6 @@ def doDenoise(cp):
         end_frame = cp.end_frame.Value
     else: # complete sequence, need to check on disk all the existing input files
         start_frame, end_frame = inFile.start, inFile.end
-        
 
     temporal_frames = cp.temporal_frames.Value
     pixel_search_radius = cp.pixel_search_radius.Value
