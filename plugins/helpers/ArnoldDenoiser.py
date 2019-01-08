@@ -77,7 +77,8 @@ def OpenDenoiserProperty_Execute(in_inspect):
 def arnold_denoiser_Define( in_ctxt ):
     cp = in_ctxt.Source
     cp.AddParameter2('input',               C.siString,                  '', None,       None, None, None, C.siClassifUnknown, C.siPersistable)
-    cp.AddParameter2('output',              C.siString,                  '', None,       None, None, None, C.siClassifUnknown, C.siPersistable)
+    cp.AddParameter2('output_suffix',       C.siString,         '_denoised', None,       None, None, None, C.siClassifUnknown, C.siPersistable)
+    cp.AddParameter2('output',              C.siString,                  '', None,       None, None, None, C.siClassifUnknown, C.siReadOnly)
     cp.AddParameter2('frame_range',         C.siString, 'Complete Sequence', None,       None, None, None, C.siClassifUnknown, C.siPersistable)
     cp.AddParameter2('start_frame',         C.siInt4,                     0,    0, 2147483647,    0,  100, C.siClassifUnknown, C.siPersistable)
     cp.AddParameter2('end_frame',           C.siInt4,                     0,    0, 2147483647,    0,  100, C.siClassifUnknown, C.siPersistable)
@@ -103,8 +104,10 @@ def arnold_denoiser_DefineLayout( in_ctxt ):
     item.SetAttribute(C.siUILabelMinPixels, 40)
     item.SetAttribute(C.siUILabelPercentage, 20)
 
-    item = layout.AddItem('output', 'Output', C.siControlFilePath)
-    item.SetAttribute(C.siUIFileFilter, file_types)
+    item = layout.AddItem('output_suffix', 'Output Suffix')
+    item.SetAttribute(C.siUILabelMinPixels, 80)
+
+    item = layout.AddItem('output', 'Output')
     item.SetAttribute(C.siUILabelMinPixels, 40)
     item.SetAttribute(C.siUILabelPercentage, 20)
 
@@ -143,6 +146,7 @@ def arnold_denoiser_DefineLayout( in_ctxt ):
 
 def arnold_denoiser_OnInit( ):
     Application.LogMessage('arnold_denoiser_OnInit called', C.siVerbose)
+    input_logic()
     frame_range_logic()
 
 def arnold_denoiser_OnClosed( ):
@@ -151,6 +155,13 @@ def arnold_denoiser_OnClosed( ):
 def arnold_denoiser_input_OnChanged( ):
     Application.LogMessage('arnold_denoiser_input_OnChanged called', C.siVerbose)
     oParam = PPG.input
+    paramVal = oParam.Value
+    Application.LogMessage(str('New value: ') + str(paramVal), C.siVerbose)
+    input_logic()
+
+def arnold_denoiser_output_suffix_OnChanged( ):
+    Application.LogMessage('arnold_denoiser__output_suffix_OnChanged called', C.siVerbose)
+    oParam = PPG.output_suffix
     paramVal = oParam.Value
     Application.LogMessage(str('New value: ') + str(paramVal), C.siVerbose)
     input_logic()
@@ -181,7 +192,7 @@ def frame_range_logic():
 def input_logic():
     # convert softimage file sequnce syntax
     inputFile = PPG.input.Value
-    if inputFile != u'':
+    if inputFile:
         inputSeq = ImageSequence(inputFile)
         start_frame = inputSeq.start
         end_frame = inputSeq.end
@@ -189,10 +200,16 @@ def input_logic():
         PPG.start_frame.Value = start_frame
         PPG.end_frame.Value = end_frame
 
-        if PPG.output.Value == u'':
-            outputSeq = ImageSequence(inputFile)
-            outputSeq.addFilebaseSuffix('_denoised')
-            PPG.output.Value = outputSeq.squares()
+        outputSuffix = PPG.output_suffix.Value
+
+        outputSeq = ImageSequence(inputFile)
+        outputSeq.addFilebaseSuffix(outputSuffix)
+        PPG.output.Value = outputSeq.si()
+
+    else:
+        PPG.start_frame.Value = 0
+        PPG.end_frame.Value = 0
+        PPG.output.Value = ''
 
 
 class ImageSequence(object):
@@ -340,19 +357,19 @@ class ImageSequence(object):
 
 
 def doDenoise(cp):
-    outFile = cp.output.Value
     inFileStr = cp.input.Value
+    outputSuffix = cp.output_suffix.Value
 
     if inFileStr == '':
         XSIUIToolkit.MsgBox('An input file must be selected', C.siMsgOkOnly, 'Arnold Denoiser')
         return False
-    if outFile == '':
-        XSIUIToolkit.MsgBox('An output file must be selected', C.siMsgOkOnly, 'Arnold Denoiser')
+    if outputSuffix == '':
+        XSIUIToolkit.MsgBox('Output suffix can\'t be empty', C.siMsgOkOnly, 'Arnold Denoiser')
         return False
 
-    outFile = ImageSequence(outFile)
     inSeq = ImageSequence(inFileStr)
-    outSeq = ImageSequence(outFile)
+    outSeq = ImageSequence(inFileStr)
+    outSeq.addFilebaseSuffix(outputSuffix)
 
     start_frame = cp.start_frame.Value
     frame_range = cp.frame_range.Value
