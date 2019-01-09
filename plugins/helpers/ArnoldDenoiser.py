@@ -367,6 +367,7 @@ def doDenoise(cp):
         XSIUIToolkit.MsgBox('Output suffix can\'t be empty', C.siMsgOkOnly, 'Arnold Denoiser')
         return False
 
+    inFileStr = XSIUtils.Linktab.ResolvePath(inFileStr)
     inSeq = ImageSequence(inFileStr)
     outSeq = ImageSequence(inFileStr)
     outSeq.addFilebaseSuffix(outputSuffix)
