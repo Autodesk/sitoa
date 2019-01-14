@@ -813,8 +813,8 @@ function ArnoldLightShaders_gobo_1_0_Define(in_ctxt)
    h.AddString(params, "twrap",       "periodic");
    h.AddScalar(params, "density",     0.0, 0.0, 1.0, 0.0, 1.0);
    h.AddString(params, "filter_mode", "blend");
-   h.AddScalar(params, "offset_x",    0.0, 0.0, 1.0, 0.0, 1.0);
-   h.AddScalar(params, "offset_y",    0.0, 0.0, 1.0, 0.0, 1.0);
+   h.AddScalar(params, "offset_x",    0.0, -1000000.0, 1000000.0, -1.0, 1.0);
+   h.AddScalar(params, "offset_y",    0.0, -1000000.0, 1000000.0, -1.0, 1.0);
 
    // OUTPUT
    h.AddOutputShader(shaderDef.OutputParamDefs);
