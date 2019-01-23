@@ -55,13 +55,21 @@ def XSIUnloadPlugin( in_reg ):
 def OpenDenoiserProperty_Init( in_ctxt ):
     oCmd = in_ctxt.Source
     oArgs = oCmd.Arguments
+    oArgs.Add("in_pass")
     oArgs.Add("in_inspect")
     return true
 
-def OpenDenoiserProperty_Execute(in_inspect):
+def OpenDenoiserProperty_Execute(in_pass, in_inspect):
     inspect = True if in_inspect is None else in_inspect
 
+    # default to currentpass
     obj = Application.ActiveProject.ActiveScene.ActivePass
+
+    if in_pass:
+        if not in_pass.IsEqualTo(Application.ActiveProject.ActiveScene.PassContainer):
+            # if Arnold Render Options is Local in the Pass where the button was pressed, use that instead of currentpass
+            obj = in_pass
+
     propCollection = obj.Properties
     prop = propCollection.Find('arnold_denoiser')
 
