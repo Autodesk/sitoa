@@ -61,10 +61,9 @@ def OpenDenoiserProperty_Init( in_ctxt ):
 def OpenDenoiserProperty_Execute(in_inspect):
     inspect = True if in_inspect is None else in_inspect
 
-    obj = Application.ActiveSceneRoot
     obj = Application.ActiveProject.ActiveScene.ActivePass
     propCollection = obj.Properties
-    prop = propCollection.find('arnold_denoiser')
+    prop = propCollection.Find('arnold_denoiser')
 
     if not prop:
          prop = obj.AddProperty("arnold_denoiser", false, "Arnold Denoiser")
