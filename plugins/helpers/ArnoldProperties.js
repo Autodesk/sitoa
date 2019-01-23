@@ -26,6 +26,7 @@ function XSILoadPlugin(in_reg)
    in_reg.RegisterCommand("AddTextureOptionsProperties", "SITOA_AddTextureOptionsProperties");
    in_reg.RegisterCommand("AddCameraOptionsProperties",  "SITOA_AddCameraOptionsProperties");
    in_reg.RegisterCommand("AddVolumeProperties",         "SITOA_AddVolumeProperties");
+   in_reg.RegisterCommand("AddDenoiserProperties",       "SITOA_AddDenoiserProperties");
 
    in_reg.RegisterProperty("arnold_visibility");
    in_reg.RegisterProperty("arnold_matte");
@@ -91,6 +92,9 @@ function CommonAddProperties(in_collection, in_type, in_inspect)
             prop = AddVolumeProperty(in_collection.item(i));
             if (prop != null)
                volume_collection.Add(in_collection.item(i))
+            break;
+         case "Denoiser":
+            prop = AddDenoiserProperty(in_collection.item(i));
             break;
          default:
             break;
@@ -222,6 +226,16 @@ function AddVolumeProperties_Init(in_ctxt)
 function AddVolumeProperties_Execute(in_collection, in_inspect)
 {
    return CommonAddProperties(in_collection, "Volume", in_inspect);
+}
+
+function AddDenoiserProperties_Init(in_ctxt)
+{
+   return CommonAddArguments(in_ctxt);
+}
+
+function AddDenoiserProperties_Execute(in_collection, in_inspect)
+{
+   return CommonAddProperties(in_collection, "Denoiser", in_inspect);
 }
 
 /////////////////////////////////
@@ -412,6 +426,25 @@ function AddVolumeProperty(in_xsiObj)
       logmessage("[sitoa] Cannot add Volume property to " + in_xsiObj.FullName + ". It can only be assigned to PolyMeshes, Hair and Pointclouds", siErrorMsg);
 
    return prop;      
+}
+
+
+function AddDenoiserProperty(in_xsiObj)
+{
+   var prop = null;
+   // is in_xsiObj capable of hosting properties ?
+   var classOk = in_xsiObj.IsClassOf(siSceneItemID);
+   
+   var type = in_xsiObj.type;
+   if (classOk && (type == "Pass"))
+   {
+      if (!CommonHasProperty(in_xsiObj, "arnold_denoiser"))
+         prop = in_xsiObj.AddProperty("arnold_denoiser", false, "Arnold Denoiser");
+   }
+   else
+      logmessage("[sitoa] Cannot add Denoiser property to " + in_xsiObj.FullName + ". It can only be assigned to Passes", siErrorMsg);
+
+   return prop;
 }
 
 /////////////////////////////////
