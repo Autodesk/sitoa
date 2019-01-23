@@ -212,6 +212,16 @@ def input_logic():
         PPG.output.Value = ''
 
 
+def SITOALogMessage(message, severity=C.siInfo):
+    loglevel = Application.GetValue("Passes.Arnold_Render_Options.log_level")
+    siloglevel = [C.siError, C.siWarning, C.siInfo, C.siVerbose][loglevel]  # select the Softimage severity from SItoA loglevel.
+    
+    if severity <= siloglevel:
+        # LogMessage but clamp sverity at siInfo
+        # This makes sure that siVerbose messages get printed regardless if Verbosity is enabled in Softimage or not
+        Application.LogMessage(message, min(severity, C.siInfo))
+
+
 class ImageSequence(object):
     si_re = re.compile(r'(.*)\[(\d+)\.{2}(\d+)(?:;(\d+))?\](.*)(\..+)')
     square_re = re.compile(r'(.*?)(#+)(.*)(\..+)')
@@ -408,22 +418,22 @@ def runDenoise(start_frame, end_frame, inSeq, outSeq, temporal_frames, pixel_sea
         inFile = inSeq.frame(f)
         outFile = outSeq.frame(f)
         if os.path.isfile(inFile):
-            Application.LogMessage('[sitoa] Denoising image {} '.format(inFile))
+            SITOALogMessage('[sitoa] Denoising image {} '.format(inFile))
             t = threading.Thread(target=denoiseImage, args=(inFile, outFile, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs))
             t.start()
 
             while t.is_alive():
                 if pb.CancelPressed:
                     run = False
-                    Application.LogMessage('[sitoa] Stopping Arnold Denoiser after the current frame is done...')
+                    SITOALogMessage('[sitoa] Stopping Arnold Denoiser after the current frame is done...')
                 Application.Desktop.RedrawUI()
                 sleep(0.01)  # just to limit the RedrawUI a bit.
             else:
                 if not run:
-                    Application.LogMessage('[sitoa] Arnold Denoiser has stopped.')
+                    SITOALogMessage('[sitoa] Arnold Denoiser has stopped.')
         
         else:
-            Application.LogMessage('[sitoa] Arnold Denoiser: Could not find input file {} '.format(inFile), C.siErrorMsg)
+            SITOALogMessage('[sitoa] Arnold Denoiser: Could not find input file {} '.format(inFile), C.siError)
 
         i = pb.Increment()
         pb.StatusText = '{}/{}'.format(i, pb.Maximum)
@@ -431,7 +441,7 @@ def runDenoise(start_frame, end_frame, inSeq, outSeq, temporal_frames, pixel_sea
 
     else:
         if run:
-            Application.LogMessage('[sitoa] Arnold Denoiser has finished.')
+            SITOALogMessage('[sitoa] Arnold Denoiser has finished.')
 
 
 def denoiseImage(inFile, outFile, temporal_frames, pixel_search_radius, pixel_patch_radius, variance, light_group_aovs):
@@ -448,6 +458,6 @@ def denoiseImage(inFile, outFile, temporal_frames, pixel_search_radius, pixel_pa
         for light_group in light_group_split:
             cmd += ['-l', light_group]
 
-    Application.LogMessage('Starting Arnold Denoiser with command: ' + subprocess.list2cmdline(cmd), C.siVerbose)
+    SITOALogMessage('[sitoa] Starting Arnold Denoiser with command: ' + subprocess.list2cmdline(cmd), C.siVerbose)
     res = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, startupinfo=_no_window).communicate()[0]
-    Application.LogMessage(res, C.siVerbose)
+    SITOALogMessage(res, C.siVerbose)
