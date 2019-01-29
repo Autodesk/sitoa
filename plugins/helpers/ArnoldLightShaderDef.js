@@ -807,14 +807,14 @@ function ArnoldLightShaders_gobo_1_0_Define(in_ctxt)
 
    h.AddImage (params, "slidemap");
    h.AddScalar(params, "rotate",      0.0, 0.0, 1000000, 0.0, 360.0);
-   h.AddScalar(params, "scale_s",     1.0, 0.001, 1000000, 0.001, 10.0);
-   h.AddScalar(params, "scale_t",     1.0, 0.001, 1000000, 0.001, 10.0);
-   h.AddString(params, "wrap_s",      "periodic");
-   h.AddString(params, "wrap_t",      "periodic");
+   h.AddScalar(params, "sscale",      1.0, 0.001, 1000000, 0.001, 10.0);
+   h.AddScalar(params, "tscale",      1.0, 0.001, 1000000, 0.001, 10.0);
+   h.AddString(params, "swrap",       "periodic");
+   h.AddString(params, "twrap",       "periodic");
    h.AddScalar(params, "density",     0.0, 0.0, 1.0, 0.0, 1.0);
    h.AddString(params, "filter_mode", "blend");
-   h.AddScalar(params, "offset_x",    0.0, 0.0, 1.0, 0.0, 1.0);
-   h.AddScalar(params, "offset_y",    0.0, 0.0, 1.0, 0.0, 1.0);
+   h.AddScalar(params, "offset_x",    0.0, -1000000.0, 1000000.0, -1.0, 1.0);
+   h.AddScalar(params, "offset_y",    0.0, -1000000.0, 1000000.0, -1.0, 1.0);
 
    // OUTPUT
    h.AddOutputShader(shaderDef.OutputParamDefs);
@@ -838,8 +838,8 @@ function gobo_Layout(in_layout)
    item = in_layout.AddItem("slidemap", "");
    item.SetAttribute(siUINoLabel, true);
    item = in_layout.AddItem("rotate",   "Rotation");
-   item = in_layout.AddItem("scale_s",  "Repeat S");
-   item = in_layout.AddItem("scale_t",  "Repeat T");
+   item = in_layout.AddItem("sscale",   "Repeat S");
+   item = in_layout.AddItem("tscale",   "Repeat T");
 
    var ar = Array("Periodic", "periodic",
                   "Black",    "black",
@@ -847,8 +847,8 @@ function gobo_Layout(in_layout)
                   "Mirror",   "mirror",
                   "File",     "file");
 
-   item = in_layout.AddEnumControl("wrap_s", ar, "Wrap S", siControlCombo);
-   item = in_layout.AddEnumControl("wrap_t", ar, "Wrap T", siControlCombo);
+   item = in_layout.AddEnumControl("swrap", ar, "Wrap S", siControlCombo);
+   item = in_layout.AddEnumControl("twrap", ar, "Wrap T", siControlCombo);
      
    item = in_layout.AddItem("density",    "Density");
 
