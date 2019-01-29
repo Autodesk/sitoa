@@ -189,6 +189,20 @@ bool LoadFilters()
 
    CNodeUtilities().SetName(closestFilterNode, "sitoa_closest_filter");
 
+   // if we're outputting denoising aovs we need a variance filter
+   // https://github.com/Autodesk/sitoa/issues/34
+   if (GetRenderOptions()->m_output_denoising_aovs && !(filterType.IsEqualNoCase(L"variance") || filterType.IsEqualNoCase(L"contour")))
+   {
+      // create a variance filter
+      AtNode* varianceFilterNode = AiNode("variance_filter");
+      if (!varianceFilterNode)
+         return false;
+      CNodeUtilities().SetName(varianceFilterNode, "sitoa_variance_filter");
+      CNodeSetter::SetFloat(varianceFilterNode, "width", GetRenderOptions()->m_output_filter_width);  // width of output_filter
+      CNodeSetter::SetBoolean(varianceFilterNode, "scalar_mode", false);
+      CNodeSetter::SetString(varianceFilterNode, "filter_weights", filterType.GetAsciiString());  // type of output_filter
+   }
+
    // optix denoise filters are added in the LoadDrivers() function because they have to be unique for each AOV
 
    return true;
@@ -343,6 +357,7 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
 {
    Framebuffer frameBuffer(in_pass.GetFramebuffers().GetItem(L"Main"));
    CString mainFormat(ParAcc_GetValue(frameBuffer, L"Format", in_frame));
+   CFrameBuffer mainFb(frameBuffer, in_frame, false);
 
    CRefArray frameBuffers = in_pass.GetFramebuffers();
    LONG nbBuffers = frameBuffers.GetCount();
@@ -364,6 +379,13 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
 
    // vector of the drivers, each with theirs layers
    vector <CDeepExrLayersDrivers> deepExrLayersDrivers;
+
+   // vars to hold if and how to create AOVs for noice
+   // it's a string because it can be added in two ways.
+   // recognised values are "add", "add_rename" and "exist"
+   CString noiceDA = L"add";
+   CString noiceN  = L"add";
+   CString noiceZ  = L"add";
 
    unsigned int activeBuffer = 0;
    for (LONG i = 0; i<nbBuffers; i++)
@@ -509,10 +531,87 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       else
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + numericFilter + " " + masterFb.m_fullName).GetAsciiString());
 
+      // Do checks if Arnold Denoising AOVs already exist and if they have the right filter if they do
+      if (masterFb.m_fullName == mainFb.m_fullName) // only check if it's a layer in the same exr as main (multilayer-exr)
+      {
+         if (thisFb.m_layerName == L"diffuse_albedo")
+            noiceDA = L"exist";
+
+         if (thisFb.m_layerName == L"N")
+         {
+            if (numericFilter == colorFilter)
+               noiceN = L"exist";
+            else
+               noiceN = L"add_rename";
+         }
+
+         if (thisFb.m_layerName == L"Z")
+         {
+            if (numericFilter == colorFilter)
+               noiceZ = L"exist";
+            else
+               noiceZ = L"add_rename";
+         }
+      }
+
       activeBuffer++;
    }
 
-   // Setting outpus array only if there is at least one active framebuffer
+   // Setup the AOVs for Arnold Denoising (noice)
+   // https://github.com/Autodesk/sitoa/issues/34
+   if (GetRenderOptions()->m_output_denoising_aovs)
+   {
+      if (mainFb.m_driverName.IsEqualNoCase(L"driver_exr"))
+      {
+         // pre-calc number of additional framebuffers to add and resize output array
+         int nbNoiceBuffers = 4;
+         if (noiceDA == L"exist")
+            nbNoiceBuffers -= 1;
+         if (noiceN == L"exist")
+            nbNoiceBuffers -= 1;
+         if (noiceZ == L"exist")
+            nbNoiceBuffers -= 1;
+         AiArrayResize(outputs, activeBuffers + nbNoiceBuffers, 1);
+
+         // Set the name and issue a warning if it's renamed
+         CString nameN = L"";
+         CString nameZ = L"";
+         if (noiceN == L"add_rename")
+         {
+            nameN = L" N_noice";
+            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"N\" has been renamed to \"N_noice\" because \"N\" already exist with \"closest_filter\".", siInfoMsg);
+         }
+         if (noiceZ == L"add_rename")
+         {
+            nameZ = L" Z_noice";
+            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"Z\" has been renamed to \"Z_noice\" because \"Z\" already exist with \"closest_filter\".", siInfoMsg);
+         }
+
+         // add the denoising aovs
+         int i = 0;
+         if (noiceDA != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"diffuse_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
+            i++;
+         }
+         if (noiceN != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"N VECTOR " + colorFilter + L" " + mainFb.m_fullName + nameN).GetAsciiString());
+            i++;
+         }
+         if (noiceZ != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"Z FLOAT " + colorFilter + L" " + mainFb.m_fullName + nameZ).GetAsciiString());
+            i++;
+         }
+         
+         AiArraySetStr(outputs, activeBuffers+i, CString(L"RGB RGB sitoa_variance_filter " + mainFb.m_fullName + L" variance").GetAsciiString());
+      }
+      else
+         GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOVs can only be output to exr.", siWarningMsg);
+   }
+
+   // Setting outputs array only if there is at least one active framebuffer
    if (activeBuffer > 0)
    {
       AiNodeSetArray(in_optionsNode, "outputs", outputs);

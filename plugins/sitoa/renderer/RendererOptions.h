@@ -222,6 +222,7 @@ public:
    // denoiser
    bool m_use_optix_on_main;
    bool m_only_show_denoise;
+   bool m_output_denoising_aovs;
 
    //////////////////////////////////////
 
@@ -404,7 +405,8 @@ public:
 
       // denoiser
       m_use_optix_on_main(false),
-      m_only_show_denoise(true)
+      m_only_show_denoise(true),
+      m_output_denoising_aovs(false)
 
    {
       for (LONG i=0; i<NB_MAX_LAYERS; i++)

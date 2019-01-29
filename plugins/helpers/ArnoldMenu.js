@@ -247,6 +247,7 @@ function AddPropertiesSubMenu(in_menu)
    in_menu.AddCommandItem("Texture Options", "AddTextureOptionsProperties");
    in_menu.AddCommandItem("Camera Options",  "AddCameraOptionsProperties");
    in_menu.AddCommandItem("Sidedness",       "AddSidednessProperties");
+   in_menu.AddCommandItem("Denoiser",        "AddDenoiserProperties");
 }
 
 

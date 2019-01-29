@@ -236,6 +236,7 @@ void CRenderOptions::Read(const Property &in_cp)
    // denoiser
    m_use_optix_on_main = (bool)ParAcc_GetValue(in_cp, L"use_optix_on_main", DBL_MAX);
    m_only_show_denoise = (bool)ParAcc_GetValue(in_cp, L"only_show_denoise", DBL_MAX);
+   m_output_denoising_aovs = (bool)ParAcc_GetValue(in_cp, L"output_denoising_aovs", DBL_MAX);
 }
 
 
@@ -524,6 +525,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    // denoiser
    cpset.AddParameter(L"use_optix_on_main",      CValue::siBool,   siPersistable, L"", L"", false,          CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"only_show_denoise",      CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"output_denoising_aovs",  CValue::siBool,   siPersistable, L"", L"", false,          CValue(), CValue(), CValue(), CValue(), p);
 
    // the hidden version string saved with the scene
    cpset.AddParameter(L"sitoa_version",          CValue::siString, siPersistable, L"", L"", L"",            CValue(), CValue(), CValue(), CValue(), p);
@@ -1115,6 +1117,10 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
          layout.AddItem(L"use_optix_on_main", L"Apply on Main");
          layout.AddItem(L"only_show_denoise", L"Only show denoise (in progressive)");
       layout.EndGroup();
+      layout.AddGroup(L"Arnold Denoiser (noice)");
+         layout.AddItem(L"output_denoising_aovs", L"Output Denoising AOVs");
+         layout.AddButton(L"OpenDenoiserProperties", L"Open Arnold Denoiser Properties");
+      layout.EndGroup();
 
       layout.AddItem(L"sitoa_version", L"SItoA Version");
 
@@ -1300,6 +1306,15 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
                break;
             }
          }
+      }
+      else if (buttonName.IsEqualNoCase(L"OpenDenoiserProperties"))
+      {
+         CValue retval = false;
+         CValueArray denoiserArgs(2);
+         denoiserArgs[0] = cpset.GetParent();
+         denoiserArgs[1] = "";
+
+         Application().ExecuteCommand(L"SITOA_OpenDenoiserProperty", denoiserArgs, retval);
       }
    }
    else if (eventID == PPGEventContext::siParameterChange)
