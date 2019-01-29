@@ -18,7 +18,7 @@ See the License for the specific language governing permissions and limitations 
 
 #include <xsi_geometryaccessor.h>
 #include <xsi_polygonmesh.h>
-
+#include <xsi_shaderarrayparameter.h>
 
 // Update an object's material. It's called when, in ipr, an object is moved to/out-of a group with a material
 //
@@ -294,6 +294,40 @@ void UpdatePassShaderStack(const Pass &in_pass, double in_frame)
    }
    else
       CNodeSetter::SetPointer(options, "background", NULL);
+   
+   // Support for 'AOV shaders' putting this into 'output' shader type
+   CRef outputStackRef;
+   outputStackRef.Set(in_pass.GetFullName() + L".OutputShaderStack");
+   ShaderArrayParameter arrayParam = ShaderArrayParameter(outputStackRef);
+   CRefArray outputShadersArray;
+
+   if (arrayParam.GetCount() > 0)
+   {   
+      for (LONG i=0; i<arrayParam.GetCount(); i++)
+      {
+         passParam = Parameter(arrayParam[i]);
+         Shader outputShader = GetConnectedShader(passParam);
+         if (outputShader.IsValid())
+         {
+            outputShadersArray.Add(outputShader.GetRef());
+         }
+      }
+
+      if (outputShadersArray.GetCount() > 0)
+      {
+         AtArray* aovShadersArray = AiArrayAllocate(outputShadersArray.GetCount(), 1, AI_TYPE_NODE);
+         for (LONG i=0; i<outputShadersArray.GetCount(); i++)
+         {
+            Shader outputShader(outputShadersArray[i]);
+
+            AtNode* shaderNode = UpdateShader(outputShader, in_frame);
+            AiArraySetPtr(aovShadersArray, i, shaderNode);
+         }
+         AiNodeSetArray(options, "aov_shaders", aovShadersArray);
+      }
+   }
+   else
+      CNodeSetter::SetPointer(options, "aov_shaders", NULL);
 
    CRef atmParamRef;
    atmParamRef.Set(in_pass.GetFullName() + L".VolumeShaderStack.Item");

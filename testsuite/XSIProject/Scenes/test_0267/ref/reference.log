@@ -3,9 +3,9 @@
 =======================================================
 
 License information: using [Processing]
-00:00:00   199MB         | log started Mon Sep  3 00:49:09 2018
+00:00:00   199MB         | log started Sun Sep  2 22:28:17 2018
 00:00:00   199MB         | Arnold 5.2.0.0 [4fb9451c] windows icc-17.0.2 oiio-1.7.17 osl-1.9.9 vdb-4.0.0 clm-1.0.3.513 rlm-12.4.2 2018/08/09 09:37:24
-00:00:00   199MB         | running on Jenus, pid=20028
+00:00:00   199MB         | running on Jenus, pid=22608
 00:00:00   199MB         |  1 x Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz (4 cores, 8 logical) with 16333MB
 00:00:00   199MB         |  Nvidia driver version 391.35
 00:00:00   199MB         |  Windows 8 Professional (version 6.2, build 9200)
@@ -14,42 +14,45 @@ License information: using [Processing]
 00:00:00   199MB         | loading plugins from C:\Users\lindg\Documents\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\..\plugins ...
 00:00:00   199MB         | loaded 4 plugins from 2 lib(s) in 0:00.00
 00:00:00   199MB         | loading plugins from C:\Users\lindg\Documents\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
-00:00:00   200MB WARNING |  unable to load dynamic library C:\Users\lindg\Documents\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\optix_denoiser.51.dll: The specified module could not be found.
+00:00:00   199MB WARNING |  unable to load dynamic library C:\Users\lindg\Documents\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\optix_denoiser.51.dll: The specified module could not be found.
 
 00:00:00   200MB         | loaded 103 plugins from 1 lib(s) in 0:00.01
 
 
 
 
-00:00:00   207MB         |  
-00:00:00   207MB         | releasing resources
-00:00:00   206MB         | Arnold shutdown
+00:00:00   206MB         |  
+00:00:00   206MB         | releasing resources
+00:00:00   205MB         | Arnold shutdown
 # INFO : [sitoa] SItoA 5.2.0 win loaded.
 # INFO : [sitoa] Arnold 5.2.0.0 detected.
 Application.InstallCustomPreferences("ArnoldRenderPreferences", "Arnold Render")
 Application.RefreshCustomPreferences()
 COMMAND: -processing -script "execute_test.js" -main main
 # INFO : C:\Users\lindg\Documents\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
->Loading: C:\Users\lindg\Documents\GitHub\sitoa\build\windows_x86_64\msvc_opt\si_13000\testsuite\test_0161\test.scn...
+>Loading: C:\Users\lindg\Documents\GitHub\sitoa\build\windows_x86_64\msvc_opt\si_13000\testsuite\test_0267\test.scn...
 # INFO : 4034 - Loaded scene was created with build number: 13.2.163.0 - compatibility version: 1300
-Application.OpenScene("C:\\Users\\lindg\\Documents\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0161\\test.scn", "", "")
+Application.OpenScene("C:\\Users\\lindg\\Documents\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0267\\test.scn", "", "")
 Application.SetValue("Passes.RenderOptions.ImageLockAspectRatio", False, "")
 Application.SetValue("Passes.RenderOptions.ImageWidth", 160, "")
 Application.SetValue("Passes.RenderOptions.ImageHeight", 120, "")
-Application.SetValue("Passes.Default_Pass.Main.Filename", "C:\\Users\\lindg\\Documents\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0161\\testrender.####.tif", "")
+Application.SetValue("Passes.Default_Pass.Main.Filename", "C:\\Users\\lindg\\Documents\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0267\\testrender.####.tif", "")
 Application.SetValue("Passes.Default_Pass.Main.Format", "tif", "")
 Application.SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, "")
 Application.SetValue("Passes.Arnold_Render_Options.enable_log_file", True, "")
 Application.SetValue("Passes.Arnold_Render_Options.log_level", 1, "")
-Application.SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\Users\\lindg\\Documents\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0161", "")
+Application.SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\Users\\lindg\\Documents\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0267", "")
+# ERROR : 2000 - Argument 0 (Target) is invalid
+# ERROR : 2001-EDIT-SetValue - Argument 0 is invalid
+Application.SetValue("Passes.Arnold_Render_Options.shaders_path", "C:\\Users\\lindg\\Documents\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\shaders", "")
+Command failed, returned -2147024809
 Application.SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\Users\\lindg\\Documents\\GitHub\\sitoa\\testsuite\\XSIProject\\Pictures", "")
 Application.SetValue("Passes.Arnold_Render_Options.save_texture_paths", False, "")
 # INFO : Rendering pass 'Default_Pass'...
 # INFO : Rendering frame 1 (0.0% done)
 # WARNING : [arnold] unable to load dynamic library C:\Users\lindg\Documents\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\optix_denoiser.51.dll: The specified module could not be found.
 # 
-# WARNING : [arnold] node entry "standard" is deprecated, and may be removed in the future
-# INFO : [sitoa] Frame 1 exported to Arnold in 0.063 sec.
+# INFO : [sitoa] Frame 1 exported to Arnold in 0.105 sec.
 # INFO : Render completed (100% done)
 Application.RenderAllPasses("", "", "", "", "siRenderVerbosityDefault")
 Warning: return value of the executed script is not an integer

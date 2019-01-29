@@ -483,6 +483,33 @@ CString CStringUtilities::GetMasterBaseNodeName(CString &in_name)
    return splits[count-1];
 }
 
+
+// Return true or false if string starts with substring
+//
+// @param in_string        The input string
+// @param in_subString     The start string
+//
+// @return true or false
+//
+bool CStringUtilities::StartsWith(CString in_string, CString in_subString)
+{
+   return (in_string.FindString(in_subString) == 0);
+}
+
+
+// Return true or false if string ends with substring
+//
+// @param in_string        The input string
+// @param in_subString     The end string
+//
+// @return true or false
+//
+bool CStringUtilities::EndsWith(CString in_string, CString in_subString)
+{
+   return (in_string.ReverseFindString(in_subString) == (in_string.Length() - in_subString.Length()));
+}
+
+
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
@@ -1216,9 +1243,6 @@ CString GetRenderCodeDesc(int in_errorCode)
       case AI_ABORT:
          desc = L"render aborted";
          break;
-      case AI_ERROR_WRONG_OUTPUT:
-         desc = L"can't open output file";
-         break;
       case AI_ERROR_NO_CAMERA:
          desc = L"camera not defined";
          break;
@@ -1231,20 +1255,14 @@ CString GetRenderCodeDesc(int in_errorCode)
       case AI_ERROR_RENDER_REGION:
          desc = L"invalid render region";
          break;
-      case AI_ERROR_OUTPUT_EXISTS:
-         desc = L"output file already exists";
-         break;
-      case AI_ERROR_OPENING_FILE:
-         desc = L"can't open file";
-         break;
       case AI_INTERRUPT:
          desc = L"render interrupted by user";
          break;
-      case AI_ERROR_UNRENDERABLE_SCENEGRAPH:
-         desc = L"unrenderable scenegraph";
-         break;
       case AI_ERROR_NO_OUTPUTS:
          desc = L"no rendering outputs";
+         break;
+      case AI_ERROR_UNAVAILABLE_DEVICE:
+         desc = L"Cannot create GPU context.";
          break;
       case AI_ERROR:
          desc = L"generic error";
@@ -1375,6 +1393,47 @@ void SetLogSettings(const CString& in_renderType, double in_frame)
       else
          GetMessageQueue()->LogMsg(L"[sitoa] Logging path is not valid", siWarningMsg);
    }
+
+   // stats and profile
+   bool enableStats        = GetRenderOptions()->m_enable_stats;
+   bool enableProfile      = GetRenderOptions()->m_enable_profile;
+
+   if (enableStats)
+   {
+      CPathString statsFile = GetRenderOptions()->m_stats_file;
+      statsFile.ResolveTokensInPlace(CTimeUtilities().GetCurrentFrame(), L"[Pass]");
+      statsFile.ResolvePathInPlace();
+      if (CUtils::EnsureFolderExists(statsFile, true))
+      {
+         AiStatsSetFileName(statsFile.GetAsciiString());
+         AiStatsSetMode(AI_STATS_MODE_APPEND);
+      }
+      else
+      {
+         GetMessageQueue()->LogMsg(L"[sitoa] Logging Stats path is not valid", siWarningMsg);
+         AiStatsSetFileName("");
+      }
+   }
+   else
+      AiStatsSetFileName("");
+
+   if (enableProfile)
+   {
+      CPathString profileFile = GetRenderOptions()->m_profile_file;
+      profileFile.ResolveTokensInPlace(CTimeUtilities().GetCurrentFrame(), L"[Pass]");
+      profileFile.ResolvePathInPlace();
+      if (CUtils::EnsureFolderExists(profileFile, true))
+      {
+         AiProfileSetFileName(profileFile.GetAsciiString());
+      }
+      else
+      {
+         GetMessageQueue()->LogMsg(L"[sitoa] Logging Profile path is not valid", siWarningMsg);
+         AiProfileSetFileName("");
+      }
+   }
+   else
+      AiProfileSetFileName("");
 }
 
 
@@ -1556,4 +1615,15 @@ void AddCRefToArray(CRefArray& out_array, const CRef& in_item, bool in_recursive
       for (LONG i=0; i<children.GetCount(); i++)
          AddCRefToArray(out_array, children[i], true);
    }
+}
+
+
+// Checks whether running in interactive or batch mode and returns the correct Arnold enum.
+//
+const AtSessionMode GetSessionMode()
+{
+   if(Application().IsInteractive())
+      return AI_SESSION_INTERACTIVE;
+   else
+      return AI_SESSION_BATCH;
 }

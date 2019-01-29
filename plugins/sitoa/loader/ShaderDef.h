@@ -49,6 +49,8 @@ private:
    bool     m_inspectable;
    bool     m_has_viewport_guid;
    CString  m_viewport_guid;
+   bool     m_has_node_type;
+   CString  m_node_type;
 
 public:
 
@@ -56,7 +58,8 @@ public:
 
    CShaderDefParameter() : 
       m_has_label(false), m_has_min(false), m_has_max(false), 
-      m_has_softmin(false), m_has_softmax(false), m_has_linkable(false), m_has_viewport_guid(false)
+      m_has_softmin(false), m_has_softmax(false), m_has_linkable(false), m_has_viewport_guid(false),
+      m_has_node_type(false)
    {}
 
    CShaderDefParameter(const CShaderDefParameter &in_arg) :
@@ -70,6 +73,7 @@ public:
       m_has_linkable(in_arg.m_has_linkable), m_linkable(in_arg.m_linkable),
       m_has_inspectable(in_arg.m_has_inspectable), m_inspectable(in_arg.m_inspectable),
       m_has_viewport_guid(in_arg.m_has_viewport_guid), m_viewport_guid(in_arg.m_viewport_guid),
+      m_has_node_type(in_arg.m_has_node_type), m_node_type(in_arg.m_node_type),
       m_name(in_arg.m_name)
    {
       m_default = in_arg.m_default;

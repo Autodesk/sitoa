@@ -94,6 +94,32 @@ siShaderParameterDataType GetParamSdType(int in_type)
    return siShaderDataTypeUnknown;
 }
 
+// Return the Softimage reference filter type for the input metadata node_type
+//
+// @param in_type   The node_type
+//
+// @return          The Softimage data type
+//
+siShaderReferenceFilterType GetShaderReferenceFilterType(CString in_type)
+{
+   if (in_type == L"object")
+      return siObjectReferenceFilter;
+   else if (in_type == L"camera")
+      return siCameraReferenceFilter;
+   else if (in_type == L"light")
+      return siLightReferenceFilter;
+   else if (in_type == L"material")
+      return siMaterialReferenceFilter;
+   else if (in_type == L"shader")
+      return siShaderReferenceFilter;
+   else if (in_type == L"geometric")
+      return siGeometryReferenceFilter;
+   else if (in_type == L"userdata")
+      return siUserDataBlobReferenceFilter;
+   else
+      return siUnknownReferenceFilter;
+}
+
 
 // Constructor for the CShaderDefParameter class, from the parameter entry
 //
@@ -124,6 +150,7 @@ CShaderDefParameter::CShaderDefParameter(const AtParamEntry* in_paramEntry, cons
    m_has_linkable      = AiMetaDataGetBool  (in_node_entry, c, ATSTRING::linkable, &m_linkable);
    m_has_inspectable   = AiMetaDataGetBool  (in_node_entry, c, ATSTRING::soft_inspectable, &m_inspectable);
    m_has_viewport_guid = MetaDataGetCStr    (in_node_entry, c, ATSTRING::soft_viewport_guid, m_viewport_guid);
+   m_has_node_type     = MetaDataGetCStr    (in_node_entry, c, ATSTRING::soft_node_type, m_node_type);
 }
 
 
@@ -205,7 +232,32 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
    if (m_type == AI_TYPE_CLOSURE)
       pDef = in_paramDef.AddParamDef(m_name, L"closure", defOptions);
    else
-      pDef = in_paramDef.AddParamDef(m_name, GetParamSdType(paramType), defOptions);
+   {
+      // adds the ability for string types to have a node picker
+      // also implements filter for the node types
+      if ((m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE) && m_has_node_type)
+      {
+         CStringArray nodeTypes = CStringUtilities().ToLower(m_node_type).Split(L" ");
+         defOptions.SetAttribute(siReferenceFilterAttribute, GetShaderReferenceFilterType(nodeTypes[0]));
+
+         if (nodeTypes.GetCount() > 1)
+         {
+            if (nodeTypes[1] == L"array")
+            {
+               // shaderarrays doesn't use the label but uses SetLongName instead
+               // label has to be specified in .mtd or else it will just show the parameter name
+               if (m_has_label)
+                  defOptions.SetLongName(m_label);
+
+               pDef = in_paramDef.AddArrayParamDef(m_name, siShaderDataTypeReference, defOptions);
+            }
+         }
+         else
+            pDef = in_paramDef.AddParamDef(m_name, siShaderDataTypeReference, defOptions);
+      }
+      else
+         pDef = in_paramDef.AddParamDef(m_name, GetParamSdType(paramType), defOptions);
+   }
 
    // setting the default for the struct parameters
    if (pDef.IsStructure())
@@ -470,6 +522,12 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
    if (m_is_passthrough_closure)
    {
       m_sd.AddShaderFamily(siShaderFamilySurfaceMat, true);
+      // Allow the closer node to connect to the environment shader stack
+      // github issue #36
+      m_sd.AddShaderFamily(siShaderFamilyEnvironment, true);
+      // This is the only way a closure can be connected to output shader stack
+      // Support for 'Global AOV Shaders'... github issue #13
+      m_sd.AddShaderFamily(siShaderFamilyOutput, true);
       m_sd.AddShaderFamily(siShaderFamilyVolume, true);
    }
    else
@@ -606,15 +664,29 @@ void CShaderDefShader::Layout()
       LONG order_array_count = order_array.GetCount();
 
       bool begin_group = false;
+      bool add_tab = false;
       CString group_name;
+      CString tab_name;
       for (LONG i = 0; i < order_array_count; i++)
       {
          CString p_s = order_array[i];
+         if (add_tab)
+         {
+            tab_name = CStringUtilities().ReplaceString(L"_", L" ", p_s);
+            layout.AddTab(tab_name);
+            add_tab = false;
+            continue;
+         }
          if (begin_group)
          {
             group_name = CStringUtilities().ReplaceString(L"_", L" ", p_s);
             layout.AddGroup(group_name);
             begin_group = false;
+            continue;
+         }
+         if (p_s == L"AddTab")
+         {
+            add_tab = true;
             continue;
          }
          if (p_s == L"BeginGroup")
@@ -664,7 +736,22 @@ void CShaderDefShader::Layout()
    }
    // unfortunately the following does not work (in the case the definition already exists)
    else // if there is no specific desc metadata, set the help to the shader page
-      layout.PutAttribute(siUIHelpFile, m_has_desc ? m_desc : SITOA_SHADERS_URL);      
+      layout.PutAttribute(siUIHelpFile, m_has_desc ? m_desc : SITOA_SHADERS_URL);
+
+   // setup ppg logic
+   layout.PutLanguage(L"JScript");
+   if (m_name == L"closure") 
+   {
+      // github issue #33
+      // for closure connector node whenever it's inspected show the shader connected to it
+      layout.PutLogic(
+         L"function OnInit()\n"
+         L"{\n"
+         L"   var src = PPG.closure.Source;\n"
+         L"   if (src != null) InspectObj(src.Parent);\n"
+         L"}\n"
+         );
+   }
 }
 
 
@@ -680,7 +767,7 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
 
    GetRenderInstance()->DestroyScene(false);
 
-   AiBegin();
+   AiBegin(GetSessionMode());
    // load the plugins (installation, + the ones in the shader search path)
    GetRenderInstance()->GetPluginsSearchPath().Put(in_plugin_origin_path, true);
    GetRenderInstance()->GetPluginsSearchPath().LoadPlugins();

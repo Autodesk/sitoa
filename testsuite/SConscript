@@ -198,10 +198,6 @@ function main(path)
    SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "%s", null);}
    catch(e) {}
    
-   try {
-   SetValue("Passes.Arnold_Render_Options.shaders_path", "%s", null);}
-   catch(e) {}
-   
    try 
    {
       SetValue("Passes.Arnold_Render_Options.textures_path", "%s", null);
@@ -217,7 +213,6 @@ function main(path)
 	   get_escaped_path(os.path.abspath('test.scn')),
        get_escaped_path(os.path.abspath(test_env['OUTPUT_IMAGE'])),
        get_escaped_path(os.getcwd()),
-       get_escaped_path(os.path.join(ROOT_DIR, os.path.dirname(str(SITOA_SHADERS[0])))),
        get_escaped_path(os.path.abspath(os.path.join(ROOT_DIR,'testsuite', 'XSIProject', 'Pictures')))))
    file.close()
 
@@ -439,7 +434,7 @@ SItoA testsuite
 <tr>
 <td>
 <font face="Arial"><h1>SItoA %s testsuite</h1>
-%s<br>%s</font>
+<a href="%s">%s</a></font>
 </td>
 <td>
 <pre>
@@ -456,7 +451,7 @@ SItoA testsuite
 </tr>
 </table>
 <br>
-''' % (SITOA_VERSION, REVISION, URL, str(PATTERNS + TAGS), len(source), passed, (100.0 * passed) / (passed + failed), failed, (100.0 * failed) / (passed + failed), TOTAL_RUNNING_TIME))
+''' % (SITOA_VERSION, URL, REVISION[:7], str(PATTERNS + TAGS), len(source), passed, (100.0 * passed) / (passed + failed), failed, (100.0 * failed) / (passed + failed), TOTAL_RUNNING_TIME))
    outfile.write('''
 <table border="0" cellpadding="0">
 <tr>

@@ -158,13 +158,10 @@ void CFrameBuffer::Log()
 //
 void LoadPlayControlData(AtNode* in_optionsNode, double in_frame)
 {
-   if (AiNodeDeclare(in_optionsNode, "frame", "constant FLOAT"))
-      CNodeSetter::SetFloat(in_optionsNode, "frame", (float)in_frame);
+   CNodeSetter::SetFloat(in_optionsNode, "frame", (float)in_frame);
 
    double fps = CTimeUtilities().GetFps();
-
-   if (AiNodeDeclare(in_optionsNode, "fps", "constant FLOAT"))
-      CNodeSetter::SetFloat(in_optionsNode, "fps", (float)fps);
+   CNodeSetter::SetFloat(in_optionsNode, "fps", (float)fps);
 }
 
 
@@ -191,6 +188,72 @@ bool LoadFilters()
       return false;
 
    CNodeUtilities().SetName(closestFilterNode, "sitoa_closest_filter");
+
+   // if we're outputting denoising aovs we need a variance filter
+   // https://github.com/Autodesk/sitoa/issues/34
+   if (GetRenderOptions()->m_output_denoising_aovs && !(filterType.IsEqualNoCase(L"variance") || filterType.IsEqualNoCase(L"contour")))
+   {
+      // create a variance filter
+      AtNode* varianceFilterNode = AiNode("variance_filter");
+      if (!varianceFilterNode)
+         return false;
+      CNodeUtilities().SetName(varianceFilterNode, "sitoa_variance_filter");
+      CNodeSetter::SetFloat(varianceFilterNode, "width", GetRenderOptions()->m_output_filter_width);  // width of output_filter
+      CNodeSetter::SetBoolean(varianceFilterNode, "scalar_mode", false);
+      CNodeSetter::SetString(varianceFilterNode, "filter_weights", filterType.GetAsciiString());  // type of output_filter
+   }
+
+   // optix denoise filters are added in the LoadDrivers() function because they have to be unique for each AOV
+
+   return true;
+}
+
+
+// Load the color manager
+// https://github.com/Autodesk/sitoa/issues/31
+//
+// @param in_optionsNode     the Arnold options node
+// @param in_frame           the frame time
+//
+// @return true if the color manager was well created, else false
+//
+bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
+{
+   CString colorManager = GetRenderOptions()->m_color_manager;
+   if (colorManager == L"color_manager_ocio")
+   {
+      AtNode* ocioNode = AiNode("color_manager_ocio");
+      if (!ocioNode)
+         return false;
+      CNodeUtilities().SetName(ocioNode, "sitoa_color_manager_ocio");
+
+      CNodeSetter::SetString(ocioNode, "config",             GetRenderOptions()->m_ocio_config.GetAsciiString());
+      CNodeSetter::SetString(ocioNode, "color_space_narrow", GetRenderOptions()->m_ocio_color_space_narrow.GetAsciiString());
+      CNodeSetter::SetString(ocioNode, "color_space_linear", GetRenderOptions()->m_ocio_color_space_linear.GetAsciiString());
+
+      // only export chromaticities if color_space_linear ise set
+      if (GetRenderOptions()->m_ocio_color_space_linear != L"") {
+         CString ocioChromaticitiesString = GetRenderOptions()->m_ocio_linear_chromaticities;
+         CStringArray ocioChromaticitiesStrings = ocioChromaticitiesString.Split(L" ");
+         if (ocioChromaticitiesStrings.GetCount() == 8) {
+            AtArray* ocioChromaticities = AiArrayAllocate(8, 1, AI_TYPE_FLOAT);
+            float chromaticitySample;
+            for (int i=0; i<8; i++) {
+               chromaticitySample = atof(ocioChromaticitiesStrings[i].GetAsciiString());
+
+               // if a sample is 0.0 and is not green or blue x (ACES uses 0.0 as green x) then issue a warning
+               if (chromaticitySample == 0.0f && i != 2 && i != 4)
+                  GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticity sample " + CString(i) + L" is 0.0", siWarningMsg);
+               AiArraySetFlt(ocioChromaticities, i, chromaticitySample);
+            }
+            AiNodeSetArray(ocioNode, "linear_chromaticities", ocioChromaticities);
+         }
+         else {
+            GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticities could not be parsed. It needs to be 8 values separated by spaces. Unparsable: '" + CString(ocioChromaticitiesString) + L"'", siWarningMsg);
+         }
+      }
+      CNodeSetter::SetPointer(in_optionsNode, "color_manager", ocioNode);
+   }
    return true;
 }
 
@@ -294,6 +357,7 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
 {
    Framebuffer frameBuffer(in_pass.GetFramebuffers().GetItem(L"Main"));
    CString mainFormat(ParAcc_GetValue(frameBuffer, L"Format", in_frame));
+   CFrameBuffer mainFb(frameBuffer, in_frame, false);
 
    CRefArray frameBuffers = in_pass.GetFramebuffers();
    LONG nbBuffers = frameBuffers.GetCount();
@@ -315,6 +379,13 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
 
    // vector of the drivers, each with theirs layers
    vector <CDeepExrLayersDrivers> deepExrLayersDrivers;
+
+   // vars to hold if and how to create AOVs for noice
+   // it's a string because it can be added in two ways.
+   // recognised values are "add", "add_rename" and "exist"
+   CString noiceDA = L"add";
+   CString noiceN  = L"add";
+   CString noiceZ  = L"add";
 
    unsigned int activeBuffer = 0;
    for (LONG i = 0; i<nbBuffers; i++)
@@ -440,16 +511,107 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
             deepExrLayersDrivers.push_back(CDeepExrLayersDrivers(masterFb.m_fullName, thisFb.m_layerName, thisFb.m_driverBitDepth));
       }
 
+      // if layerName ends with "_denoise", we add a denoise filter named after the layer and then add the output
+      if (CStringUtilities().EndsWith(thisFb.m_layerName, L"_denoise"))
+      {
+         // OptiX denoise needs a separete filter for each AOV, so we create them here instad of in LoadFilters()
+         CString optixFilterName = L"sitoa_" + thisFb.m_layerName + L"_optix_filter";
+         AtNode* optixFilterNode = AiNode("denoise_optix_filter");
+         if (!optixFilterNode)
+         {
+            GetMessageQueue()->LogMsg(L"[sitoa] Couldn't create denoise_optix_filter for layer " + thisFb.m_layerName, siErrorMsg);
+            continue;
+         }
+         CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
+         AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + optixFilterName + L" " + masterFb.m_fullName).GetAsciiString());
+      }
       // Adding to outputs. masterFb differs from thisFb if they are both exr and share the same filename
-      if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
+      else if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + colorFilter + " " + masterFb.m_fullName).GetAsciiString());
       else
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + numericFilter + " " + masterFb.m_fullName).GetAsciiString());
 
+      // Do checks if Arnold Denoising AOVs already exist and if they have the right filter if they do
+      if (masterFb.m_fullName == mainFb.m_fullName) // only check if it's a layer in the same exr as main (multilayer-exr)
+      {
+         if (thisFb.m_layerName == L"diffuse_albedo")
+            noiceDA = L"exist";
+
+         if (thisFb.m_layerName == L"N")
+         {
+            if (numericFilter == colorFilter)
+               noiceN = L"exist";
+            else
+               noiceN = L"add_rename";
+         }
+
+         if (thisFb.m_layerName == L"Z")
+         {
+            if (numericFilter == colorFilter)
+               noiceZ = L"exist";
+            else
+               noiceZ = L"add_rename";
+         }
+      }
+
       activeBuffer++;
    }
 
-   // Setting outpus array only if there is at least one active framebuffer
+   // Setup the AOVs for Arnold Denoising (noice)
+   // https://github.com/Autodesk/sitoa/issues/34
+   if (GetRenderOptions()->m_output_denoising_aovs)
+   {
+      if (mainFb.m_driverName.IsEqualNoCase(L"driver_exr"))
+      {
+         // pre-calc number of additional framebuffers to add and resize output array
+         int nbNoiceBuffers = 4;
+         if (noiceDA == L"exist")
+            nbNoiceBuffers -= 1;
+         if (noiceN == L"exist")
+            nbNoiceBuffers -= 1;
+         if (noiceZ == L"exist")
+            nbNoiceBuffers -= 1;
+         AiArrayResize(outputs, activeBuffers + nbNoiceBuffers, 1);
+
+         // Set the name and issue a warning if it's renamed
+         CString nameN = L"";
+         CString nameZ = L"";
+         if (noiceN == L"add_rename")
+         {
+            nameN = L" N_noice";
+            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"N\" has been renamed to \"N_noice\" because \"N\" already exist with \"closest_filter\".", siInfoMsg);
+         }
+         if (noiceZ == L"add_rename")
+         {
+            nameZ = L" Z_noice";
+            GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOV \"Z\" has been renamed to \"Z_noice\" because \"Z\" already exist with \"closest_filter\".", siInfoMsg);
+         }
+
+         // add the denoising aovs
+         int i = 0;
+         if (noiceDA != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"diffuse_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
+            i++;
+         }
+         if (noiceN != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"N VECTOR " + colorFilter + L" " + mainFb.m_fullName + nameN).GetAsciiString());
+            i++;
+         }
+         if (noiceZ != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"Z FLOAT " + colorFilter + L" " + mainFb.m_fullName + nameZ).GetAsciiString());
+            i++;
+         }
+         
+         AiArraySetStr(outputs, activeBuffers+i, CString(L"RGB RGB sitoa_variance_filter " + mainFb.m_fullName + L" variance").GetAsciiString());
+      }
+      else
+         GetMessageQueue()->LogMsg(L"[sitoa] Arnold Denoising AOVs can only be output to exr.", siWarningMsg);
+   }
+
+   // Setting outputs array only if there is at least one active framebuffer
    if (activeBuffer > 0)
    {
       AiNodeSetArray(in_optionsNode, "outputs", outputs);
@@ -480,7 +642,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
 
    CNodeSetter::SetInt(in_optionsNode, "xres", width);
    CNodeSetter::SetInt(in_optionsNode, "yres", height);
-   if (aspectRatio > 0.0f)
+   if (aspectRatio > 0.0f && (fabs(aspectRatio-1.0f) > AI_EPSILON))
       CNodeSetter::SetFloat(in_optionsNode, "pixel_aspect_ratio", 1.0f / aspectRatio);
 
    // cropping
@@ -522,6 +684,18 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetInt(in_optionsNode, "GI_transmission_samples", GetRenderOptions()->m_GI_transmission_samples);
    CNodeSetter::SetInt(in_optionsNode, "GI_sss_samples",          GetRenderOptions()->m_GI_sss_samples);
    CNodeSetter::SetInt(in_optionsNode, "GI_volume_samples",       GetRenderOptions()->m_GI_volume_samples);
+
+   // some things should only be set in interactive mode but not if exporting .ass
+   CString renderType = GetRenderInstance()->GetRenderType();
+   if (Application().IsInteractive() && (renderType != L"Export"))
+   {
+      CNodeSetter::SetBoolean(in_optionsNode, "enable_progressive_render", GetRenderOptions()->m_enable_progressive_render);
+      CNodeSetter::SetBoolean(in_optionsNode, "enable_dependency_graph", true);
+   }
+
+   CNodeSetter::SetBoolean(in_optionsNode, "enable_adaptive_sampling", GetRenderOptions()->m_enable_adaptive_sampling);
+   CNodeSetter::SetInt(in_optionsNode, "AA_samples_max",               GetRenderOptions()->m_AA_samples_max);
+   CNodeSetter::SetFloat(in_optionsNode, "AA_adaptive_threshold",      GetRenderOptions()->m_AA_adaptive_threshold);
 
    CNodeSetter::SetFloat(in_optionsNode, "indirect_specular_blur", GetRenderOptions()->m_indirect_specular_blur);
 
@@ -590,8 +764,6 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    // Set the maximum number of files open
    CNodeSetter::SetInt(in_optionsNode, "texture_max_open_files", GetRenderOptions()->m_texture_max_open_files);
    CNodeSetter::SetFloat(in_optionsNode, "texture_max_sharpen",    1.5f); // #1559
-   CNodeSetter::SetFloat(in_optionsNode, "texture_diffuse_blur",   GetRenderOptions()->m_texture_diffuse_blur);
-   CNodeSetter::SetFloat(in_optionsNode, "texture_specular_blur",    GetRenderOptions()->m_texture_specular_blur);
 
    CNodeSetter::SetBoolean(in_optionsNode, "texture_per_file_stats", GetRenderOptions()->m_texture_per_file_stats);
 
@@ -627,6 +799,10 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    int nb_threads = GetRenderOptions()->m_autodetect_threads ? 0 : GetRenderOptions()->m_threads;
    CNodeSetter::SetInt(in_optionsNode, "threads", nb_threads); 
 
+   // GPU devices
+   CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
+   CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
+
    // #680
    LoadUserOptions(in_optionsNode, in_arnoldOptions, in_frame);
 }
@@ -647,6 +823,12 @@ CStatus LoadOptions(const Property& in_arnoldOptions, double in_frame, bool in_f
 
    // load rendering options
    LoadOptionsParameters(optionsNode, in_arnoldOptions, in_frame);
+
+   // load color manager
+   if (!LoadColorManager(optionsNode, in_frame)) {
+      GetMessageQueue()->LogMsg(L"[sitoa] Failed to create a Color Manager.", siWarningMsg);
+      return CStatus::Abort;
+   }
 
    if (!in_flythrough)
    {

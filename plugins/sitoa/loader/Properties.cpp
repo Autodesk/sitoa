@@ -336,6 +336,19 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
          continue;
       }
 
+      if (!strcmp(charParamName, "toon_id"))
+      {
+         CString toonId = param.GetValue(); 
+         if (toonId.IsEmpty()) // Avoid exporting the toon_id if it is empty
+            continue;
+         if (!AiNodeLookUpUserParameter(in_node, "toon_id"))
+            AiNodeDeclare(in_node, "toon_id", "constant STRING");
+         if (AiNodeLookUpUserParameter(in_node, "toon_id"))
+            CNodeSetter::SetString(in_node, "toon_id", toonId.GetAsciiString());
+
+         continue;
+      }
+
       if (!strcmp(charParamName, "trace_sets")) // #783: Expose the trace sets string for shapes
       {
          CString traceSets = param.GetValue(); 
@@ -580,14 +593,9 @@ void LoadCameraOptions(const Camera &in_xsiCamera, AtNode* in_node, const Proper
          CNodeSetter::SetFloat(in_node, "aperture_blade_curvature", apertureBladeCurvature); 
          CNodeSetter::SetFloat(in_node, "aperture_rotation",        apertureRotation); 
          CNodeSetter::SetFloat(in_node, "aperture_aspect_ratio",    apertureAspectRatio);       
-      }
-      else
-      {
-         aperture_size = AiArrayAllocate(1, 1, AI_TYPE_FLOAT);
-         AiArraySetFlt(aperture_size, 0, 0.0f);
-      }
 
-      AiNodeSetArray(in_node, "aperture_size", aperture_size);
+         AiNodeSetArray(in_node, "aperture_size", aperture_size);
+      }
    }
 
    if (focus_distance)

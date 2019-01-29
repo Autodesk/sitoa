@@ -13,6 +13,7 @@ See the License for the specific language governing permissions and limitations 
 
 #include "sitoa.h"
 
+#include <xsi_ppgeventcontext.h>
 #include <xsi_customproperty.h>
 #include <xsi_color4f.h>
 #include <xsi_utils.h>
@@ -45,6 +46,8 @@ public:
    // system
    bool     m_autodetect_threads;
    int      m_threads;
+   CString  m_gpu_default_names;
+   int      m_gpu_default_min_memory_MB;
    CString  m_bucket_scanning;
    int      m_bucket_size;
    bool     m_progressive_minus3;
@@ -103,10 +106,16 @@ public:
    int     m_GI_transmission_samples;
    int     m_GI_sss_samples;
    int     m_GI_volume_samples;
-   float   m_indirect_specular_blur;
+   bool     m_enable_progressive_render;
 
+   bool    m_enable_adaptive_sampling;
+   int     m_AA_samples_max;
+   float   m_AA_adaptive_threshold;
+
+   float   m_indirect_specular_blur;
    bool    m_lock_sampling_noise;
    bool    m_sss_use_autobump;
+
    bool    m_use_sample_clamp;
    bool    m_use_sample_clamp_AOVs;
    float   m_AA_sample_clamp;
@@ -147,14 +156,19 @@ public:
    bool  m_texture_accept_unmipped;
    bool  m_texture_automip;
    int   m_texture_filter;
-   float m_texture_diffuse_blur;
-   float m_texture_specular_blur;
    bool  m_texture_accept_untiled;
    bool  m_enable_autotile;
    int   m_texture_autotile;
    bool  m_use_existing_tx_files;
    int   m_texture_max_memory_MB;
    int   m_texture_max_open_files;
+
+   // color managers
+   CString m_color_manager;
+   CString m_ocio_config;
+   CString m_ocio_color_space_narrow;
+   CString m_ocio_color_space_linear;
+   CString m_ocio_linear_chromaticities;
 
    // diagnostic
    bool         m_enable_log_console;
@@ -164,6 +178,13 @@ public:
    bool         m_texture_per_file_stats;
    CString      m_output_file_tagdir_log;
    // output_file_dir_log; not read, just used to display the path
+
+   bool         m_enable_stats;
+   CString      m_stats_file;
+   int          m_stats_mode;
+   bool         m_enable_profile;
+   CString      m_profile_file;
+
    bool         m_ignore_textures;
    bool         m_ignore_shaders;
    bool         m_ignore_atmosphere;
@@ -198,6 +219,11 @@ public:
    bool m_output_lights;
    bool m_output_shaders;
 
+   // denoiser
+   bool m_use_optix_on_main;
+   bool m_only_show_denoise;
+   bool m_output_denoising_aovs;
+
    //////////////////////////////////////
 
    void Read(const Property &in_cp);
@@ -208,6 +234,8 @@ public:
       // system
       m_autodetect_threads(true),
       m_threads(4),
+      m_gpu_default_names(L"*"),
+      m_gpu_default_min_memory_MB(512),
       m_bucket_scanning(L"spiral"),
       m_bucket_size(64),
       m_progressive_minus3(true),
@@ -262,6 +290,12 @@ public:
       m_GI_transmission_samples(2),
       m_GI_sss_samples(2),
       m_GI_volume_samples(2),
+      m_enable_progressive_render(false),
+
+      m_enable_adaptive_sampling(false),
+      m_AA_samples_max(8),
+      m_AA_adaptive_threshold(0.05f),
+
       m_indirect_specular_blur(1.0f),
 
       m_lock_sampling_noise(false),
@@ -307,14 +341,19 @@ public:
       m_texture_accept_unmipped(true),
       m_texture_automip(false),
       m_texture_filter(AI_TEXTURE_SMART_BICUBIC),
-      m_texture_diffuse_blur(0.03125f),
-      m_texture_specular_blur(0.0f), // note that Arnold's default is 0.015625
       m_texture_accept_untiled(true),
       m_enable_autotile(false),
       m_texture_autotile(64),
       m_use_existing_tx_files(false),
       m_texture_max_memory_MB(2048),
       m_texture_max_open_files(100),
+
+      // color managers
+      m_color_manager(L"none"),
+      m_ocio_config(L""),
+      m_ocio_color_space_narrow(L""),
+      m_ocio_color_space_linear(L""),
+      m_ocio_linear_chromaticities(L""),
 
       // diagnostic
       m_enable_log_console(true),
@@ -323,6 +362,13 @@ public:
       m_max_log_warning_msgs(5),
       m_texture_per_file_stats(false),
       m_output_file_tagdir_log(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs")),
+
+      m_enable_stats(false),
+      m_stats_file(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].stats.json")),
+      m_stats_mode(1),
+      m_enable_profile(false),
+      m_profile_file(CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].profile_[Host].json")),
+
       m_ignore_textures(false),
       m_ignore_shaders(false),
       m_ignore_atmosphere(false),
@@ -355,7 +401,13 @@ public:
       m_output_geometry(false),
       m_output_cameras(false),
       m_output_lights(false),
-      m_output_shaders(false)
+      m_output_shaders(false),
+
+      // denoiser
+      m_use_optix_on_main(false),
+      m_only_show_denoise(true),
+      m_output_denoising_aovs(false)
+
    {
       for (LONG i=0; i<NB_MAX_LAYERS; i++)
       {
@@ -386,14 +438,18 @@ void SystemTabLogic(CustomProperty &in_cp);
 void OutputTabLogic(CustomProperty &in_cp);
 // Logic for the textures tab
 void TexturesTabLogic(CustomProperty &in_cp);
+// Logic for the color managers tab
+void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt);
 // Logic for the subdivision tab
 void SubdivisionTabLogic(CustomProperty &in_cp);
 // Logic for the diagnostics tab
 void DiagnosticsTabLogic(CustomProperty &in_cp);
 // Logic for the ass archives tab
 void AssOutputTabLogic(CustomProperty &in_cp);
+// Logic for the denoiser tab
+void DenoiserTabLogic(CustomProperty &in_cp);
 
 // Reset the default values of all the parameters
-void ResetToDefault(CustomProperty &in_cp);
+void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt);
 
 

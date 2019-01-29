@@ -43,6 +43,10 @@ CString GetLayerName(const CString &in_datatype)
    if (in_datatype.IsEqualNoCase(L"Main"))
       return L"RGBA";
 
+   // If someone where to create a denoise of "Main" lets handle that as well
+   if (in_datatype.IsEqualNoCase(L"Main_denoise"))
+      return L"RGBA_denoise";
+
    // is this one of the AOVs created by CreateRenderChannels in ArnoldScenePreferences.js ?
    if (in_datatype.FindString(L"Arnold_") == 0) // trim the "Arnold_" prefix, so to get back the Arnold factory name
       return CStringUtilities().ReplaceString(L"Arnold_", L"", in_datatype);

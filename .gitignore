@@ -19,6 +19,12 @@ custom.py
 dist
 build
 
+# VS and VS Code
+.vs
+.vscode/*
+*.user
+*.code-workspace
+
 # Eclipse
 .settings
 .*project
@@ -35,3 +41,8 @@ cmake-build-debug
 
 # mac cruft
 .DS_Store
+
+# Softimage testsuite
+testsuite/XSIProject/Backup/*
+testsuite/XSIProject/Cache/*
+testsuite/XSIProject/system/*

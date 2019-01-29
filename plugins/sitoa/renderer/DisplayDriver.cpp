@@ -34,6 +34,22 @@ void CDisplayDriverData::Init(const AtBBox2 &in_display_window, const AtBBox2 &i
    m_data_window    = in_data_window;
    m_overscan = m_display_window.minx != m_data_window.minx || m_display_window.miny != m_data_window.miny || 
                 m_display_window.maxx != m_data_window.maxx || m_display_window.maxy != m_data_window.maxy;
+
+   // get parameters necessary for progressive progress bar
+   AtNode* options = AiUniverseGetOptions();
+   bool progressive = AiNodeGetBool(options, "enable_progressive_render");
+   int aaSamples = AiNodeGetInt(options, "AA_samples");
+   bool adaptiveSampling = AiNodeGetBool(options, "enable_adaptive_sampling");
+   int aaSamplesMax = AiNodeGetInt(options, "AA_samples_max");
+
+   if (progressive)
+   {
+    if (adaptiveSampling && (aaSamplesMax > aaSamples))
+        m_progressivePasses = aaSamplesMax * aaSamplesMax;
+    else
+        m_progressivePasses = aaSamples * aaSamples;
+   }
+
 }
 
 
@@ -143,7 +159,7 @@ node_initialize
 {
    CDisplayDriverData *ddData = new CDisplayDriverData;
    AiNodeSetLocalData(node, ddData);
-   AiDriverInitialize(node, false);
+   AiDriverInitialize(node, true);
 }
 
 node_update {}
@@ -171,22 +187,34 @@ driver_process_bucket
    int           i, j, pixel_type;
    AtRGB         rgb;
    AtRGBA        rgba;
+   const char*   aov_name;
 
    CDisplayDriverData *ddData = (CDisplayDriverData*)AiNodeGetLocalData(node);
       
    CRenderInstance* renderInstance = GetRenderInstance();
    DisplayDriver* displayDriver = renderInstance->GetDisplayDriver();
    
+
    if (renderInstance->InterruptRenderSignal())
       return;
 
-   // Progress bar
-   displayDriver->m_paintedDisplayArea += (bucket_size_x * bucket_size_y);
-   int percent = (int)((displayDriver->m_paintedDisplayArea / (float)displayDriver->m_displayArea) * 100.0f);
-   displayDriver->m_renderContext.ProgressUpdate(CValue(percent).GetAsText() + L"%   Rendered", L"Rendering", percent);
-
-   if (!AiOutputIteratorGetNext(iterator, NULL, &pixel_type, &bucket_data))
+   if (!AiOutputIteratorGetNext(iterator, &aov_name, &pixel_type, &bucket_data))
       return;
+
+   // don't update progressbar if Main (RGBA) is being denoised
+   if (!displayDriver->m_useOptixOnMain ||
+         (displayDriver->m_useOptixOnMain &&
+          !strcmp(aov_name, "RGBA_denoise") == 0))
+   {
+      // Progress bar
+      displayDriver->m_paintedDisplayArea += (bucket_size_x * bucket_size_y);
+      int percent = (int)((displayDriver->m_paintedDisplayArea / (float)displayDriver->m_displayArea) * 100.0f);
+      // if in progressive render mode we need to divide percent by number of progressive passes
+      if (ddData->m_progressivePasses > 1)
+         percent = percent / ddData->m_progressivePasses;
+      displayDriver->m_renderContext.ProgressUpdate(CValue(percent).GetAsText() + L"%   Rendered", L"Rendering", percent);
+   }
+
    // if the Arnold bucket is completely in the overscan frame, don't
    // send it to the Softimage render view
    if (ddData->IsBucketOutsideView(bucket_xo, bucket_yo, bucket_size_x, bucket_size_y))
@@ -278,6 +306,17 @@ driver_process_bucket
 
    if (!renderInstance->InterruptRenderSignal())
    {
+      // only_show_denoise
+      // display driver doesn't work properly if we just skip writing to the framebuffer.
+      // as a workaround we just output 1x1 pixel of RGBA
+      if (!strcmp(aov_name, "RGBA_denoise") == 0 &&
+          displayDriver->m_useOptixOnMain &&
+          displayDriver->m_onlyShowDenoise &&
+          ddData->m_progressivePasses > 1)
+      {
+         view_bucket_size_x = 1U;
+         view_bucket_size_y = 1U;
+      }
       RenderTile fragment(view_bucket_xo, displayDriver->m_renderHeight - view_bucket_yo - view_bucket_size_y , 
                           view_bucket_size_x, view_bucket_size_y, buffer, displayDriver->m_dither);
        
@@ -319,11 +358,14 @@ void DisplayDriver::CreateDisplayDriver()
 
 
 void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, unsigned int in_displayArea, 
-                                        const bool in_filterColorAov, const bool in_filterNumericAov)
+                                        const bool in_filterColorAov, const bool in_filterNumericAov,
+                                        const bool in_useOptixOnMain, const bool in_onlyShowDenoise)
 {
    m_renderContext = in_rendererContext;
    m_displayArea = in_displayArea;     
    m_renderHeight = (int)m_renderContext.GetAttribute(L"ImageHeight");
+   m_useOptixOnMain = in_useOptixOnMain;
+   m_onlyShowDenoise = in_onlyShowDenoise;
 
    AtNode* options = AiUniverseGetOptions();   
    AtArray *outputs, *new_outputs;
@@ -337,12 +379,13 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
    Framebuffer frameBuffer = m_renderContext.GetDisplayFramebuffer();
    RenderChannel renderchannel = frameBuffer.GetRenderChannel();
    CString layerName = GetLayerName(renderchannel.GetName());
+   CString layerdataType;
 
    if (m_renderContext.GetAttribute(L"FileOutput"))
    {          
       // Display Driver format will use the DataType of the MAIN framebuffer Softimage
       // returns us from m_renderContext.GetDisplayFramebuffer() to avoid black images in render window (trac #780)
-      CString layerdataType = ParAcc_GetValue(frameBuffer, L"DataType", DBL_MAX).GetAsText();
+      layerdataType = ParAcc_GetValue(frameBuffer, L"DataType", DBL_MAX).GetAsText();
       if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
       {
          if (in_filterColorAov)
@@ -368,13 +411,27 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
    else
    {
       // Display Driver format will use the layer data type from the renderchannel
-      CString layerdataType = GetDriverLayerDataTypeByName(layerName);
+      layerdataType = GetDriverLayerDataTypeByName(layerName);
 
       // If empty get dataType from RenderChannel.ChannelType.
       if (layerdataType.IsEqualNoCase(L""))
          layerdataType = GetDriverLayerChannelType((LONG)renderchannel.GetChannelType());
 
-      if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
+      // if layerName ends with "_denoise", we connect the driver to the optix filter for that layer
+      if (CStringUtilities().EndsWith(layerName, L"_denoise"))
+      {
+         // we need to check if the optix filter exist. If it doesn't exist, we create one.
+         CString optixFilterName = L"sitoa_" + layerName + L"_optix_filter_display";
+         AtNode* optixFilterNode = AiNodeLookUpByName(optixFilterName.GetAsciiString());
+         if (!optixFilterNode)
+         {
+            optixFilterNode = AiNode("denoise_optix_filter");
+            if (optixFilterNode)
+               CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
+         }
+         displayDriver = layerName + L" " + layerdataType + L" " + optixFilterName + " xsi_driver";
+      }
+      else if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
       {
          if (in_filterColorAov)
             displayDriver = layerName + L" " + layerdataType + L" sitoa_output_filter xsi_driver";
@@ -390,6 +447,26 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
       }
       
       new_outputs = AiArray(1, 1, AI_TYPE_STRING, CStringUtilities().Strdup(displayDriver.GetAsciiString()));
+   }
+
+    // if layerName is RGBA (Main) and use_optix_on_main is ON,
+    // we will add the denoised main to the new_outputs
+   if (layerName == "RGBA" && m_useOptixOnMain)
+   {
+      // we need to check if the optix filter exist. If it doesn't exist, we create one.
+      CString optixFilterName = L"sitoa_RGBA_denoise_optix_filter_display";
+      AtNode* optixFilterNode = AiNodeLookUpByName(optixFilterName.GetAsciiString());
+      if (!optixFilterNode)
+      {
+         optixFilterNode = AiNode("denoise_optix_filter");
+         if (optixFilterNode)
+            CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
+      }
+      displayDriver = L"RGBA_denoise " + layerdataType + L" " + optixFilterName + " xsi_driver";
+      
+      // resize new_outputs so we can add optix output to display driver outputs
+      AiArrayResize(new_outputs, AiArrayGetNumElements(new_outputs) + 1, 1);
+      AiArraySetStr(new_outputs, AiArrayGetNumElements(new_outputs) - 1, CStringUtilities().Strdup(displayDriver.GetAsciiString()));
    }
 
    AiNodeSetArray(options, "outputs", new_outputs);

@@ -96,6 +96,7 @@ namespace ATSTRING
    const AtString soft_skip("soft.skip");
    const AtString soft_inspectable("soft.inspectable");
    const AtString soft_viewport_guid("soft.viewport_guid");
+   const AtString soft_node_type("soft.node_type");
    //
    const AtString closure("closure");
 };
@@ -345,6 +346,10 @@ public:
    CString GetSoftimageNameFromSItoAName(CString &in_nane);
    // Return the name of the master node of a ginstance or a cloned light
    CString GetMasterBaseNodeName(CString &in_name);
+   // Checks if string starts with substring
+   bool StartsWith(CString in_string, CString in_subString);
+   // Checks if string ends with substring
+   bool EndsWith(CString in_string, CString in_subString);
 
 private:
    // Build the name for an Arnold node (overload for a CString input type)
@@ -458,4 +463,5 @@ CStatus GetBoundingBoxFromObjects(const CRefArray in_objects, double in_frame, d
 bool ArrayContainsCRef(const CRefArray& in_array, const CRef& in_ref);
 // Add a CRef to the output array, optionally recursing over the children
 void AddCRefToArray(CRefArray& out_array, const CRef& in_item, bool in_recursive);
-
+// Checks whether running in interactive or batch mode and returns the correct Arnold enum.
+const AtSessionMode GetSessionMode();

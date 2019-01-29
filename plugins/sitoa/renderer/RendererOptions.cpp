@@ -34,6 +34,10 @@ void CRenderOptions::Read(const Property &in_cp)
    // system
    m_autodetect_threads    = (bool)ParAcc_GetValue(in_cp, L"autodetect_threads",    DBL_MAX);
    m_threads               = (int) ParAcc_GetValue(in_cp, L"threads",               DBL_MAX);
+
+   m_gpu_default_names         = ParAcc_GetValue(in_cp,       L"gpu_default_names",         DBL_MAX).GetAsText();
+   m_gpu_default_min_memory_MB = (int) ParAcc_GetValue(in_cp, L"gpu_default_min_memory_MB", DBL_MAX);
+
    m_bucket_scanning       = ParAcc_GetValue(in_cp,       L"bucket_scanning",       DBL_MAX).GetAsText();
    m_bucket_size           = (int)ParAcc_GetValue(in_cp,  L"bucket_size",           DBL_MAX);
    m_progressive_minus3    = (bool)ParAcc_GetValue(in_cp, L"progressive_minus3",    DBL_MAX);
@@ -111,6 +115,11 @@ void CRenderOptions::Read(const Property &in_cp)
    m_GI_transmission_samples = (int)ParAcc_GetValue(in_cp, L"GI_transmission_samples", DBL_MAX);
    m_GI_sss_samples          = (int)ParAcc_GetValue(in_cp, L"GI_sss_samples",          DBL_MAX);
    m_GI_volume_samples       = (int)ParAcc_GetValue(in_cp, L"GI_volume_samples",       DBL_MAX);
+   m_enable_progressive_render = (bool)ParAcc_GetValue(in_cp, L"enable_progressive_render", DBL_MAX);
+
+   m_enable_adaptive_sampling = (bool)ParAcc_GetValue(in_cp,  L"enable_adaptive_sampling", DBL_MAX);
+   m_AA_samples_max           = (int)ParAcc_GetValue(in_cp,   L"AA_samples_max",           DBL_MAX);
+   m_AA_adaptive_threshold    = (float)ParAcc_GetValue(in_cp, L"AA_adaptive_threshold",    DBL_MAX);
 
    m_indirect_specular_blur  = (float)ParAcc_GetValue(in_cp, L"indirect_specular_blur", DBL_MAX);
 
@@ -163,14 +172,19 @@ void CRenderOptions::Read(const Property &in_cp)
    m_texture_accept_unmipped = (bool)ParAcc_GetValue(in_cp,  L"texture_accept_unmipped", DBL_MAX);
    m_texture_automip         = (bool)ParAcc_GetValue(in_cp,  L"texture_automip",         DBL_MAX);
    m_texture_filter          = (int)ParAcc_GetValue(in_cp,   L"texture_filter",          DBL_MAX);
-   m_texture_diffuse_blur    = (float)ParAcc_GetValue(in_cp, L"texture_diffuse_blur",    DBL_MAX);
-   m_texture_specular_blur   = (float)ParAcc_GetValue(in_cp, L"texture_specular_blur",   DBL_MAX);
    m_texture_accept_untiled  = (bool)ParAcc_GetValue(in_cp,  L"texture_accept_untiled",  DBL_MAX);
    m_enable_autotile         = (bool)ParAcc_GetValue(in_cp,  L"enable_autotile",         DBL_MAX);
    m_texture_autotile        = (int)ParAcc_GetValue(in_cp,   L"texture_autotile",        DBL_MAX);
    m_use_existing_tx_files   = (bool)ParAcc_GetValue(in_cp,  L"use_existing_tx_files",   DBL_MAX);
    m_texture_max_memory_MB   = (int)ParAcc_GetValue(in_cp,   L"texture_max_memory_MB",   DBL_MAX);
    m_texture_max_open_files  = (int)ParAcc_GetValue(in_cp,   L"texture_max_open_files",  DBL_MAX);
+
+   // color managers
+   m_color_manager              = ParAcc_GetValue(in_cp, L"color_manager",              DBL_MAX).GetAsText();
+   m_ocio_config                = ParAcc_GetValue(in_cp, L"ocio_config",                DBL_MAX).GetAsText();
+   m_ocio_color_space_narrow    = ParAcc_GetValue(in_cp, L"ocio_color_space_narrow",    DBL_MAX).GetAsText();
+   m_ocio_color_space_linear    = ParAcc_GetValue(in_cp, L"ocio_color_space_linear",    DBL_MAX).GetAsText();
+   m_ocio_linear_chromaticities = ParAcc_GetValue(in_cp, L"ocio_linear_chromaticities", DBL_MAX).GetAsText();
 
    // diagnostic
    m_enable_log_console     = (bool)ParAcc_GetValue(in_cp, L"enable_log_console",     DBL_MAX);
@@ -179,6 +193,13 @@ void CRenderOptions::Read(const Property &in_cp)
    m_max_log_warning_msgs   = (int) ParAcc_GetValue(in_cp,  L"max_log_warning_msgs",  DBL_MAX);
    m_texture_per_file_stats = (bool)ParAcc_GetValue(in_cp, L"texture_per_file_stats", DBL_MAX);
    m_output_file_tagdir_log = ParAcc_GetValue(in_cp,       L"output_file_tagdir_log", DBL_MAX).GetAsText();
+
+   m_enable_stats           = (bool)ParAcc_GetValue(in_cp, L"enable_stats",           DBL_MAX);
+   m_stats_file             = ParAcc_GetValue(in_cp,       L"stats_file",             DBL_MAX).GetAsText();
+   m_stats_mode             = (int) ParAcc_GetValue(in_cp, L"stats_mode",             DBL_MAX);
+   m_enable_profile         = (bool)ParAcc_GetValue(in_cp, L"enable_profile",         DBL_MAX);
+   m_profile_file           = ParAcc_GetValue(in_cp,       L"profile_file",           DBL_MAX).GetAsText();
+
    m_ignore_textures        = (bool)ParAcc_GetValue(in_cp, L"ignore_textures",        DBL_MAX);
    m_ignore_shaders         = (bool)ParAcc_GetValue(in_cp, L"ignore_shaders",         DBL_MAX);
    m_ignore_atmosphere      = (bool)ParAcc_GetValue(in_cp, L"ignore_atmosphere",      DBL_MAX);
@@ -211,6 +232,11 @@ void CRenderOptions::Read(const Property &in_cp)
    m_output_cameras = (bool)ParAcc_GetValue(in_cp, L"output_cameras", DBL_MAX);
    m_output_lights = (bool)ParAcc_GetValue(in_cp, L"output_lights", DBL_MAX);
    m_output_shaders = (bool)ParAcc_GetValue(in_cp, L"output_shaders", DBL_MAX);
+
+   // denoiser
+   m_use_optix_on_main = (bool)ParAcc_GetValue(in_cp, L"use_optix_on_main", DBL_MAX);
+   m_only_show_denoise = (bool)ParAcc_GetValue(in_cp, L"only_show_denoise", DBL_MAX);
+   m_output_denoising_aovs = (bool)ParAcc_GetValue(in_cp, L"output_denoising_aovs", DBL_MAX);
 }
 
 
@@ -269,6 +295,8 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    CString defaultTexturesPath = CUtils::BuildPath(app.GetInstallationPath(siProjectPath), L"Pictures");
    CString defaultAssPath      = CUtils::BuildPath(L"[Project Path]", L"Arnold_Scenes"); // Ass Path
    CString defaultLogPath      = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs");   // Log Path
+   CString defaultStatsPath    = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].stats.json");
+   CString defaultProfilePath  = CUtils::BuildPath(L"[Project Path]", L"Arnold_Logs", L"[Scene]_[Pass].[Frame].profile_[Host].json");
 
    // shaders path
    char* aux = getenv("SITOA_SHADERS_PATH");
@@ -284,6 +312,10 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    // system
    cpset.AddParameter(L"autodetect_threads",     CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"threads",                CValue::siInt4,   siPersistable, L"", L"", 4, -AI_MAX_THREADS, AI_MAX_THREADS, 1, AI_MAX_THREADS, p);
+
+   cpset.AddParameter(L"gpu_default_names",         CValue::siString, siPersistable, L"", L"",  L"*", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"gpu_default_min_memory_MB", CValue::siInt4,   siPersistable, L"", L"", 512, 0, 10000000, 256, 1024, p);
+
    cpset.AddParameter(L"bucket_scanning",        CValue::siString, siPersistable, L"", L"", L"spiral", CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"bucket_size",            CValue::siInt4,   siPersistable, L"", L"",  64, 16, 256, 16, 256, p);
    cpset.AddParameter(L"progressive_minus3",     CValue::siBool,   siPersistable, L"", L"",  true, CValue(), CValue(), CValue(), CValue(), p);
@@ -375,6 +407,11 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"GI_transmission_samples", CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
    cpset.AddParameter(L"GI_sss_samples",          CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
    cpset.AddParameter(L"GI_volume_samples",       CValue::siInt4,   siPersistable, L"", L"", 2, 0, 100, 0, 10, p);
+   cpset.AddParameter(L"enable_progressive_render", CValue::siBool, siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+
+   cpset.AddParameter(L"enable_adaptive_sampling", CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 8, -3, 100, 0, 10, p);
+   cpset.AddParameter(L"AA_adaptive_threshold",    CValue::siDouble, siPersistable, L"", L"", 0.05f, 0.0f, 1.0f, 0.0f, 100.0f, p);
 
    cpset.AddParameter(L"indirect_specular_blur",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 1.0f, 0.0f, 2.0f, 0.0f, 100.0f, p);
    
@@ -386,7 +423,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"AA_sample_clamp",         CValue::siDouble, siPersistable, L"", L"", 10, 0.001, 100, 0.001, 100, p);
    cpset.AddParameter(L"indirect_sample_clamp",   CValue::siDouble, siPersistable, L"", L"", 10, 0.0, 100, 0.0, 100, p);
    cpset.AddParameter(L"output_filter",           CValue::siString, siPersistable, L"", L"", L"gaussian", 0, 10, 0, 10, p);
-   cpset.AddParameter(L"output_filter_width",     CValue::siDouble, siPersistable, L"", L"", 2, 0, 10, 1, 6, p);
+   cpset.AddParameter(L"output_filter_width",     CValue::siDouble, siPersistable, L"", L"", 2, 0, 100, 1, 6, p);
    cpset.AddParameter(L"filter_color_AOVs",       CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"filter_numeric_AOVs",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
 
@@ -420,14 +457,20 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"texture_accept_unmipped", CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_automip",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_filter",          CValue::siInt4,   siPersistable, L"", L"", AI_TEXTURE_SMART_BICUBIC, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"texture_diffuse_blur",    CValue::siDouble, siPersistable, L"", L"", 0.03125, 0, 1, 0, 0.1, p);
-   cpset.AddParameter(L"texture_specular_blur",   CValue::siDouble, siPersistable, L"", L"", 0.0, 0, 1, 0, 0.1, p);
    cpset.AddParameter(L"texture_accept_untiled",  CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"enable_autotile",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_autotile",        CValue::siInt4,   siPersistable, L"", L"", 64, 16, 1024, 16, 512, p);
    cpset.AddParameter(L"use_existing_tx_files",   CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_max_memory_MB",   CValue::siInt4,   siPersistable, L"", L"", 2048, 128, CValue(), 128, 4096, p);
    cpset.AddParameter(L"texture_max_open_files",  CValue::siInt4,   siPersistable, L"", L"", 0, 0, 10000, 0, 2000, p);
+
+   // color managers
+   cpset.AddParameter(L"color_manager",              CValue::siString, siPersistable, L"", L"", L"", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_config",                CValue::siString, siPersistable, L"", L"", L"", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_config_message",        CValue::siString, siPersistable, L"", L"", L"", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_color_space_narrow",    CValue::siString, siPersistable, L"", L"", L"", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_color_space_linear",    CValue::siString, siPersistable, L"", L"", L"", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ocio_linear_chromaticities", CValue::siString, siPersistable, L"", L"", L"", CValue(), CValue(), CValue(), CValue(), p);
 
    // diagnostic:
    cpset.AddParameter(L"enable_log_console",     CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
@@ -437,6 +480,13 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"texture_per_file_stats", CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_file_tagdir_log", CValue::siString, siPersistable, L"", L"", defaultLogPath, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_file_dir_log",    CValue::siString, siPersistable, L"", L"", defaultLogPath, CValue(), CValue(), CValue(), CValue(), p);
+
+   cpset.AddParameter(L"enable_stats",           CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"stats_file",             CValue::siString, siPersistable, L"", L"", defaultStatsPath, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"stats_mode",             CValue::siInt4,   siPersistable, L"", L"", eSItoALogLevel_Warnings, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"enable_profile",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"profile_file",           CValue::siString, siPersistable, L"", L"", defaultProfilePath, CValue(), CValue(), CValue(), CValue(), p);
+
    cpset.AddParameter(L"ignore_textures",        CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_shaders",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_atmosphere",      CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
@@ -471,6 +521,11 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"output_cameras",         CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_lights",          CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_shaders",         CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
+
+   // denoiser
+   cpset.AddParameter(L"use_optix_on_main",      CValue::siBool,   siPersistable, L"", L"", false,          CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"only_show_denoise",      CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"output_denoising_aovs",  CValue::siBool,   siPersistable, L"", L"", false,          CValue(), CValue(), CValue(), CValue(), p);
 
    // the hidden version string saved with the scene
    cpset.AddParameter(L"sitoa_version",          CValue::siString, siPersistable, L"", L"", L"",            CValue(), CValue(), CValue(), CValue(), p);
@@ -555,6 +610,12 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.AddItem(L"autodetect_threads", L"Autodetect");
       item = layout.AddItem(L"threads", L"Number of Threads");
       item.PutAttribute(siUILabelPercentage, 100);
+   layout.EndGroup();
+   layout.AddGroup(L"Devices");
+      item = layout.AddItem(L"gpu_default_names", L"GPU Names");
+      item.PutAttribute(siUILabelMinPixels, 100);
+      item = layout.AddItem(L"gpu_default_min_memory_MB", L"Min. Memory (MB)");
+      item.PutAttribute(siUILabelMinPixels, 100);
    layout.EndGroup();
    layout.AddGroup(L"Buckets", true, 0);
       CValueArray scanning;
@@ -777,6 +838,15 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUILabelPercentage, 100);
       item = layout.AddItem(L"GI_volume_samples", L"Volume");
       item.PutAttribute(siUILabelPercentage, 100);
+      layout.AddItem(L"enable_progressive_render", L"Progressive Render");
+   layout.EndGroup();
+
+   layout.AddGroup(L"Adaptive Sampling");
+      layout.AddItem(L"enable_adaptive_sampling",  L"Enable");
+      item = layout.AddItem(L"AA_samples_max", L"Max. Camera (AA)");
+      item.PutAttribute(siUILabelPercentage, 100);
+      item = layout.AddItem(L"AA_adaptive_threshold", L"Adaptive Threshold");
+      item.PutAttribute(siUILabelPercentage, 100);
    layout.EndGroup();
 
    item = layout.AddItem(L"indirect_specular_blur",  L"Indirect Specular Blur");
@@ -800,8 +870,10 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       filters.Add(L"blackman_harris"); filters.Add(L"blackman_harris");
       filters.Add(L"box");        filters.Add(L"box");
       filters.Add(L"catmull-rom");filters.Add(L"catrom");
+      filters.Add(L"contour");filters.Add(L"contour");
       filters.Add(L"gaussian");   filters.Add(L"gaussian");
       filters.Add(L"mitchell-netravali"); filters.Add(L"mitnet");
+      filters.Add(L"sinc"); filters.Add(L"sinc");
       filters.Add(L"triangle");   filters.Add(L"triangle");       
       filters.Add(L"variance");   filters.Add(L"variance");
       layout.AddEnumControl(L"output_filter", filters, L"Type", siControlCombo);    
@@ -891,12 +963,6 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item = layout.AddEnumControl(L"texture_filter", textFilters, L"Filter", siControlCombo);
       item.PutAttribute(siUILabelMinPixels, 195);
       item.PutAttribute(siUILabelPercentage, 90);
-      item = layout.AddItem(L"texture_diffuse_blur", L"Diffuse Blur");
-      item.PutAttribute(siUILabelMinPixels, 195);
-      item.PutAttribute(siUILabelPercentage, 30);
-      item = layout.AddItem(L"texture_specular_blur", L"Specular Blur");
-      item.PutAttribute(siUILabelMinPixels, 195);
-      item.PutAttribute(siUILabelPercentage, 30);
    layout.EndGroup();
    layout.AddGroup(L"Tiling", true, 0);
       layout.AddItem(L"texture_accept_untiled", L"Accept Untiled Textures");
@@ -918,6 +984,38 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item = layout.AddItem(L"texture_max_open_files", L"Max. Open Textures");
       item.PutAttribute(siUILabelPercentage, 90);
       layout.EndRow();
+   layout.EndGroup();
+
+   layout.AddTab(L"Color Management");
+   layout.AddGroup(L"Color Manager");
+      CValueArray color_managers;
+      color_managers.Add(L"Built-in"); color_managers.Add(L"");
+      color_managers.Add(L"OCIO"); color_managers.Add(L"color_manager_ocio");
+      item = layout.AddEnumControl(L"color_manager", color_managers, L"Color Manager", siControlCombo);
+      item.PutAttribute(siUINoLabel, true);
+   layout.EndGroup();
+   layout.AddGroup(L"OCIO");
+      layout.AddGroup(L"Config");
+         item = layout.AddItem(L"ocio_config", L"Config", siControlFilePath);
+         item.PutAttribute(siUINoLabel, true);
+         item.PutAttribute(siUIOpenFile, true);
+         item.PutAttribute(siUIFileMustExist, true);
+         item.PutAttribute(siUIFileFilter, L"OCIO config files (*.ocio)|*.ocio||");
+         item = layout.AddItem(L"ocio_config_message", L"\n", siControlStatic);
+      layout.EndGroup();
+      CValueArray colorSpaces(2);
+      colorSpaces[0] = L""; colorSpaces[1] = L"";
+      layout.AddGroup(L"sRGB Color Space");
+         item = layout.AddEnumControl(L"ocio_color_space_narrow", colorSpaces, L"sRGB Color Space", siControlCombo);
+         item.PutAttribute(siUINoLabel, true);
+      layout.EndGroup();
+      layout.AddGroup(L"Rendering Color Space");
+         item = layout.AddEnumControl(L"ocio_color_space_linear", colorSpaces, L"Rendering Color Space", siControlCombo);
+         item.PutAttribute(siUINoLabel, true);
+         item = layout.AddItem(L"ocio_linear_chromaticities", L"Chromaticities");
+         item.PutAttribute(siUILabelMinPixels, 80);
+         item.PutAttribute(siUILabelPercentage, 25);
+      layout.EndGroup();
    layout.EndGroup();
 
    layout.AddTab(L"Diagnostics");
@@ -949,6 +1047,18 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
          item = layout.AddItem(L"output_file_dir_log", L"Directory");
          item.PutAttribute(siUINoLabel, true);
       layout.EndGroup();
+   layout.EndGroup();
+   layout.AddGroup(L"Statistics & Profiling");
+      item = layout.AddItem(L"enable_stats", L"Output Statistics");
+      item = layout.AddItem(L"stats_file", L"Stats File", siControlFilePath);
+      item.PutAttribute(siUIFileFilter, L"JSON files (*.json)|*.json||");
+      CValueArray statsMode;
+      statsMode.Add(L"Owerwrite");   statsMode.Add((int)AI_STATS_MODE_OVERWRITE);
+      statsMode.Add(L"Append");      statsMode.Add((int)AI_STATS_MODE_APPEND);
+      item = layout.AddEnumControl(L"stats_mode", statsMode, L"Stats Mode", siControlCombo);
+      item = layout.AddItem(L"enable_profile", L"Output Profile");
+      item = layout.AddItem(L"profile_file", L"Profile File", siControlFilePath);
+      item.PutAttribute(siUIFileFilter, L"JSON files (*.json)|*.json||");
    layout.EndGroup();
    layout.AddGroup(L"Ignore", true, 0);
       layout.AddItem(L"ignore_textures",     L"Texture Maps");
@@ -1002,6 +1112,16 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUICX, 140);
       layout.EndRow();
 
+   layout.AddTab(L"Denoiser");
+      layout.AddGroup(L"OptiX Denoiser");
+         layout.AddItem(L"use_optix_on_main", L"Apply on Main");
+         layout.AddItem(L"only_show_denoise", L"Only show denoise (in progressive)");
+      layout.EndGroup();
+      layout.AddGroup(L"Arnold Denoiser (noice)");
+         layout.AddItem(L"output_denoising_aovs", L"Output Denoising AOVs");
+         layout.AddButton(L"OpenDenoiserProperties", L"Open Arnold Denoiser Properties");
+      layout.EndGroup();
+
       layout.AddItem(L"sitoa_version", L"SItoA Version");
 
    return CStatus::OK;
@@ -1042,9 +1162,11 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       SystemTabLogic(cpset);
       OutputTabLogic(cpset);
       TexturesTabLogic(cpset);
+      ColorManagersTabLogic(cpset, ctxt);
       SubdivisionTabLogic(cpset);
       DiagnosticsTabLogic(cpset);
       AssOutputTabLogic(cpset);
+      DenoiserTabLogic(cpset);
 
       Pass pass(Application().GetActiveProject().GetActiveScene().GetActivePass());
 
@@ -1132,7 +1254,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
          if (app.GetUIToolkit().MsgBox(L"Are You Sure ?", siMsgOkCancel, L"Reset Options", okPressed) == CStatus::OK)
          {
             if (okPressed == 1)
-               ResetToDefault(cpset);
+               ResetToDefault(cpset, ctxt);
          }
       }
       else if (buttonName.IsEqualNoCase(L"AddMetadata"))
@@ -1185,6 +1307,15 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
             }
          }
       }
+      else if (buttonName.IsEqualNoCase(L"OpenDenoiserProperties"))
+      {
+         CValue retval = false;
+         CValueArray denoiserArgs(2);
+         denoiserArgs[0] = cpset.GetParent();
+         denoiserArgs[1] = "";
+
+         Application().ExecuteCommand(L"SITOA_OpenDenoiserProperty", denoiserArgs, retval);
+      }
    }
    else if (eventID == PPGEventContext::siParameterChange)
    {
@@ -1198,7 +1329,8 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
           paramName == L"motion_shutter_onframe")
          MotionBlurTabLogic(cpset);
 
-      else if (paramName == L"use_sample_clamp" ||
+      else if (paramName == L"enable_adaptive_sampling" ||
+               paramName == L"use_sample_clamp" ||
                paramName == L"output_filter")
          SamplingTabLogic(cpset);
 
@@ -1215,17 +1347,27 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
                paramName == L"texture_accept_untiled")
          TexturesTabLogic(cpset);
 
+      else if (paramName == L"color_manager" ||
+               paramName == L"ocio_config" ||
+               paramName == L"ocio_color_space_linear")
+         ColorManagersTabLogic(cpset, ctxt);
+
       else if (paramName == L"use_dicing_camera")
          SubdivisionTabLogic(cpset);
 
       else if (paramName == L"enable_log_file" ||
                paramName == L"log_level"       || 
-               paramName == L"output_file_tagdir_log")
+               paramName == L"output_file_tagdir_log" ||
+               paramName == L"enable_stats" ||
+               paramName == L"enable_profile")
          DiagnosticsTabLogic(cpset);
 
       else if (paramName == L"output_file_tagdir_ass" || 
                paramName == L"compress_output_ass")
          AssOutputTabLogic(cpset);
+
+      else if (paramName == L"use_optix_on_main")
+         DenoiserTabLogic(cpset);
 
       else if (paramName == L"skip_license_check")
       {
@@ -1275,11 +1417,17 @@ void MotionBlurTabLogic(CustomProperty &in_cp)
 //
 void SamplingTabLogic(CustomProperty &in_cp)
 {
+   // adaptive sampling
+   bool adaptive = (bool)ParAcc_GetValue(in_cp, L"enable_adaptive_Sampling", DBL_MAX);
+   ParAcc_GetParameter(in_cp, L"AA_samples_max").PutCapabilityFlag(siReadOnly, !adaptive);
+   ParAcc_GetParameter(in_cp, L"AA_adaptive_threshold").PutCapabilityFlag(siReadOnly, !adaptive);
+
    // Only some filter nodes have a width attribute
    CString filter = ParAcc_GetValue(in_cp, L"output_filter", DBL_MAX).GetAsText();
 
    bool enableWidth = filter.IsEqualNoCase(L"gaussian") || filter.IsEqualNoCase(L"triangle") ||
-                      filter.IsEqualNoCase(L"variance") || filter.IsEqualNoCase(L"blackman_harris");
+                      filter.IsEqualNoCase(L"variance") || filter.IsEqualNoCase(L"blackman_harris") ||
+                      filter.IsEqualNoCase(L"contour") || filter.IsEqualNoCase(L"sinc");
 
    ParAcc_GetParameter(in_cp, L"output_filter_width").PutCapabilityFlag(siReadOnly, !enableWidth);
 
@@ -1352,6 +1500,120 @@ void TexturesTabLogic(CustomProperty &in_cp)
 }
 
 
+// Logic for the color managers tab
+// https://github.com/Autodesk/sitoa/issues/31
+//
+// @param in_cp       The arnold rendering options property
+// @param in_ctxt     The arnold rendering options PPGEvent
+//
+void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
+{
+   Parameter paramChanged = in_ctxt.GetSource();
+   CString paramName = paramChanged.GetScriptName(); 
+
+   // OCIO color manager
+   bool ocioManager = (bool)(ParAcc_GetValue(in_cp, L"color_manager", DBL_MAX) == L"color_manager_ocio");
+   bool useOcioDefaultRenderingSpace = (bool)(ParAcc_GetValue(in_cp, L"ocio_color_space_linear", DBL_MAX) == L"");
+   bool hasOcioEnv = (bool)(getenv("OCIO") != NULL);
+   CString ocioConfig = ParAcc_GetValue(in_cp, L"ocio_config", DBL_MAX);
+   bool ocioLoaded = false;
+
+   ParAcc_GetParameter(in_cp, L"ocio_config").PutCapabilityFlag(siReadOnly, !ocioManager);
+   ParAcc_GetParameter(in_cp, L"ocio_config_message").PutCapabilityFlag(siReadOnly, !ocioManager);
+   ParAcc_GetParameter(in_cp, L"ocio_color_space_narrow").PutCapabilityFlag(siReadOnly, !ocioManager);
+   ParAcc_GetParameter(in_cp, L"ocio_color_space_linear").PutCapabilityFlag(siReadOnly, !ocioManager);
+   ParAcc_GetParameter(in_cp, L"ocio_linear_chromaticities").PutCapabilityFlag(siReadOnly, (!ocioManager || useOcioDefaultRenderingSpace));
+
+
+   // don't do the heavy UI update if just the rendering color space has changed
+   if (paramName != L"ocio_color_space_linear") {
+      if (ocioManager) {
+         if (hasOcioEnv && ocioConfig == L"") {
+            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using OCIO config from environment.\n"));
+            ocioLoaded = true;
+         }
+         else if (ocioConfig != L"") {
+            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using the specified OCIO config.\n"));
+            ocioLoaded = true;
+         }
+         else
+            in_cp.PutParameterValue(L"ocio_config_message", CString(L"No OCIO in environment.\nLoad a config manually to use OCIO."));
+      }
+      else
+         in_cp.PutParameterValue(L"ocio_config_message", CString(L"\n"));
+
+      if (ocioLoaded) {
+         // init strings to get default colorspaces
+         AtString defaultsRGB;
+         AtString defaultLinear;
+         CValueArray colorSpaces(2);
+         colorSpaces[0] = L""; colorSpaces[1] = L"";  // init first items
+
+         // we need to have an arnold universe with the ocio node so that we can get all the color spaces
+         bool defaultUniverseExist = AiUniverseIsActive();
+         AtUniverse* ocioUniverse;
+         AtNode* ocioNode;
+
+         if (defaultUniverseExist) {
+            ocioUniverse = AiUniverse();
+            ocioNode = AiNode(ocioUniverse, "color_manager_ocio");
+         }
+         else {
+            AiBegin();
+            ocioNode = AiNode("color_manager_ocio");
+         }
+
+         CNodeSetter::SetString(ocioNode, "config", GetRenderOptions()->m_ocio_config.GetAsciiString());
+
+         int numColorSpaces = AiColorManagerGetNumColorSpaces(ocioNode);
+         if (numColorSpaces > 0) {
+            // get all colorspaces in the current OCIO config
+            colorSpaces.Resize((numColorSpaces+1)*2);
+            CString colorSpace;
+
+            for (LONG i=0; i<numColorSpaces; i++) {
+               colorSpace = CString(AiColorManagerGetColorSpaceNameByIndex(ocioNode, i));
+               colorSpaces[i*2+2] = colorSpace;
+               colorSpaces[i*2+3] = colorSpace;
+            }
+
+            // get the default color spaces
+            AiColorManagerGetDefaults(ocioNode, defaultsRGB, defaultLinear);
+
+         }
+         else {
+            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Error: No color spaces found!\n"));
+         }
+
+         // destroy the universe
+         if (defaultUniverseExist)
+            AiUniverseDestroy(ocioUniverse);
+         else
+            AiEnd();
+
+         // update the PPGs
+         PPGLayout layout = in_cp.GetPPGLayout();
+         PPGItem item;
+
+         // add the default sRGB color space
+         if (defaultsRGB)
+            colorSpaces[0] = L"Auto (" + CString(defaultsRGB) + ")";
+         item = layout.GetItem(L"ocio_color_space_narrow");
+         item.PutUIItems(colorSpaces);
+
+         // add the default linear color space
+         if (defaultLinear)
+            colorSpaces[0] = L"Auto (" + CString(defaultLinear) + ")";
+         item = layout.GetItem(L"ocio_color_space_linear");
+         item.PutUIItems(colorSpaces);
+
+         // redraw the PPG so the new Enum items are showing
+         in_ctxt.PutAttribute(L"Refresh", true);
+      }
+   }
+}
+
+
 // Logic for the subdivision tab
 //
 // @param in_cp       The arnold rendering options property
@@ -1397,6 +1659,14 @@ void DiagnosticsTabLogic(CustomProperty &in_cp)
 
    int log_level = (int)ParAcc_GetValue(in_cp, L"log_level", DBL_MAX);
    ParAcc_GetParameter(in_cp, L"texture_per_file_stats").PutCapabilityFlag(siReadOnly, log_level != eSItoALogLevel_Debug); 
+
+   // stats and profiling logic
+   bool stats = (bool)ParAcc_GetValue(in_cp, L"enable_stats", DBL_MAX);
+   ParAcc_GetParameter(in_cp, L"stats_file").PutCapabilityFlag(siReadOnly, !stats);
+   ParAcc_GetParameter(in_cp, L"stats_mode").PutCapabilityFlag(siReadOnly, !stats);
+
+   bool profile = (bool)ParAcc_GetValue(in_cp, L"enable_profile", DBL_MAX);
+   ParAcc_GetParameter(in_cp, L"profile_file").PutCapabilityFlag(siReadOnly, !profile);
 }
 
 
@@ -1419,11 +1689,23 @@ void AssOutputTabLogic(CustomProperty &in_cp)
 }
 
 
-// Reset the default values of all the parameters
+// Logic for the denoiser tab
 //
 // @param in_cp       The arnold rendering options property
 //
-void ResetToDefault(CustomProperty &in_cp)
+void DenoiserTabLogic(CustomProperty &in_cp)
+{
+  bool useOptixOnMain = (bool)ParAcc_GetValue(in_cp, L"use_optix_on_main", DBL_MAX);
+  ParAcc_GetParameter(in_cp, L"only_show_denoise").PutCapabilityFlag(siReadOnly, !useOptixOnMain);
+}
+
+
+// Reset the default values of all the parameters
+//
+// @param in_cp       The arnold rendering options property
+// @param in_ctxt     The arnold rendering options PPGEvent
+//
+void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt)
 {
    CParameterRefArray params = in_cp.GetParameters();
    for (LONG i=0; i<params.GetCount(); i++)
@@ -1437,9 +1719,9 @@ void ResetToDefault(CustomProperty &in_cp)
    SystemTabLogic(in_cp);
    OutputTabLogic(in_cp);
    TexturesTabLogic(in_cp);
+   ColorManagersTabLogic(in_cp, in_ctxt);
    SubdivisionTabLogic(in_cp);
    DiagnosticsTabLogic(in_cp);
    AssOutputTabLogic(in_cp);
+   DenoiserTabLogic(in_cp);
 }
-
-

@@ -112,9 +112,18 @@ function AddShader_Execute(in_shaderName, in_connectionPoint, in_collection, in_
          {
             DeleteObj(shader);      
             shader = CreateShaderFromProgID(in_shaderName, xsiObj.material, null);
-            var closure = CreateShaderFromProgID("Arnold.closure.1.0", xsiObj.material, null);
-            SIConnectShaderToCnxPoint(shader, closure + ".closure", false);
-            SIConnectShaderToCnxPoint(closure, xsiObj.material + ".surface", false);
+            // we only want to add a closure shader when it's needed
+            // closures have 20 as OutputType value so we test for that
+            if (shader.OutputType == 20)
+            {
+               var closure = CreateShaderFromProgID("Arnold.closure.1.0", xsiObj.material, null);
+               SIConnectShaderToCnxPoint(shader, closure + ".closure", false);
+               SIConnectShaderToCnxPoint(closure, xsiObj.material + ".surface", false);
+            }
+            else
+            {
+               SIConnectShaderToCnxPoint(shader, xsiObj.material + ".surface", false);
+            }
          }
       }
    }
@@ -137,7 +146,18 @@ function AddShaderStack_Execute(in_shaderName, in_connectionPoint)
 {
    var pass = ActiveProject.ActiveScene.ActivePass;
    var shader = CreateShaderFromProgID(in_shaderName, pass, null);
-   SIConnectShaderToCnxPoint(shader, pass + "." + in_connectionPoint, false);
+   // we only want to add a closure shader when it's needed
+   // closures have 20 as OutputType value so we test for that 
+   if (shader.OutputType == 20)
+   {
+      var closure = CreateShaderFromProgID("Arnold.closure.1.0", pass, null);
+      SIConnectShaderToCnxPoint(shader, closure + ".closure", false);
+      SIConnectShaderToCnxPoint(closure, pass + "." + in_connectionPoint, false);
+   }
+   else
+   {
+      SIConnectShaderToCnxPoint(shader, pass + "." + in_connectionPoint, false);
+   }
    InspectObj(shader);
 }
 
@@ -227,6 +247,7 @@ function AddPropertiesSubMenu(in_menu)
    in_menu.AddCommandItem("Texture Options", "AddTextureOptionsProperties");
    in_menu.AddCommandItem("Camera Options",  "AddCameraOptionsProperties");
    in_menu.AddCommandItem("Sidedness",       "AddSidednessProperties");
+   in_menu.AddCommandItem("Denoiser",        "AddDenoiserProperties");
 }
 
 
@@ -240,8 +261,10 @@ function ArnoldShaders_Init(io_Context)
 
 function AddShadersSubMenu(in_menu)
 {
+   in_menu.AddCallbackItem("Car Paint",         "OnShadersMenu");
    in_menu.AddCallbackItem("Standard Surface",  "OnShadersMenu");
    in_menu.AddCallbackItem("Standard Hair",     "OnShadersMenu");
+   in_menu.AddCallbackItem("Toon",              "OnShadersMenu");
    in_menu.AddCallbackItem("Utility",           "OnShadersMenu");
    in_menu.AddSeparatorItem();
    in_menu.AddCallbackItem("Camera Projection", "OnShadersMenu");
@@ -258,6 +281,16 @@ function AddShadersSubMenu(in_menu)
    in_menu.AddCallbackItem("Physical Sky",      "OnShadersMenu");   
 }
 
+
+// pass sub-menu
+function ArnoldPassShaders_Init(io_Context)
+{
+   var xsiMenu = io_Context.Source;
+   xsiMenu.AddCallbackItem("Atmosphere Volume", "OnShadersMenu");
+   xsiMenu.AddCallbackItem("Fog",               "OnShadersMenu");
+   xsiMenu.AddSeparatorItem();
+   xsiMenu.AddCallbackItem("Cryptomatte",       "OnShadersMenu");
+}
 
 // lights sub-menu
 function ArnoldLights_Init(io_Context)
@@ -429,11 +462,17 @@ function OnShadersMenu(in_ctxt)
    var item = in_ctxt.Source;
    switch (item.Name)
    {
+      case "Car Paint":
+         SITOA_AddShader("Arnold.car_paint.1.0", "surface");
+         break;
       case "Standard Surface":
          SITOA_AddShader("Arnold.standard_surface.1.0", "surface");
          break;
       case "Standard Hair":
          SITOA_AddShader("Arnold.standard_hair.1.0", "surface");
+         break;
+      case "Toon":
+         SITOA_AddShader("Arnold.toon.1.0", "surface");
          break;
       case "Utility":
          SITOA_AddShader("Arnold.utility.1.0", null);
@@ -465,8 +504,17 @@ function OnShadersMenu(in_ctxt)
       case "Standard Volume":
          SITOA_AddShader("Arnold.standard_volume.1.0", "surface");
          break;
+      case "Atmosphere Volume":
+         SITOA_AddShaderStack("Arnold.atmosphere_volume.1.0", "VolumeShaderStack");
+         break;
+      case "Fog":
+         SITOA_AddShaderStack("Arnold.fog.1.0", "VolumeShaderStack");
+         break;
       case  "Physical Sky":
-         SITOA_AddShaderStack("Arnold.physical_sky.1.0", "EnvironmentShaderStack");
+         SITOA_AddShaderStack("Arnold.physical_sky.1.0", null);
+         break;
+      case  "Cryptomatte":
+         SITOA_AddShaderStack("Arnold.cryptomatte.1.0", "OutputShaderStack");
          break;
     }
 }
@@ -537,7 +585,8 @@ function About()
                           "Eric Mootz",
                           "Holger Schoenberger",
                           "Frederic Servant",
-                          "Jules Stevenson"
+                          "Jules Stevenson",
+                          "Jens Lindgren"
                           );
                          
    var layout = prop.PPGLayout;
