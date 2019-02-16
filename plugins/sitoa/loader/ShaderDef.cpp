@@ -443,7 +443,9 @@ CShaderDefShader::CShaderDefShader(AtNodeEntry* in_node_entry, const bool in_clo
    else // since we're storing the names by so/dll + " " + name, we can't let this void
       m_so_name = L"core";
 
-   m_is_camera_node = AiNodeEntryGetType(m_node_entry) == AI_NODE_CAMERA;
+   int entry_type = AiNodeEntryGetType(m_node_entry);
+   m_is_camera_node = entry_type == AI_NODE_CAMERA;
+   m_is_operator_node = entry_type == AI_NODE_OPERATOR;
 
    if (in_clone_vector_map)
       m_type = AI_TYPE_FLOAT;
@@ -512,7 +514,7 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
 
    CString shader_prog_id = L"Arnold." + m_name;
    shader_prog_id+= L".1.0";
-
+ 
    m_sd = Application().GetShaderDef(shader_prog_id);
    m_sd_created = !m_sd.IsValid();
 
@@ -544,6 +546,13 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
          category = category + L"/" + m_category;
    }
 
+   if (m_is_operator_node)
+   {
+      category = L"Arnold/Operators";
+      if (m_has_category)
+         category = category + L"/" + m_category;
+   }
+
    m_sd.PutCategory(category);
 
    if (m_has_deprecated && m_deprecated)
@@ -566,6 +575,8 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
 
    if (m_is_passthrough_closure) // hack the closure output for the closure connector to color
       outParamDef.AddParamDef("out", siShaderDataTypeColor4, outOpts);
+   else if (m_is_operator_node)
+      outParamDef.AddParamDef("out", L"operator", outOpts);
    else
    {
       if (m_type == AI_TYPE_CLOSURE)
@@ -778,7 +789,7 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
       GetMessageQueue()->LogMsg(L"[sitoa] Missing shader metadata file " + metadata_path, siWarningMsg);
 
    // iterate the nodes
-   AtNodeEntryIterator* node_entry_it = AiUniverseGetNodeEntryIterator(AI_NODE_SHADER | AI_NODE_CAMERA);
+   AtNodeEntryIterator* node_entry_it = AiUniverseGetNodeEntryIterator(AI_NODE_SHADER | AI_NODE_CAMERA | AI_NODE_OPERATOR);
    while (!AiNodeEntryIteratorFinished(node_entry_it))
    {
       AtNodeEntry* node_entry = AiNodeEntryIteratorGetNext(node_entry_it);

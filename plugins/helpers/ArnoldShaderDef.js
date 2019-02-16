@@ -137,6 +137,14 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("volume_sample_float", 1, 0);
    in_reg.RegisterShader("volume_sample_rgb", 1, 0);
    in_reg.RegisterShader("wireframe", 1, 0);
+   // operators
+   in_reg.RegisterShader("materialx", 1, 0);
+   in_reg.RegisterShader("merge", 1, 0);
+   in_reg.RegisterShader("set_parameter", 1, 0);
+   in_reg.RegisterShader("disable", 1, 0);
+   in_reg.RegisterShader("switch_operator", 1, 0);
+   in_reg.RegisterShader("set_transform", 1, 0);
+   in_reg.RegisterShader("collection", 1, 0);
 
    // in_reg.Help = "https://support.solidangle.com/display/A5SItoAUG/Shaders";
 
@@ -377,7 +385,22 @@ function Arnold_volume_sample_rgb_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_volume_sample_rgb_1_0_Define(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_Define(in_ctxt) { return true; }
- 
+// operators
+function Arnold_materialx_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_materialx_1_0_Define(in_ctxt) { return true; }
+function Arnold_merge_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_merge_1_0_Define(in_ctxt) { return true; }
+function Arnold_set_parameter_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_set_parameter_1_0_Define(in_ctxt) { return true; }
+function Arnold_disable_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_disable_1_0_Define(in_ctxt) { return true; }
+function Arnold_switch_operator_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_switch_operator_1_0_Define(in_ctxt) { return true; }
+function Arnold_set_transform_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_set_transform_1_0_Define(in_ctxt) { return true; }
+function Arnold_collection_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_collection_1_0_Define(in_ctxt) { return true; }
+
 ///////////////////////////////////////////////////
 /////////////// shaders that require a dedicated UI
 ///////////////////////////////////////////////////

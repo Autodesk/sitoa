@@ -18,6 +18,7 @@ See the License for the specific language governing permissions and limitations 
 #include "loader/Polymeshes.h"
 #include "loader/Shaders.h"
 #include "loader/Procedurals.h"
+#include "loader/Operators.h"
 #include "renderer/RenderMessages.h"
 #include "renderer/Renderer.h"
 
@@ -250,6 +251,19 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
       {
          AiMsgDebug("[sitoa] Loading Options");
          status = LoadOptions(in_arnoldOptions, iframe);
+
+         if (progressBar.IsCancelPressed() || status == CStatus::Abort)
+         {
+            AbortFrameLoadScene();
+            break;
+         }
+      }
+
+      //////////// Operators ////////////
+      if (!in_createStandIn)
+      {
+         AiMsgDebug("[sitoa] Loading Operators");
+         status = LoadOperators();
 
          if (progressBar.IsCancelPressed() || status == CStatus::Abort)
          {

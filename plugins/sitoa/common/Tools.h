@@ -89,7 +89,7 @@ namespace ATSTRING
    const AtString softmax("softmax");
    const AtString linkable("linkable");
    const AtString deprecated("deprecated");
-   // sitos-specific metadata
+   // sitoa-specific metadata
    const AtString soft_category("soft.category");
    const AtString soft_order("soft.order");
    const AtString soft_label("soft.label");
@@ -97,8 +97,9 @@ namespace ATSTRING
    const AtString soft_inspectable("soft.inspectable");
    const AtString soft_viewport_guid("soft.viewport_guid");
    const AtString soft_node_type("soft.node_type");
-   //
+   // sitoa custom ports/types
    const AtString closure("closure");
+   const AtString operator_node("operator");
 };
 
 namespace VERBOSITY

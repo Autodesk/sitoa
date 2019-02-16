@@ -120,6 +120,7 @@ public:
    CString m_so_name;                          // the so/dll file name
    bool    m_is_camera_node;                   // is this a custom camera node?
    bool    m_is_passthrough_closure;           // is this the SItoA shader called "closure" ?
+   bool    m_is_operator_node;                 // is this an operator node?
    bool    m_has_skip;
    bool    m_skip;
 
@@ -144,6 +145,7 @@ public:
       m_so_name(in_arg.m_so_name), 
       m_is_camera_node(in_arg.m_is_camera_node), 
       m_is_passthrough_closure(in_arg.m_is_passthrough_closure),
+      m_is_operator_node(in_arg.m_is_operator_node),
       m_has_skip(in_arg.m_has_skip), m_skip(in_arg.m_skip)
    {
    }

@@ -211,7 +211,35 @@ SITOA_CALLBACK ArnoldRender_Query(CRef &in_ctxt)
    return CStatus::OK;
 }
 
+// github issue #19
+// support for operators
+SITOA_CALLBACK ArnoldRender_Define(CRef &in_ctxt)
+{
 
+   // github issue #19
+   // register a new "operator" parameter type
+   CStringArray op_type_filter, family_filter;
+   op_type_filter.Add("operator");
+   Application().RegisterShaderCustomParameterType(L"operator", L"operator", L"operator", 0, 5, 255, op_type_filter, family_filter);
+
+   Context ctxt(in_ctxt);
+
+   ShaderDef shaderDef(ctxt.GetAttribute(L"Definition"));
+   ShaderParamDefContainer inputDefs = shaderDef.GetInputParamDefs();
+
+   ShaderParamDef renderPassDef = inputDefs.GetParamDefByName("pass");
+
+   Factory factory = Application().GetFactory();
+   ShaderParamDefOptions paramOptions = ShaderParamDefOptions(factory.CreateShaderParamDefOptions());
+   paramOptions.SetTexturable(true);
+
+   ShaderStructParamDef structParam(renderPassDef);
+   ShaderParamDefContainer container = structParam.GetSubParamDefs();
+
+   container.AddParamDef(L"operator", L"operator", paramOptions);
+
+   return CStatus::OK;
+}
 
 LockSceneData::LockSceneData()
 : m_renderer((Renderer) GetRenderInstance()->GetRendererRef())
