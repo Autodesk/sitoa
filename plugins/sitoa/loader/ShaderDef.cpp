@@ -343,23 +343,7 @@ void CShaderDefParameter::Layout(PPGLayout &in_layout)
    if (m_has_label)
       label = m_label;
    else
-   {
-      // replace "_" with " ". "_" is very common in the Arnold nodes
-      // Ex: "emission_color" -> "emission color: 
-      CString t_label = CStringUtilities().ReplaceString(L"_", L" ", m_name);
-
-      // capitalize the first char of the name, and each token after a space, as we do for the SItoA shaders
-      // Ex: "emission color" -> "Emission Color: 
-      for (ULONG i=0; i<t_label.Length(); i++)
-      {
-         if (i==0)
-            label+= (char)toupper(t_label[i]);
-         else if (t_label[i-1] == ' ')
-            label+= (char)toupper(t_label[i]);
-         else
-            label+= t_label[i];
-      }
-   }
+      label = CStringUtilities().PrettifyParameterName(m_name);
 
    // if a string parameter is called "filename", it's reasonable to provide a file browser widget
    if (m_type == AI_TYPE_STRING && m_name == ATSTRING::filename)
