@@ -226,37 +226,67 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
    else if (!m_has_softmin && m_has_softmax)
       GetMessageQueue()->LogMsg(L"[sitoa] " + in_shader_name + L"." + m_name + " has softmax metadata, but no softmin.", siWarningMsg);
 
-   // if the Arnold type is an array, we create a single parameter of the type of the array elements
-   int paramType = m_type == AI_TYPE_ARRAY ? m_arrayType : m_type;
-   ShaderParamDef pDef;
-   if (m_type == AI_TYPE_CLOSURE)
-      pDef = in_paramDef.AddParamDef(m_name, L"closure", defOptions);
-   else
+
+   bool paramIsArray = m_type == AI_TYPE_ARRAY;
+   int paramType = paramIsArray ? m_arrayType : m_type;
+   CString customNodeType = L"";
+
+   // check for node type overrides
+   // strings can also be overriden to nodes
+   if ((paramType == AI_TYPE_STRING || paramType == AI_TYPE_NODE) && m_has_node_type)
    {
-      // adds the ability for string types to have a node picker
-      // also implements filter for the node types
-      if ((m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE) && m_has_node_type)
+      // override node type be AI_TYPE_NODE
+      paramType = AI_TYPE_NODE;
+      CStringArray nodeTypes = CStringUtilities().ToLower(m_node_type).Split(L" ");
+      CString nodeType = nodeTypes[0];
+      if (nodeType == L"operator")
+         customNodeType = nodeType;
+      else
       {
-         CStringArray nodeTypes = CStringUtilities().ToLower(m_node_type).Split(L" ");
-         defOptions.SetAttribute(siReferenceFilterAttribute, GetShaderReferenceFilterType(nodeTypes[0]));
+         // force node type even if string (toon shader uses this)
+         paramType = AI_TYPE_NODE;
+         // set the reference filter type
+         defOptions.SetAttribute(siReferenceFilterAttribute, GetShaderReferenceFilterType(nodeType));
+      }
 
-         if (nodeTypes.GetCount() > 1)
+      if (nodeTypes.GetCount() > 1)
+      {
+         if (nodeTypes[1] == L"array")
          {
-            if (nodeTypes[1] == L"array")
-            {
-               // shaderarrays doesn't use the label but uses SetLongName instead
-               // label has to be specified in .mtd or else it will just show the parameter name
-               if (m_has_label)
-                  defOptions.SetLongName(m_label);
-
-               pDef = in_paramDef.AddArrayParamDef(m_name, siShaderDataTypeReference, defOptions);
-            }
+            // if array is specified in the soft.node_type metadata, a parameter array will be created even though it's not an array in arnold
+            // toon shader uses this for lights, but it's data is converted to semicolon-delimited string on rendering/export
+            paramIsArray = true;
          }
          else
-            pDef = in_paramDef.AddParamDef(m_name, siShaderDataTypeReference, defOptions);
+            GetMessageQueue()->LogMsg(L"[sitoa] " + in_shader_name + L"." + m_name + " has unknown node type override: " + m_node_type, siWarningMsg);
       }
+   }
+   else if (paramType == AI_TYPE_CLOSURE)
+      customNodeType = L"closure";
+
+   ShaderParamDef pDef;
+   if (!paramIsArray)
+   {
+      if (customNodeType != "")
+         pDef = in_paramDef.AddParamDef(m_name, customNodeType, defOptions);
       else
          pDef = in_paramDef.AddParamDef(m_name, GetParamSdType(paramType), defOptions);
+   }
+
+   if (paramIsArray)
+   {
+      // shaderarrays doesn't use the label but uses SetLongName instead
+      CString label;
+      if (m_has_label)
+         label = m_label;
+      else
+         label = CStringUtilities().PrettifyParameterName(m_name);
+      defOptions.SetLongName(label);
+
+      if (customNodeType != "")
+         pDef = in_paramDef.AddArrayParamDef(m_name, customNodeType, defOptions);
+      else
+         pDef = in_paramDef.AddArrayParamDef(m_name, GetParamSdType(paramType), defOptions);
    }
 
    // setting the default for the struct parameters
@@ -367,12 +397,6 @@ void CShaderDefParameter::Layout(PPGLayout &in_layout)
    }
    else
    {
-      // if the Arnold type is array, add " (array)" to the label of the parameter,
-      // which we expose as a single value. So, even if we don't support arrays yet, 
-      // we have a way to spot the case by the label name. Also, this way the user gets
-      // "warned" that this parameter won't work as expected
-      if (m_arrayType != AI_TYPE_UNDEFINED)
-         label+= L" (array)";
       item = in_layout.AddItem(m_name, label);
       item.PutAttribute(siUILabelMinPixels, 120);
       item.PutAttribute(siUILabelPercentage, 35);
