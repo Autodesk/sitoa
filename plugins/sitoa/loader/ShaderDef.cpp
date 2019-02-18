@@ -514,7 +514,7 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
 
    CString shader_prog_id = L"Arnold." + m_name;
    shader_prog_id+= L".1.0";
- 
+
    m_sd = Application().GetShaderDef(shader_prog_id);
    m_sd_created = !m_sd.IsValid();
 

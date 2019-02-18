@@ -15,5 +15,5 @@ See the License for the specific language governing permissions and limitations 
 
 using namespace XSI;
 
-// Load all hair primitives into Arnold
-CStatus LoadOperators();
+// Load operators into Arnold
+CStatus LoadPassOperator();

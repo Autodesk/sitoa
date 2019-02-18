@@ -16,11 +16,11 @@ See the License for the specific language governing permissions and limitations 
 
 #include "renderer/Renderer.h"
 
-// Load all operators into Arnold
+// Load the operators connected to a RenderPass into Arnold
 //
 // @return CStatus::OK if all went well, else the error code
 //
-CStatus LoadOperators()
+CStatus LoadPassOperator()
 {
    CStatus status(CStatus::OK);
 

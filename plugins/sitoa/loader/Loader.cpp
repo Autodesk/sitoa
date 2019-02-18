@@ -263,7 +263,7 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
       if (!in_createStandIn)
       {
          AiMsgDebug("[sitoa] Loading Operators");
-         status = LoadOperators();
+         status = LoadPassOperator();
 
          if (progressBar.IsCancelPressed() || status == CStatus::Abort)
          {
