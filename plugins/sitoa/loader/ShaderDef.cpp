@@ -782,11 +782,16 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
    // load the plugins (installation, + the ones in the shader search path)
    GetRenderInstance()->GetPluginsSearchPath().Put(in_plugin_origin_path, true);
    GetRenderInstance()->GetPluginsSearchPath().LoadPlugins();
-   // load the metadata file
+   // load the shader metadata file
    CString metadata_path = CUtils::BuildPath(in_plugin_origin_path, L"arnold_shaders.mtd");
    bool metadata_exists = AiMetaDataLoadFile(metadata_path.GetAsciiString());
    if (!metadata_exists)
       GetMessageQueue()->LogMsg(L"[sitoa] Missing shader metadata file " + metadata_path, siWarningMsg);
+   // load the operator metadata file
+   metadata_path = CUtils::BuildPath(in_plugin_origin_path, L"arnold_operators.mtd");
+   metadata_exists = AiMetaDataLoadFile(metadata_path.GetAsciiString());
+   if (!metadata_exists)
+      GetMessageQueue()->LogMsg(L"[sitoa] Missing operator metadata file " + metadata_path, siWarningMsg);
 
    // iterate the nodes
    AtNodeEntryIterator* node_entry_it = AiUniverseGetNodeEntryIterator(AI_NODE_SHADER | AI_NODE_CAMERA | AI_NODE_OPERATOR);
