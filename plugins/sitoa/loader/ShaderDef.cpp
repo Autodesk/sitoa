@@ -265,14 +265,6 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
       customNodeType = L"closure";
 
    ShaderParamDef pDef;
-   if (!paramIsArray)
-   {
-      if (customNodeType != "")
-         pDef = in_paramDef.AddParamDef(m_name, customNodeType, defOptions);
-      else
-         pDef = in_paramDef.AddParamDef(m_name, GetParamSdType(paramType), defOptions);
-   }
-
    if (paramIsArray)
    {
       // shaderarrays doesn't use the label but uses SetLongName instead
@@ -287,6 +279,13 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
          pDef = in_paramDef.AddArrayParamDef(m_name, customNodeType, defOptions);
       else
          pDef = in_paramDef.AddArrayParamDef(m_name, GetParamSdType(paramType), defOptions);
+   }
+   else
+   {
+      if (customNodeType != "")
+         pDef = in_paramDef.AddParamDef(m_name, customNodeType, defOptions);
+      else
+         pDef = in_paramDef.AddParamDef(m_name, GetParamSdType(paramType), defOptions);
    }
 
    // setting the default for the struct parameters
