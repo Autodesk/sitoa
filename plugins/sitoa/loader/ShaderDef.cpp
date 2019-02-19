@@ -239,15 +239,11 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
       paramType = AI_TYPE_NODE;
       CStringArray nodeTypes = CStringUtilities().ToLower(m_node_type).Split(L" ");
       CString nodeType = nodeTypes[0];
-      if (nodeType == L"operator")
-         customNodeType = nodeType;
-      else
-      {
-         // force node type even if string (toon shader uses this)
-         paramType = AI_TYPE_NODE;
-         // set the reference filter type
-         defOptions.SetAttribute(siReferenceFilterAttribute, GetShaderReferenceFilterType(nodeType));
-      }
+
+      // force node type even if string (toon shader uses this)
+      paramType = AI_TYPE_NODE;
+      // set the reference filter type
+      defOptions.SetAttribute(siReferenceFilterAttribute, GetShaderReferenceFilterType(nodeType));
 
       if (nodeTypes.GetCount() > 1)
       {
