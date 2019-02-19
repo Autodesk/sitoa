@@ -584,7 +584,7 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
    if (m_is_passthrough_closure) // hack the closure output for the closure connector to color
       outParamDef.AddParamDef("out", siShaderDataTypeColor4, outOpts);
    else if (m_is_operator_node)
-      outParamDef.AddParamDef("out", L"operator", outOpts);
+      outParamDef.AddParamDef("out", siShaderDataTypeReference, outOpts);
    else
    {
       if (m_type == AI_TYPE_CLOSURE)

@@ -16,7 +16,6 @@
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "operator"
 soft.inspectable BOOL false
 
 ###########################################################################
@@ -26,7 +25,6 @@ soft.inspectable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "operator"
 soft.inspectable BOOL false
 
 [attr mode]
@@ -51,7 +49,6 @@ linkable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "operator"
 soft.inspectable BOOL false
 
 [attr assign_materials]
@@ -70,7 +67,6 @@ linkable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "operator"
 soft.inspectable BOOL false
 
 ###########################################################################
@@ -80,7 +76,6 @@ soft.inspectable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "operator"
 soft.inspectable BOOL false
 
 [attr assignment]
@@ -93,7 +88,6 @@ linkable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "operator"
 soft.inspectable BOOL false
 
 [attr translate]
@@ -112,7 +106,6 @@ linkable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "operator"
 soft.inspectable BOOL false
 
 [attr index]
