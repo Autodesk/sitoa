@@ -117,7 +117,10 @@ siShaderReferenceFilterType GetShaderReferenceFilterType(CString in_type)
    else if (in_type == L"userdata")
       return siUserDataBlobReferenceFilter;
    else
+   {
+      GetMessageQueue()->LogMsg(L"[sitoa] Unknown ReferenceFilterType: \"" + in_type + L"\". Check your metadata file.", siWarningMsg);
       return siUnknownReferenceFilter;
+   }
 }
 
 
