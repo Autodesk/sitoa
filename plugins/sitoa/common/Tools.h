@@ -351,6 +351,8 @@ public:
    bool StartsWith(CString in_string, CString in_subString);
    // Checks if string ends with substring
    bool EndsWith(CString in_string, CString in_subString);
+   // Converts a parameter name to prettier Title Case formated string
+   CString PrettifyParameterName(CString in_string);
 
 private:
    // Build the name for an Arnold node (overload for a CString input type)

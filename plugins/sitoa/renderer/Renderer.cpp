@@ -236,7 +236,7 @@ SITOA_CALLBACK ArnoldRender_Define(CRef &in_ctxt)
    ShaderStructParamDef structParam(renderPassDef);
    ShaderParamDefContainer container = structParam.GetSubParamDefs();
 
-   container.AddParamDef(L"operator", L"operator", paramOptions);
+   container.AddParamDef(L"operator", siShaderDataTypeReference, paramOptions);
 
    return CStatus::OK;
 }

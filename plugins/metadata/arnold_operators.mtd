@@ -16,7 +16,7 @@
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "shader array"
+soft.inspectable BOOL false
 
 ###########################################################################
 [node disable]
@@ -25,7 +25,7 @@ soft.node_type STRING "shader array"
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "shader array"
+soft.inspectable BOOL false
 
 [attr mode]
 linkable BOOL false
@@ -49,7 +49,7 @@ linkable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "shader array"
+soft.inspectable BOOL false
 
 [attr assign_materials]
 linkable BOOL false
@@ -67,7 +67,7 @@ linkable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "shader array"
+soft.inspectable BOOL false
 
 ###########################################################################
 [node set_parameter]
@@ -76,7 +76,7 @@ soft.node_type STRING "shader array"
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "shader array"
+soft.inspectable BOOL false
 
 [attr assignment]
 linkable BOOL false
@@ -88,7 +88,7 @@ linkable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "shader array"
+soft.inspectable BOOL false
 
 [attr translate]
 linkable BOOL false
@@ -106,7 +106,7 @@ linkable BOOL false
 linkable BOOL false
 
 [attr inputs]
-soft.node_type STRING "shader array"
+soft.inspectable BOOL false
 
 [attr index]
 linkable BOOL false
