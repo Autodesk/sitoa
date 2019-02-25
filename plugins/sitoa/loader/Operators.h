@@ -16,4 +16,4 @@ See the License for the specific language governing permissions and limitations 
 using namespace XSI;
 
 // Load operators into Arnold
-CStatus LoadPassOperator();
+CStatus LoadPassOperator(double in_frame);
