@@ -9,12 +9,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License.
 ************************************************************************************************************************************/
 
+#include "common/ParamsShader.h"
+#include "loader/Shaders.h"
+#include "renderer/Renderer.h"
+
 #include <xsi_project.h>
 #include <xsi_scene.h>
 #include <xsi_passcontainer.h>
 #include <xsi_pass.h>
-
-#include "renderer/Renderer.h"
 
 // Load the operators connected to a RenderPass into Arnold
 //
