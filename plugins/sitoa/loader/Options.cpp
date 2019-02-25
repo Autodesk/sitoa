@@ -741,6 +741,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_smoothing",    GetRenderOptions()->m_ignore_smoothing);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_sss",          GetRenderOptions()->m_ignore_sss);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_dof",          GetRenderOptions()->m_ignore_dof);
+   CNodeSetter::SetBoolean(in_optionsNode, "ignore_operators",    GetRenderOptions()->m_ignore_operators);
 
    // Error colors
    CNodeSetter::SetRGB(in_optionsNode, "error_color_bad_texture", GetRenderOptions()->m_error_color_bad_map.GetR(), 
