@@ -217,6 +217,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_ignore_procedurals     = (bool)ParAcc_GetValue(in_cp, L"ignore_procedurals", DBL_MAX);
    m_ignore_user_options    = (bool)ParAcc_GetValue(in_cp, L"ignore_user_options", DBL_MAX);
    m_ignore_matte           = (bool)ParAcc_GetValue(in_cp, L"ignore_matte", DBL_MAX);
+   m_ignore_operators       = (bool)ParAcc_GetValue(in_cp, L"ignore_operators", DBL_MAX);
 
    // ass archive
    m_output_file_tagdir_ass = ParAcc_GetValue(in_cp,       L"output_file_tagdir_ass", DBL_MAX).GetAsText();
@@ -232,6 +233,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_output_cameras = (bool)ParAcc_GetValue(in_cp, L"output_cameras", DBL_MAX);
    m_output_lights = (bool)ParAcc_GetValue(in_cp, L"output_lights", DBL_MAX);
    m_output_shaders = (bool)ParAcc_GetValue(in_cp, L"output_shaders", DBL_MAX);
+   m_output_operators = (bool)ParAcc_GetValue(in_cp, L"output_operators", DBL_MAX);
 
    // denoiser
    m_use_optix_on_main = (bool)ParAcc_GetValue(in_cp, L"use_optix_on_main", DBL_MAX);
@@ -504,6 +506,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"ignore_procedurals",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_user_options",    CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_matte",           CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ignore_operators",       CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"show_samples",           CValue::siString, siPersistable, L"", L"", L"off", 0, 10, 0, 10, p);
 
    // ass archive
@@ -521,6 +524,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"output_cameras",         CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_lights",          CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_shaders",         CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"output_operators",       CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
 
    // denoiser
    cpset.AddParameter(L"use_optix_on_main",      CValue::siBool,   siPersistable, L"", L"", false,          CValue(), CValue(), CValue(), CValue(), p);
@@ -1078,6 +1082,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.AddItem(L"ignore_procedurals",  L"Procedurals");
       layout.AddItem(L"ignore_user_options", L"User Options");
       layout.AddItem(L"ignore_matte",        L"Matte Properties");
+      layout.AddItem(L"ignore_operators",    L"Operators");
    layout.EndGroup();
 
    layout.AddTab(L"ASS Archives");
@@ -1104,6 +1109,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
          layout.AddItem(L"output_cameras", L"Cameras");
          layout.AddItem(L"output_lights", L"Lights");
          layout.AddItem(L"output_shaders", L"Shaders");
+         layout.AddItem(L"output_operators", L"Operators");
       layout.EndGroup();
       layout.AddRow();
       item = layout.AddButton(L"ExportASS", L"Export Frame");
