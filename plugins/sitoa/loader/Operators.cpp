@@ -26,14 +26,22 @@ CStatus LoadPassOperator(double in_frame)
 {
    CStatus status(CStatus::OK);
 
-   GetMessageQueue()->LogMsg(L"[sitoa] loading some operators...");
-
    Pass pass(Application().GetActiveProject().GetActiveScene().GetActivePass());
 
    CRef operatorRef;
    operatorRef.Set(pass.GetFullName() + L".operator");
-   CString idName = operatorRef.GetClassIDName();
-   GetMessageQueue()->LogMsg(L"[sitoa]     " + idName);
+   Parameter operatorParam(operatorRef);
+
+   AtNode* options = AiUniverseGetOptions();
+
+   Shader operatorShader = GetConnectedShader(operatorParam);
+   if (operatorShader.IsValid())
+   {            
+      AtNode* operatorNode = LoadShader(operatorShader, in_frame, pass.GetRef(), RECURSE_FALSE);
+
+      if (operatorNode)
+         CNodeSetter::SetPointer(options, "operator", operatorNode);
+   } 
 
    return status;
 }

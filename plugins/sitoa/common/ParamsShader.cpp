@@ -188,7 +188,7 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
       // in certain cases, like 'lights' in the toon shader,
       // we have an array parameter in the shaderdef but the node input in Arnold is a string
       // let's itterate over the array and build a semicolon separated string of the objects
-      int paramType = GetArnoldParameterType(in_node, in_param.GetScriptName().GetAsciiString());
+      int paramType = GetArnoldParameterType(in_node, in_param.GetScriptName().GetAsciiString(), true);
       if (paramType == AI_TYPE_STRING)
       {
          const char* aiParamName = in_param.GetScriptName().GetAsciiString();
@@ -214,6 +214,35 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
             }
          }
          CNodeSetter::SetString(in_node, aiParamName, paramValue.GetAsciiString());
+      }
+      else if (paramType == AI_TYPE_NODE)
+      {
+         CRefArray connectedShadersArray;
+         if (paramArray.GetCount() > 0)
+         {
+            for (LONG i=0; i<paramArray.GetCount(); i++)
+            {
+               Parameter paramItem = Parameter(paramArray[i]);
+               Shader connectedShader = GetConnectedShader(paramItem);
+               if (connectedShader.IsValid())
+               {
+                  connectedShadersArray.Add(connectedShader.GetRef());
+               }
+            }
+
+            if (connectedShadersArray.GetCount() > 0)
+            {
+               AtArray* shadersArray = AiArrayAllocate(connectedShadersArray.GetCount(), 1, AI_TYPE_NODE);
+               for (LONG i=0; i<connectedShadersArray.GetCount(); i++)
+               {
+                  Shader connectedShader(connectedShadersArray[i]);
+
+                  AtNode* shaderNode = LoadShader(connectedShader, in_frame, in_ref, in_recursively);
+                  AiArraySetPtr(shadersArray, i, shaderNode);
+               }
+               AiNodeSetArray(in_node, in_param.GetScriptName().GetAsciiString(), shadersArray);
+            }
+         }
       }
       else
       {
