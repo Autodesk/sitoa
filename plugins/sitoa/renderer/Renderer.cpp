@@ -215,13 +215,6 @@ SITOA_CALLBACK ArnoldRender_Query(CRef &in_ctxt)
 // support for operators
 SITOA_CALLBACK ArnoldRender_Define(CRef &in_ctxt)
 {
-
-   // github issue #19
-   // register a new "operator" parameter type
-   CStringArray op_type_filter, family_filter;
-   op_type_filter.Add("operator");
-   Application().RegisterShaderCustomParameterType(L"operator", L"operator", L"operator", 0, 5, 255, op_type_filter, family_filter);
-
    Context ctxt(in_ctxt);
 
    ShaderDef shaderDef(ctxt.GetAttribute(L"Definition"));
