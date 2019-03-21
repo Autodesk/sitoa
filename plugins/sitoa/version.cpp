@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and limitations 
 
 #define SITOA_MAJOR_VERSION_NUM    5
 #define SITOA_MINOR_VERSION_NUM    2
-#define SITOA_FIX_VERSION          L"0"
+#define SITOA_FIX_VERSION          L"1"
 
 
 CString GetSItoAVersion(bool in_addPlatform)

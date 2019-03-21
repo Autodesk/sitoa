@@ -216,6 +216,7 @@ softmax FLOAT   1
 
 [attr normal]
 desc STRING "The shader to be evaluated after the normal perturbation has been completed. Then, the perturbed normals are restored.\nIf this method is used the bump2d node should be connected to the surface parameter of the output node and not bump."
+soft.inspectable BOOL false
 
 ##############################################################################
 [node bump3d]
@@ -239,6 +240,7 @@ softmax FLOAT 1
 
 [attr normal]
 desc STRING "The shader to be evaluated after the normal perturbation has been done is specified here. Optionally, a shader to specify the color and/or reflectance can be specified here, allowing the node to be connected to the Surface slot of the material (rather than connecting bump3d to the Bump Map slot and the other shader to the Surface slot separately). This may be useful in some situations."
+soft.inspectable BOOL false
 
 ##############################################################################
 [node cache]
@@ -1383,6 +1385,7 @@ desc STRING "Controls how opaque the shader is."
 
 [attr normal]
 desc STRING "If linked, the normal to use."
+soft.inspectable BOOL false
 
 ##############################################################################
 [node layer_float]
