@@ -49,7 +49,7 @@ function XSIUnloadPlugin(in_reg)
  var lightLabelMinPixels = 100;
  var lightLabelPcg = 25;
 
-function LightCommonParams(in_params, in_normalize, in_exposeColor, in_is_skydome)
+function LightCommonParams(in_params, in_normalize, in_exposeColor, in_has_visibility, in_visible)
 {
    var h = SItoAShaderDefHelpers(); // helper object
    h.AddColor3 (in_params, "color",          1, 1, 1,                 true, in_exposeColor, true, h.UiLightColorGuid);
@@ -64,10 +64,13 @@ function LightCommonParams(in_params, in_normalize, in_exposeColor, in_is_skydom
    h.AddColor3 (in_params, "shadow_color",   0, 0, 0,                 true, false, true);
    h.AddScalar (in_params, "shadow_density", 1, 0, 1000000, 0, 1,     true, false, true);
  
-   if (in_is_skydome)
+   if (in_has_visibility)
    {
-      h.AddScalar (in_params, "camera",       1, 0, 1, 0, 1,          true, false, true);
-      h.AddScalar (in_params, "transmission", 1, 0, 1, 0, 1,          true, false, true);      
+      var default_visibility = 0;
+      if (in_visible)
+         default_visibility = 1;
+      h.AddScalar (in_params, "camera",       default_visibility, 0, 1, 0, 1, true, false, true);
+      h.AddScalar (in_params, "transmission", default_visibility, 0, 1, 0, 1, true, false, true);
    } 
    h.AddScalar (in_params, "diffuse",        1, 0, 1, 0, 1,           true, false, true);
    h.AddScalar (in_params, "specular",       1, 0, 1, 0, 1,           true, false, true);
@@ -98,10 +101,10 @@ function LightCommonLayoutColor(in_layout)
    in_layout.EndGroup();
 }
 
-function LightCommonLayoutContribution(in_layout, in_is_skydome)
+function LightCommonLayoutContribution(in_layout, in_has_visibility)
 {
    in_layout.AddGroup("Contribution");
-      if (in_is_skydome)
+      if (in_has_visibility)
       {
          item = in_layout.AddItem("camera", "Camera");
          SetLabelPixelsAndPcg(item, lightLabelMinPixels, lightLabelPcg);              
@@ -261,7 +264,7 @@ function ArnoldLightShaders_arnold_cylinder_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, true, false, false);
+   LightCommonParams(params, true, false, true, false);
 
    // OUTPUT
    h.AddOutputColor4(shaderDef.OutputParamDefs);
@@ -278,7 +281,7 @@ function arnold_cylinder_light_Layout(in_layout)
    in_layout.SetAttribute(siUIHelpFile, "https://support.solidangle.com/display/A5SItoAUG/Cylinder+Light");
 
    LightCommonLayoutColor(in_layout);
-   LightCommonLayoutContribution(in_layout, false);
+   LightCommonLayoutContribution(in_layout, true);
    in_layout.AddGroup("Area");
       LightCommonLayoutArea(in_layout);
    in_layout.EndGroup();
@@ -304,7 +307,7 @@ function ArnoldLightShaders_arnold_disk_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, true, false, false);
+   LightCommonParams(params, true, false, true, false);
    h.AddScalar(params, "spread", 1, 0, 1, 0, 1, true, false, true);
 
    // OUTPUT
@@ -321,7 +324,7 @@ function arnold_disk_light_Layout(in_layout)
    in_layout.Clear();
    in_layout.SetAttribute(siUIHelpFile, "https://support.solidangle.com/display/A5SItoAUG/Disk+Light");
    LightCommonLayoutColor(in_layout);
-   LightCommonLayoutContribution(in_layout, false);
+   LightCommonLayoutContribution(in_layout, true);
    in_layout.AddGroup("Area");
       LightCommonLayoutArea(in_layout);
       item = in_layout.AddItem("spread", "Spread");
@@ -350,7 +353,7 @@ function ArnoldLightShaders_arnold_distant_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, true, false, false);
+   LightCommonParams(params, true, false, false, false);
    h.AddScalar(params, "angle", 0, 0, 180, 0, 10, true, false, true);
 
    // OUTPUT
@@ -395,7 +398,7 @@ function ArnoldLightShaders_arnold_mesh_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, true, true, false);
+   LightCommonParams(params, true, true, false, false);
 
    // OUTPUT
    h.AddOutputColor4(shaderDef.OutputParamDefs);
@@ -438,7 +441,7 @@ function ArnoldLightShaders_arnold_photometric_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, true, false, false);
+   LightCommonParams(params, true, false, false, false);
    h.AddLightProfile(params, "filename");
    h.AddScalar(params, "radius", 0, 0, 1000000, 0, 2, true, false, true);
 
@@ -490,7 +493,7 @@ function ArnoldLightShaders_arnold_point_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, true, false, false);
+   LightCommonParams(params, true, false, true, false);
    h.AddScalar (params, "radius", 0, 0, 1000000, 0, 10, true, false, true);
 
    // OUTPUT
@@ -508,7 +511,7 @@ function arnold_point_light_Layout(in_layout)
    in_layout.SetAttribute(siUIHelpFile, "https://support.solidangle.com/display/A5SItoAUG/Point+Light");
 
    LightCommonLayoutColor(in_layout);
-   LightCommonLayoutContribution(in_layout, false);
+   LightCommonLayoutContribution(in_layout, true);
    in_layout.AddGroup("Area");
       item = in_layout.AddItem("radius", "Radius");
       SetLabelPixelsAndPcg(item, lightLabelMinPixels, lightLabelPcg);  
@@ -536,7 +539,7 @@ function ArnoldLightShaders_arnold_quad_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, true, true, false);
+   LightCommonParams(params, true, true, true, false);
    h.AddInteger(params, "resolution", 512, 1, 1000000, 1, 4096, true, false, true);
    h.AddScalar(params, "spread", 1, 0, 1, 0, 1, true, false, true);
    h.AddBoolean(params, "portal", false, true, false, true);
@@ -558,7 +561,7 @@ function arnold_quad_light_Layout(in_layout)
    in_layout.SetAttribute(siUIHelpFile, "https://support.solidangle.com/display/A5SItoAUG/Quad+Light");
 
    LightCommonLayoutColor(in_layout);
-   LightCommonLayoutContribution(in_layout, false);
+   LightCommonLayoutContribution(in_layout, true);
    in_layout.AddGroup("Area");
       item = in_layout.AddItem("portal", "Portal");
       SetLabelPixelsAndPcg(item, lightLabelMinPixels, lightLabelPcg);
@@ -595,7 +598,7 @@ function ArnoldLightShaders_arnold_skydome_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, false, true, true); // no "normalize" param, yes texturable color, yes camera and transmission
+   LightCommonParams(params, false, true, true, true); // no "normalize" param, yes texturable color, yes camera and transmission, yes camera and transmission on by default
    h.AddInteger(params, "resolution", 1000, 1, 1000000, 1, 4096, true, false, true);
    h.AddInteger(params, "format",     1, 0, 2, 0, 2, true, false, true);
    h.AddInteger(params, "portal_mode", 1, 0, 2, 0, 2, true, false, true);
@@ -655,7 +658,7 @@ function ArnoldLightShaders_arnold_spot_light_1_0_Define(in_ctxt)
  
    // INPUT      
    params = shaderDef.InputParamDefs;
-   LightCommonParams(params, true, false, false);
+   LightCommonParams(params, true, false, false, false);
    h.AddScalar(params, "radius",          0, 0, 1000000, 0, 10, true, false, true);
    h.AddScalar(params, "lens_radius",     0,  0, 1000000, 0, 10);
    h.AddScalar(params, "cone_angle",      65, 0, 1000000, 0, 100);
