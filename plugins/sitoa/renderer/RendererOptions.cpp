@@ -209,7 +209,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_ignore_displacement    = (bool)ParAcc_GetValue(in_cp, L"ignore_displacement",    DBL_MAX);
    m_ignore_bump            = (bool)ParAcc_GetValue(in_cp, L"ignore_bump",            DBL_MAX);
    m_ignore_smoothing       = (bool)ParAcc_GetValue(in_cp, L"ignore_smoothing",       DBL_MAX);
-   m_ignore_motion_blur     = (bool)ParAcc_GetValue(in_cp, L"ignore_motion_blur",     DBL_MAX);
+   m_ignore_motion          = (bool)ParAcc_GetValue(in_cp, L"ignore_motion",          DBL_MAX);
    m_ignore_dof             = (bool)ParAcc_GetValue(in_cp, L"ignore_dof", DBL_MAX);
    m_ignore_sss             = (bool)ParAcc_GetValue(in_cp, L"ignore_sss", DBL_MAX);
    m_ignore_hair            = (bool)ParAcc_GetValue(in_cp, L"ignore_hair", DBL_MAX);
@@ -496,7 +496,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"ignore_displacement",    CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_bump",            CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_smoothing",       CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"ignore_motion_blur",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ignore_motion",          CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_dof",             CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_sss",             CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_hair",            CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
@@ -1070,7 +1070,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.AddItem(L"ignore_displacement", L"Displacement");
       layout.AddItem(L"ignore_bump",         L"Bump");
       layout.AddItem(L"ignore_smoothing",    L"Normal Smoothing");
-      layout.AddItem(L"ignore_motion_blur",  L"Motion Blur");
+      layout.AddItem(L"ignore_motion",       L"Motion");
       layout.AddItem(L"ignore_dof",          L"Depth of Field");	  
       layout.AddItem(L"ignore_sss",          L"Sub-Surface Scattering");
       layout.AddItem(L"ignore_hair",         L"Hair");

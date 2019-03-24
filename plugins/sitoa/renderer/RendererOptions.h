@@ -194,7 +194,7 @@ public:
    bool         m_ignore_displacement;
    bool         m_ignore_bump;
    bool         m_ignore_smoothing;
-   bool         m_ignore_motion_blur;
+   bool         m_ignore_motion;
    bool         m_ignore_dof;
    bool         m_ignore_sss;
    bool         m_ignore_hair;
@@ -378,7 +378,7 @@ public:
       m_ignore_displacement(false),
       m_ignore_bump(false),
       m_ignore_smoothing(false),
-      m_ignore_motion_blur(false),
+      m_ignore_motion(false),
       m_ignore_dof(false),
       m_ignore_sss(false),
       m_ignore_hair(false),
