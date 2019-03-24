@@ -146,6 +146,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_motion_step_deform     = (int) ParAcc_GetValue(in_cp, L"motion_step_deform",    DBL_MAX);
    m_exact_ice_mb           = (bool)ParAcc_GetValue(in_cp, L"exact_ice_mb",          DBL_MAX);
    
+   m_ignore_motion_blur          = (bool)ParAcc_GetValue(in_cp, L"ignore_motion_blur",    DBL_MAX);
    m_motion_shutter_length       = (float)ParAcc_GetValue(in_cp, L"motion_shutter_length",       DBL_MAX);
    m_motion_shutter_custom_start = (float)ParAcc_GetValue(in_cp, L"motion_shutter_custom_start", DBL_MAX);
    m_motion_shutter_custom_end   = (float)ParAcc_GetValue(in_cp, L"motion_shutter_custom_end",   DBL_MAX);
@@ -433,6 +434,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"enable_motion_deform",   CValue::siBool,   siPersistable,                L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"motion_step_deform",     CValue::siInt4,   siPersistable,                L"", L"", 2, 2, 200, 2, 15, p);
    cpset.AddParameter(L"exact_ice_mb",           CValue::siBool,   siPersistable,                L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ignore_motion_blur",     CValue::siBool,   siPersistable,                L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"motion_shutter_length",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 0.5f ,  0, 999999, 0, 2, p);
    cpset.AddParameter(L"motion_shutter_custom_start", CValue::siDouble, siPersistable | siAnimatable, L"", L"", -0.25f , -100, 100, -100, 100, p);
    cpset.AddParameter(L"motion_shutter_custom_end",   CValue::siDouble, siPersistable | siAnimatable, L"", L"", 0.25f , -100, 100, -100, 100, p);
@@ -898,6 +900,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
    item = layout.AddItem(L"exact_ice_mb",     L"Exact ICE Blur");
 
    layout.AddGroup(L"Geometry Shutter", true, 0); 
+      item = layout.AddItem(L"ignore_motion_blur", L"Instantaneous Shutter (overrides camera settings)");
       CValueArray onFrame, shutterType;
       onFrame.Add(L"Start on Frame");  onFrame.Add(eMbPos_Start);
       onFrame.Add(L"Center on Frame"); onFrame.Add(eMbPos_Center);
@@ -1326,6 +1329,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
 
       if (paramName == L"enable_motion_blur"     || 
           paramName == L"enable_motion_deform"   ||
+          paramName == L"ignore_motion_blur"     ||
           paramName == L"motion_shutter_onframe")
          MotionBlurTabLogic(cpset);
 
@@ -1395,19 +1399,22 @@ void MotionBlurTabLogic(CustomProperty &in_cp)
    // Enabling / Disabling Blur settings
    bool transfOn = (bool)ParAcc_GetValue(in_cp, L"enable_motion_blur",   DBL_MAX);
    bool defOn    = (bool)ParAcc_GetValue(in_cp, L"enable_motion_deform", DBL_MAX);
+   bool ignoreMB = (bool)ParAcc_GetValue(in_cp, L"ignore_motion_blur",   DBL_MAX);
    bool transfOrDefOn = transfOn || defOn;
+   bool shuttersOn = transfOrDefOn && !ignoreMB;
    int  onFrame = (int)ParAcc_GetValue(in_cp, L"motion_shutter_onframe", DBL_MAX);
-   bool customOn = transfOrDefOn && (onFrame == eMbPos_Custom);
-   bool lengthOn = transfOrDefOn && (onFrame != eMbPos_Custom);
+   bool customOn = shuttersOn && (onFrame == eMbPos_Custom);
+   bool lengthOn = shuttersOn && (onFrame != eMbPos_Custom);
 
    ParAcc_GetParameter(in_cp, L"motion_step_transform").PutCapabilityFlag(siReadOnly, !transfOn);
    ParAcc_GetParameter(in_cp, L"motion_step_deform").PutCapabilityFlag(siReadOnly, !defOn); 
    ParAcc_GetParameter(in_cp, L"exact_ice_mb").PutCapabilityFlag(siReadOnly, !defOn); 
 
+   ParAcc_GetParameter(in_cp, L"ignore_motion_blur").PutCapabilityFlag(siReadOnly, !transfOrDefOn);
+   ParAcc_GetParameter(in_cp, L"motion_shutter_onframe").PutCapabilityFlag(siReadOnly, !shuttersOn);
    ParAcc_GetParameter(in_cp, L"motion_shutter_length").PutCapabilityFlag(siReadOnly, !lengthOn); 
    ParAcc_GetParameter(in_cp, L"motion_shutter_custom_start").PutCapabilityFlag(siReadOnly, !customOn); 
    ParAcc_GetParameter(in_cp, L"motion_shutter_custom_end").PutCapabilityFlag(siReadOnly, !customOn); 
-   ParAcc_GetParameter(in_cp, L"motion_shutter_onframe").PutCapabilityFlag(siReadOnly, !transfOrDefOn); 
 }
 
 

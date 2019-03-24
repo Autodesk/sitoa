@@ -131,6 +131,7 @@ public:
    bool    m_enable_motion_deform;
    int     m_motion_step_deform;
    bool    m_exact_ice_mb;
+   bool    m_ignore_motion_blur;
    float   m_motion_shutter_length;
    float   m_motion_shutter_custom_start;
    float   m_motion_shutter_custom_end;
@@ -316,6 +317,7 @@ public:
       m_motion_step_deform(2),
       m_exact_ice_mb(false),
       // new mb
+      m_ignore_motion_blur(false),
       m_motion_shutter_length(0.5f),
       m_motion_shutter_custom_start(-0.25f),
       m_motion_shutter_custom_end(0.25f),

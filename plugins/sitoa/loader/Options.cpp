@@ -738,6 +738,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_displacement", GetRenderOptions()->m_ignore_displacement);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_bump",         GetRenderOptions()->m_ignore_bump);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_motion",       GetRenderOptions()->m_ignore_motion);
+   CNodeSetter::SetBoolean(in_optionsNode, "ignore_motion_blur",  GetRenderOptions()->m_ignore_motion_blur);  // property is located in motion blur tab on PPG
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_smoothing",    GetRenderOptions()->m_ignore_smoothing);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_sss",          GetRenderOptions()->m_ignore_sss);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_dof",          GetRenderOptions()->m_ignore_dof);
