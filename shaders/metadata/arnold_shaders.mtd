@@ -248,7 +248,7 @@ soft.category STRING "Utility"
 
 ##############################################################################
 [node camera_projection]
-soft.category STRING "Texture"
+soft.category STRING "Utility"
 
 [attr camera]
 desc STRING "The projecting camera. Leave blank to use the default render camera."
@@ -282,6 +282,14 @@ desc STRING "Use the shading normal for visibility tests instead of the "
 "geometric normal. This results in smoother but less accurate visibility "
 "boundaries that can produce seams if the render camera is used for the "
 "projection."
+
+[attr coord_space]
+desc STRING "Specifies the coordinate space to use."
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as 'Pref', which is still the default. The array type can be RGB/RGBA as well as VECTOR."
+
+[attr P]
 
 ##############################################################################
 [node car_paint]
