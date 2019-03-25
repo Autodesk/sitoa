@@ -2933,7 +2933,7 @@ soft.order STRING "BeginGroup Base base base_color diffuse_roughness metalness E
 "BeginGroup Specular specular specular_color specular_roughness specular_IOR specular_anisotropy specular_rotation EndGroup "
 "BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness transmit_aovs EndGroup "
 "BeginGroup Subsurface subsurface subsurface_color subsurface_radius subsurface_scale subsurface_type subsurface_anisotropy EndGroup "
-"BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal coat_affect_color coat_affect_roughness EndGroup "
+"BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal coat_anisotropy coat_rotation coat_affect_color coat_affect_roughness EndGroup "
 "BeginGroup Sheen sheen sheen_color sheen_roughness EndGroup "
 "BeginGroup Thin_Film thin_film_thickness thin_film_IOR EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
@@ -3135,6 +3135,18 @@ desc STRING "Affects the Fresnel blending of the coat over the base, so dependin
 "the base will be more or less visible from particular angles."
 soft.label STRING "Normal"
 soft.inspectable BOOL false
+
+[attr coat_anisotropy]
+desc STRING "Anisotropy."
+soft.label STRING "Anisotropy"
+min FLOAT 0
+max FLOAT 1
+
+[attr coat_rotation]
+desc STRING "Rotation."
+soft.label STRING "Rotation"
+softmin FLOAT 0
+softmax FLOAT 1
 
 [attr coat_affect_color]
 desc STRING "Affect Color."
