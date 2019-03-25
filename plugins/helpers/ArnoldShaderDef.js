@@ -71,6 +71,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("layer_shader", 1, 0);
    in_reg.RegisterShader("length", 1, 0);
    in_reg.RegisterShader("log", 1, 0);
+   in_reg.RegisterShader("matrix_interpolate", 1, 0);
    in_reg.RegisterShader("matrix_multiply_vector", 1, 0);
    in_reg.RegisterShader("matrix_transform", 1, 0);
    in_reg.RegisterShader("matte", 1, 0);
@@ -245,6 +246,8 @@ function Arnold_length_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_length_1_0_Define(in_ctxt) { return true; }
 function Arnold_log_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_log_1_0_Define(in_ctxt) { return true; }
+function Arnold_matrix_interpolate_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_matrix_interpolate_1_0_Define(in_ctxt) { return true; }
 function Arnold_matrix_multiply_vector_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_matrix_multiply_vector_1_0_Define(in_ctxt) { return true; }
 function Arnold_matrix_transform_1_0_DefineInfo(in_ctxt) { return true; }

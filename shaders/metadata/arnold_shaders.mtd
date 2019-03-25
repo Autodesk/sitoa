@@ -1880,12 +1880,66 @@ desc STRING "Input to calcute logarithm of."
 desc STRING "Base for use in logarithm calculation."
 
 ##############################################################################
+[node matrix_interpolate]
+soft.category STRING "Math"
+
+[attr matrix]
+desc STRING "The transformation matrix."
+
+[attr type]
+desc STRING "Determines how to interpolate the matrix. This parameter is set to 'time' by default, which uses the current time inside the shutter range and allows to get motion blurred matrices in the shading tree."
+
+[attr value]
+desc STRING "The value used to interpolate between the matrices."
+min FLOAT 0
+max FLOAT 1
+
+##############################################################################
 [node matrix_multiply_vector]
 soft.category STRING "Math"
+
+[attr input]
+desc STRING "The vector to transform."
+
+[attr type]
+desc STRING "Specify a vector type (point, vector or normal). For the vector and normal type, the translation component is ignored. For the normal type the inverse transpose matrix is used to avoid streching the normals."
+
+[attr matrix]
+desc STRING "The transformation matrix."
 
 ##############################################################################
 [node matrix_transform]
 soft.category STRING "Math"
+
+[attr transform_order]
+desc STRING "Transform order of the Scale, Rotation and Translate can be modified."
+
+[attr rotation_type]
+desc STRING "Rotation can be set using Euler-Angles or Axis/Angle."
+
+[attr units]
+desc STRING "Rotation units, set to Radians or Degrees."
+
+[attr rotation_order]
+desc STRING "The axes order in which the rotations are applied."
+
+[attr rotation]
+desc STRING "The rotation angles about the X, Y and Z axes."
+
+[attr axis]
+desc STRING "The direction of the axis of rotation."
+
+[attr angle]
+desc STRING "The rotation angle."
+
+[attr translate]
+desc STRING "The XYZ translation vector used to compose the transformation matrix."
+
+[attr scale]
+desc STRING "The XYZ scaling vector used to compose the transformation matrix."
+
+[attr pivot]
+desc STRING "The XYZ controls that allow you to offset the pivot."
 
 ##############################################################################
 [node matte]
