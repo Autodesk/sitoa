@@ -3995,6 +3995,36 @@ desc STRING "The material when the surface normal is opposite to the camera."
 soft.label STRING "Back Material"
 
 ##############################################################################
+[node uv_projection]
+soft.category STRING "Utility"
+
+[attr projection_color]
+desc STRING "The 2D texture to be used as a map."
+
+[attr projection_type]
+
+[attr cord_space]
+desc STRING "Specifies the coordinate space to use."
+
+[attr pref_name]
+desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as 'Pref', which is still the default. The array type can be RGB/RGBA as well as VECTOR."
+
+[attr P]
+
+[attr u_angle]
+desc STRING "Changes the U angle (for spherical and cylindrical mapping only)."
+softmin FLOAT 0
+softmax FLOAT 360
+
+[attr v_angle]
+desc STRING "Changes the V angle (for spherical mapping only)."
+softmin FLOAT 0
+softmax FLOAT 360
+
+[attr matrix]
+desc STRING "Defines the 3D texture’s positioning and orientation in world space."
+
+##############################################################################
 [node user_data_float]
 soft.category STRING "User Data"
 

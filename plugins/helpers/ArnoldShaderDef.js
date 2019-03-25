@@ -130,6 +130,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("user_data_rgba", 1, 0);
    in_reg.RegisterShader("user_data_string", 1, 0);
    in_reg.RegisterShader("utility", 1, 0);
+   in_reg.RegisterShader("uv_projection", 1, 0);
    in_reg.RegisterShader("uv_transform", 1, 0);
    in_reg.RegisterShader("vector_displacement", 1, 0); // extra, clone of vector_map with float output
    in_reg.RegisterShader("vector_map", 1, 0);
@@ -364,6 +365,8 @@ function Arnold_user_data_string_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_user_data_string_1_0_Define(in_ctxt) { return true; }
 function Arnold_utility_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_utility_1_0_Define(in_ctxt) { return true; }
+function Arnold_uv_projection_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_uv_projection_1_0_Define(in_ctxt) { return true; }
 function Arnold_uv_transform_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_uv_transform_1_0_Define(in_ctxt) { return true; }
 function Arnold_vector_displacement_1_0_DefineInfo(in_ctxt) { return true; } // extra, clone of vector_map with float output
