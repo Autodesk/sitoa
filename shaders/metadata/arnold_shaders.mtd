@@ -3053,7 +3053,7 @@ softmax FLOAT 100
 [attr transmission_extra_roughness]
 desc STRING "Additional refraction blurriness."
 soft.label STRING "Extra Roughness"
-min FLOAT 0
+min FLOAT -1
 max FLOAT 1
 
 [attr transmit_aovs]
