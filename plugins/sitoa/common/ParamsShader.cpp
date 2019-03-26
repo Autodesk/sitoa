@@ -175,10 +175,27 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
          CNodeSetter::SetPointer(in_node, paramScriptName.GetAsciiString(), shaderLinked);
       else
       {
-         if (in_arrayElement != -1)
-            paramScriptName = in_arrayParamName + L"[" + CString(CValue(in_arrayElement).GetAsText()) + L"]";
+         // if we have an arrayParamName then let's get the arnold array type
+         if(!in_arrayParamName.IsEmpty())
+            paramType = GetArnoldParameterType(in_node, in_arrayParamName.GetAsciiString(), true);
 
-         AiNodeLink(shaderLinked, paramScriptName.GetAsciiString(), in_node);
+         // if we have an arnold node array type and in_arrayElement was passed in
+         if (paramType == AI_TYPE_NODE && in_arrayElement != -1)
+         {
+            AtArray* nodes = AiNodeGetArray(in_node, in_arrayParamName.GetAsciiString());
+            if (nodes)
+            {
+               AiArraySetPtr(nodes, in_arrayElement, shaderLinked);
+               AiNodeSetArray(in_node, in_arrayParamName.GetAsciiString(), nodes);
+            }
+         }
+         else
+         {
+            if (in_arrayElement != -1)
+               paramScriptName = in_arrayParamName + L"[" + CString(CValue(in_arrayElement).GetAsText()) + L"]";
+
+            AiNodeLink(shaderLinked, paramScriptName.GetAsciiString(), in_node);
+         }
       }
    }
    else if (sourceID == siShaderArrayParameterID)
@@ -188,7 +205,7 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
       // in certain cases, like 'lights' in the toon shader,
       // we have an array parameter in the shaderdef but the node input in Arnold is a string
       // let's itterate over the array and build a semicolon separated string of the objects
-      int paramType = GetArnoldParameterType(in_node, in_param.GetScriptName().GetAsciiString(), true);
+      int paramType = GetArnoldParameterType(in_node, in_param.GetScriptName().GetAsciiString());
       if (paramType == AI_TYPE_STRING)
       {
          const char* aiParamName = in_param.GetScriptName().GetAsciiString();
@@ -214,35 +231,6 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
             }
          }
          CNodeSetter::SetString(in_node, aiParamName, paramValue.GetAsciiString());
-      }
-      else if (paramType == AI_TYPE_NODE)
-      {
-         CRefArray connectedShadersArray;
-         if (paramArray.GetCount() > 0)
-         {
-            for (LONG i=0; i<paramArray.GetCount(); i++)
-            {
-               Parameter paramItem = Parameter(paramArray[i]);
-               Shader connectedShader = GetConnectedShader(paramItem);
-               if (connectedShader.IsValid())
-               {
-                  connectedShadersArray.Add(connectedShader.GetRef());
-               }
-            }
-
-            if (connectedShadersArray.GetCount() > 0)
-            {
-               AtArray* shadersArray = AiArrayAllocate(connectedShadersArray.GetCount(), 1, AI_TYPE_NODE);
-               for (LONG i=0; i<connectedShadersArray.GetCount(); i++)
-               {
-                  Shader connectedShader(connectedShadersArray[i]);
-
-                  AtNode* shaderNode = LoadShader(connectedShader, in_frame, in_ref, in_recursively);
-                  AiArraySetPtr(shadersArray, i, shaderNode);
-               }
-               AiNodeSetArray(in_node, in_param.GetScriptName().GetAsciiString(), shadersArray);
-            }
-         }
       }
       else
       {
