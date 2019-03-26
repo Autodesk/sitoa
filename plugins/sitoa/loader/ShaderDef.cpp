@@ -378,7 +378,7 @@ void CShaderDefParameter::Layout(PPGLayout &in_layout)
          dropdown.Add(enum_string); dropdown.Add(enum_string);
       }
       item = in_layout.AddEnumControl(m_name, dropdown, label, siControlCombo);
-      item.PutAttribute(siUILabelMinPixels, 120);
+      item.PutAttribute(siUILabelMinPixels, 110);
       item.PutAttribute(siUILabelPercentage, 35);
    }
    else
@@ -390,7 +390,7 @@ void CShaderDefParameter::Layout(PPGLayout &in_layout)
       if (m_arrayType != AI_TYPE_UNDEFINED)
          label+= L" (array)";
       item = in_layout.AddItem(m_name, label);
-      item.PutAttribute(siUILabelMinPixels, 120);
+      item.PutAttribute(siUILabelMinPixels, 110);
       item.PutAttribute(siUILabelPercentage, 35);
    }
 
