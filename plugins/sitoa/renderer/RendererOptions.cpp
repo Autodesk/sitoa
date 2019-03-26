@@ -411,8 +411,8 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"enable_progressive_render", CValue::siBool, siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
 
    cpset.AddParameter(L"enable_adaptive_sampling", CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 8, -3, 100, 0, 10, p);
-   cpset.AddParameter(L"AA_adaptive_threshold",    CValue::siDouble, siPersistable, L"", L"", 0.05f, 0.0f, 1.0f, 0.0f, 100.0f, p);
+   cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 20, -3, 1000, 0, 50, p);
+   cpset.AddParameter(L"AA_adaptive_threshold",    CValue::siDouble, siPersistable, L"", L"", 0.015f, 0.0f, 1.0f, 0.0f, 0.1f, p);
 
    cpset.AddParameter(L"indirect_specular_blur",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 1.0f, 0.0f, 2.0f, 0.0f, 100.0f, p);
    
