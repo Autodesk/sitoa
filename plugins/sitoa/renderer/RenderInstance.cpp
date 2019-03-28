@@ -225,8 +225,11 @@ int CRenderInstance::RenderProgressiveScene()
       aa_steps.insert(-2);
    if ((aa_max > -1) && GetRenderOptions()->m_progressive_minus1)
       aa_steps.insert(-1);
+
+   AtNode* options = AiUniverseGetOptions();
+
    // if progressive rendering, ignore the 1 aa step because that is already the first step in progressive
-   if (!GetRenderOptions()->m_enable_progressive_render)
+   if (!AiNodeGetBool(options, "enable_progressive_render"))
    {
       if ((aa_max > 1) && GetRenderOptions()->m_progressive_plus1)
          aa_steps.insert(1);
@@ -235,7 +238,6 @@ int CRenderInstance::RenderProgressiveScene()
    aa_steps.insert(aa_max); // the main value for aa, so aa_steps is never empty, and aaMax will always be the final step used
    
    // We need to change some values of the aspect ratio and camera when we are in an IPR render
-   AtNode* options = AiUniverseGetOptions();
    // override the aspect ratio, for the viewport is always 1.0
    CNodeSetter::SetFloat(options, "pixel_aspect_ratio", 1.0);   
    // disable adaptive sampling during negative aa passes
