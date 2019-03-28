@@ -146,6 +146,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("switch_operator", 1, 0);
    in_reg.RegisterShader("set_transform", 1, 0);
    in_reg.RegisterShader("collection", 1, 0);
+   in_reg.RegisterShader("include_graph", 1, 0);
 
    // in_reg.Help = "https://support.solidangle.com/display/A5SItoAUG/Shaders";
 
@@ -401,6 +402,8 @@ function Arnold_set_transform_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_set_transform_1_0_Define(in_ctxt) { return true; }
 function Arnold_collection_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_collection_1_0_Define(in_ctxt) { return true; }
+function Arnold_include_graph_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_include_graph_1_0_Define(in_ctxt) { return true; }
 
 ///////////////////////////////////////////////////
 /////////////// shaders that require a dedicated UI

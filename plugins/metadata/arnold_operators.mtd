@@ -89,3 +89,15 @@ linkable BOOL false
 
 [attr index]
 linkable BOOL false
+
+###########################################################################
+[node include_graph]
+
+[attr enable]
+linkable BOOL false
+
+[attr filename]
+linkable BOOL false
+
+[attr target]
+linkable BOOL false
