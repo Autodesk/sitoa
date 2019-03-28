@@ -45,7 +45,7 @@ CStatus LoadPassOperator(double in_frame)
          if (outputShader.IsValid())
          {
             // find the first 'operator' shader, dummy shader node for supporting arnold operators
-            if (outputShader.GetName() == L"operator")
+            if (GetShaderNameFromProgId(outputShader.GetProgID()) == L"operator")
             {
                operatorShader = outputShader.GetRef();
                break;

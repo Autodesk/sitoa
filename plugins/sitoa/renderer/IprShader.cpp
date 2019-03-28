@@ -310,7 +310,7 @@ void UpdatePassShaderStack(const Pass &in_pass, double in_frame)
          if (outputShader.IsValid())
          {
             // skip 'operator' dummy shader
-            if (outputShader.GetName() == L"operator")
+            if (GetShaderNameFromProgId(outputShader.GetProgID()) == L"operator")
                continue;
             outputShadersArray.Add(outputShader.GetRef());
          }
