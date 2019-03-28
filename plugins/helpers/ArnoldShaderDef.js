@@ -138,6 +138,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("volume_sample_rgb", 1, 0);
    in_reg.RegisterShader("wireframe", 1, 0);
    // operators
+   in_reg.RegisterShader("operator", 1, 0);
    in_reg.RegisterShader("materialx", 1, 0);
    in_reg.RegisterShader("merge", 1, 0);
    in_reg.RegisterShader("set_parameter", 1, 0);
@@ -538,4 +539,31 @@ function physical_sky_RemoveExpression_OnClicked()
    RemoveAnimation(pset + ".Z.x", null, null, null, null, null);
    RemoveAnimation(pset + ".Z.y", null, null, null, null, null);
    RemoveAnimation(pset + ".Z.z", null, null, null, null, null);
+}
+
+function Arnold_operator_1_0_DefineInfo(in_ctxt)
+{
+   in_ctxt.SetAttribute("DisplayName", "operator");
+   in_ctxt.SetAttribute("Category", "Arnold/Operators");
+   return true;
+}
+
+function Arnold_operator_1_0_Define(in_ctxt)
+{
+   var h = SItoAShaderDefHelpers(); // helper object
+
+   var shaderDef = in_ctxt.GetAttribute("Definition");
+   shaderDef.AddShaderFamily(siShaderFamilyTexture);
+ 
+   // INPUT      
+   params = shaderDef.InputParamDefs;
+   h.AddNode(params, "operator");
+
+   // OUTPUT
+   h.AddOutputColor4(shaderDef.OutputParamDefs);
+
+   // Renderer definition
+   h.AddArnoldRendererDef(shaderDef);
+
+   return true;
 }

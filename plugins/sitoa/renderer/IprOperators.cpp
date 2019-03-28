@@ -17,6 +17,7 @@ See the License for the specific language governing permissions and limitations 
 #include <xsi_scene.h>
 #include <xsi_passcontainer.h>
 #include <xsi_pass.h>
+#include <xsi_shaderarrayparameter.h>
 
 // Update the operators connected to a RenderPass into Arnold
 //
@@ -28,22 +29,64 @@ CStatus UpdatePassOperator(const Pass &in_pass, double in_frame)
    
    CStatus status(CStatus::OK);
 
-   CRef operatorRef;
-   operatorRef.Set(in_pass.GetFullName() + L".operator");
-   Parameter operatorParam(operatorRef);
+   // CRef operatorRef;
+   // operatorRef.Set(in_pass.GetFullName() + L".operator");
+   // Parameter operatorParam(operatorRef);
+
+   // AtNode* options = AiUniverseGetOptions();
+
+   // Shader operatorShader = GetConnectedShader(operatorParam);
+   // if (operatorShader.IsValid())
+   // {            
+   //    AtNode* operatorNode = UpdateShader(operatorShader, in_frame);
+
+   //    if (operatorNode)
+   //       CNodeSetter::SetPointer(options, "operator", operatorNode);
+   // }
+   // else
+   //   CNodeSetter::SetPointer(options, "operator", NULL);
+    
+   CRef outputStackRef;
+   outputStackRef.Set(in_pass.GetFullName() + L".OutputShaderStack");
+   ShaderArrayParameter arrayParam = ShaderArrayParameter(outputStackRef);
 
    AtNode* options = AiUniverseGetOptions();
 
-   Shader operatorShader = GetConnectedShader(operatorParam);
-   if (operatorShader.IsValid())
-   {            
-      AtNode* operatorNode = UpdateShader(operatorShader, in_frame);
+   if (arrayParam.GetCount() > 0)
+   {
+      Shader operatorShader;
+      for (LONG i=0; i<arrayParam.GetCount(); i++)
+      {
+         Parameter param = Parameter(arrayParam[i]);
+         Shader outputShader = GetConnectedShader(param);
+         if (outputShader.IsValid())
+         {
+            // find the first 'operator' shader, dummy shader node for supporting arnold operators
+            if (outputShader.GetName() == L"operator")
+            {
+               operatorShader = outputShader.GetRef();
+               break;
+            }
+         }
+      }
 
-      if (operatorNode)
-         CNodeSetter::SetPointer(options, "operator", operatorNode);
+      if (operatorShader.IsValid())
+      {
+         // get what's connected to that dummy shader's operator parameter
+         Parameter operatorParam = operatorShader.GetParameter(L"operator");
+         operatorShader = GetConnectedShader(operatorParam);
+         if (operatorShader.IsValid())
+         {
+            AtNode* operatorNode = UpdateShader(operatorShader, in_frame);
+
+            if (operatorNode)
+               CNodeSetter::SetPointer(options, "operator", operatorNode);
+         }
+         else
+           CNodeSetter::SetPointer(options, "operator", NULL);
+      }
+      else
+         CNodeSetter::SetPointer(options, "operator", NULL);
    }
-   else
-     CNodeSetter::SetPointer(options, "operator", NULL); 
-
    return status;
 }

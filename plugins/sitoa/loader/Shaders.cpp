@@ -399,6 +399,9 @@ CStatus LoadPassShaders(double in_frame, bool in_selectionOnly)
          Shader outputShader = GetConnectedShader(passParam);
          if (outputShader.IsValid())
          {
+            // skip 'operator' dummy shader
+            if (outputShader.GetName() == L"operator")
+               continue;
             outputShadersArray.Add(outputShader.GetRef());
          }
       }

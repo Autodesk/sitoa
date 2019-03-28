@@ -309,6 +309,9 @@ void UpdatePassShaderStack(const Pass &in_pass, double in_frame)
          Shader outputShader = GetConnectedShader(passParam);
          if (outputShader.IsValid())
          {
+            // skip 'operator' dummy shader
+            if (outputShader.GetName() == L"operator")
+               continue;
             outputShadersArray.Add(outputShader.GetRef());
          }
       }
