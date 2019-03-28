@@ -29,21 +29,6 @@ CStatus LoadPassOperator(double in_frame)
 
    Pass pass(Application().GetActiveProject().GetActiveScene().GetActivePass());
 
-   // CRef operatorRef;
-   // operatorRef.Set(pass.GetFullName() + L".operator");
-   // Parameter operatorParam(operatorRef);
-
-   // AtNode* options = AiUniverseGetOptions();
-
-   // Shader operatorShader = GetConnectedShader(operatorParam);
-   // if (operatorShader.IsValid())
-   // {            
-   //    AtNode* operatorNode = LoadShader(operatorShader, in_frame, pass.GetRef(), RECURSE_FALSE);
-
-   //    if (operatorNode)
-   //       CNodeSetter::SetPointer(options, "operator", operatorNode);
-   // }
-
    CRef outputStackRef;
    outputStackRef.Set(pass.GetFullName() + L".OutputShaderStack");
    ShaderArrayParameter arrayParam = ShaderArrayParameter(outputStackRef);
@@ -72,7 +57,7 @@ CStatus LoadPassOperator(double in_frame)
       {
          // get what's connected to that dummy shader's operator parameter
          Parameter operatorParam = operatorShader.GetParameter(L"operator");
-         operatorShader = GetConnectedShader(operatorParam);
+         operatorShader = GetShaderFromSource(operatorParam.GetSource());
          if (operatorShader.IsValid())
          {
             AtNode* operatorNode = LoadShader(operatorShader, in_frame, pass.GetRef(), RECURSE_FALSE);

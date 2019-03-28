@@ -12,6 +12,7 @@ See the License for the specific language governing permissions and limitations 
 #include "common/ParamsShader.h"
 #include "renderer/IprShader.h"
 #include "renderer/Renderer.h"
+#include "loader/Operators.h"
 
 #include <xsi_project.h>
 #include <xsi_scene.h>
@@ -25,27 +26,8 @@ See the License for the specific language governing permissions and limitations 
 //
 CStatus UpdatePassOperator(const Pass &in_pass, double in_frame)
 {
-   GetMessageQueue()->LogMsg(L"[sitoa] UpdatePassOperator");
-   
    CStatus status(CStatus::OK);
 
-   // CRef operatorRef;
-   // operatorRef.Set(in_pass.GetFullName() + L".operator");
-   // Parameter operatorParam(operatorRef);
-
-   // AtNode* options = AiUniverseGetOptions();
-
-   // Shader operatorShader = GetConnectedShader(operatorParam);
-   // if (operatorShader.IsValid())
-   // {            
-   //    AtNode* operatorNode = UpdateShader(operatorShader, in_frame);
-
-   //    if (operatorNode)
-   //       CNodeSetter::SetPointer(options, "operator", operatorNode);
-   // }
-   // else
-   //   CNodeSetter::SetPointer(options, "operator", NULL);
-    
    CRef outputStackRef;
    outputStackRef.Set(in_pass.GetFullName() + L".OutputShaderStack");
    ShaderArrayParameter arrayParam = ShaderArrayParameter(outputStackRef);
@@ -74,7 +56,7 @@ CStatus UpdatePassOperator(const Pass &in_pass, double in_frame)
       {
          // get what's connected to that dummy shader's operator parameter
          Parameter operatorParam = operatorShader.GetParameter(L"operator");
-         operatorShader = GetConnectedShader(operatorParam);
+         operatorShader = GetShaderFromSource(operatorParam.GetSource());
          if (operatorShader.IsValid())
          {
             AtNode* operatorNode = UpdateShader(operatorShader, in_frame);
@@ -83,7 +65,7 @@ CStatus UpdatePassOperator(const Pass &in_pass, double in_frame)
                CNodeSetter::SetPointer(options, "operator", operatorNode);
          }
          else
-           CNodeSetter::SetPointer(options, "operator", NULL);
+            CNodeSetter::SetPointer(options, "operator", NULL);
       }
       else
          CNodeSetter::SetPointer(options, "operator", NULL);
