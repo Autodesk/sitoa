@@ -800,9 +800,24 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    int nb_threads = GetRenderOptions()->m_autodetect_threads ? 0 : GetRenderOptions()->m_threads;
    CNodeSetter::SetInt(in_optionsNode, "threads", nb_threads); 
 
-   // GPU devices
-   CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
-   CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
+   // Devices
+   CNodeSetter::SetString(in_optionsNode, "render_device", GetRenderOptions()->m_render_device.GetAsciiString());
+   CNodeSetter::SetString(in_optionsNode, "render_device_fallback", GetRenderOptions()->m_render_device_fallback.GetAsciiString());
+   bool gpuRender = (GetRenderOptions()->m_render_device.GetAsciiString() == "GPU");
+   bool optixDenoiser = GetRenderOptions()->m_use_optix_on_main;
+
+   // For GPU render, we want to force options.enable_progressive_render to be ON, even if its value is ignored by Arnold.
+   // At least we can take this parameter into account later on, for example when IPR needs to do special things depending on 
+   // whether this option is enabled or not. See MtoA #3627
+   if (gpuRender && Application().IsInteractive())
+      CNodeSetter::SetBoolean(in_optionsNode, "enable_progressive_render", true);
+
+   // Only export GPU settings if we use a GPU for something;
+   if (gpuRender || optixDenoiser)
+   {
+      CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
+      CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
+   }
 
    // #680
    LoadUserOptions(in_optionsNode, in_arnoldOptions, in_frame);

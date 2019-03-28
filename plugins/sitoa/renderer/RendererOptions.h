@@ -46,6 +46,8 @@ public:
    // system
    bool     m_autodetect_threads;
    int      m_threads;
+   CString  m_render_device;
+   CString  m_render_device_fallback;
    CString  m_gpu_default_names;
    int      m_gpu_default_min_memory_MB;
    CString  m_bucket_scanning;
@@ -235,6 +237,8 @@ public:
       // system
       m_autodetect_threads(true),
       m_threads(4),
+      m_render_device(L"CPU"),
+      m_render_device_fallback(L"error"),
       m_gpu_default_names(L"*"),
       m_gpu_default_min_memory_MB(512),
       m_bucket_scanning(L"spiral"),
