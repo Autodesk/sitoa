@@ -628,10 +628,13 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       device_fallbacks.Add(L"CPU");   device_fallbacks.Add(L"CPU");
       item = layout.AddEnumControl(L"render_device_fallback", device_fallbacks, L"Render Device Fallback", siControlCombo);
       item.PutAttribute(siUILabelMinPixels, 120);
-      item = layout.AddItem(L"gpu_default_names", L"GPU Names");
       item.PutAttribute(siUILabelMinPixels, 120);
-      item = layout.AddItem(L"gpu_default_min_memory_MB", L"Min. Memory (MB)");
-      item.PutAttribute(siUILabelMinPixels, 120);
+      layout.AddGroup(L"Auto Device Selection");
+         item = layout.AddItem(L"gpu_default_names", L"GPU Names");
+         item.PutAttribute(siUILabelMinPixels, 120);
+         item = layout.AddItem(L"gpu_default_min_memory_MB", L"Min. Memory (MB)");
+         item.PutAttribute(siUILabelMinPixels, 120);
+      layout.EndGroup();
    layout.EndGroup();
    layout.AddGroup(L"Buckets", true, 0);
       CValueArray scanning;
