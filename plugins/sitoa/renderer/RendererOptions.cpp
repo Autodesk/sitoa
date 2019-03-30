@@ -1358,7 +1358,8 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
                paramName == L"output_filter")
          SamplingTabLogic(cpset);
 
-      else if (paramName == L"autodetect_threads")
+      else if (paramName == L"autodetect_threads" ||
+               paramName == L"render_device")
          SystemTabLogic(cpset);
 
       else if (paramName == L"overscan" || 
@@ -1473,6 +1474,17 @@ void SystemTabLogic(CustomProperty &in_cp)
 {
    bool autoDetect = (bool)ParAcc_GetValue(in_cp, L"autodetect_threads", DBL_MAX);
    ParAcc_GetParameter(in_cp, L"threads").PutCapabilityFlag(siReadOnly, autoDetect);
+
+   // GPU logic
+   bool useGPU = (bool)(ParAcc_GetValue(in_cp, L"render_device", DBL_MAX) == L"GPU");
+   ParAcc_GetParameter(in_cp, L"render_device_fallback").PutCapabilityFlag(siReadOnly, !useGPU);
+   ParAcc_GetParameter(in_cp, L"gpu_max_texture_resolution").PutCapabilityFlag(siReadOnly, !useGPU);
+   // When rendering with GPU, disable all secondary sample params on the Sampling tab
+   ParAcc_GetParameter(in_cp, L"GI_diffuse_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"GI_specular_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"GI_transmission_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"GI_sss_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"GI_volume_samples").PutCapabilityFlag(siReadOnly, useGPU);
 }
 
 
