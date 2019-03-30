@@ -806,6 +806,9 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    bool gpuRender = (GetRenderOptions()->m_render_device == L"GPU");
    bool optixDenoiser = GetRenderOptions()->m_use_optix_on_main;
 
+   if (gpuRender)
+      CNodeSetter::SetInt(in_optionsNode, "gpu_max_texture_resolution", GetRenderOptions()->m_gpu_max_texture_resolution);
+
    // For GPU render, we want to force options.enable_progressive_render to be ON, even if its value is ignored by Arnold.
    // At least we can take this parameter into account later on, for example when IPR needs to do special things depending on 
    // whether this option is enabled or not. See MtoA #3627

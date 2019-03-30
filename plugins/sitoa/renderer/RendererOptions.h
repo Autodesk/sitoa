@@ -48,6 +48,7 @@ public:
    int      m_threads;
    CString  m_render_device;
    CString  m_render_device_fallback;
+   int      m_gpu_max_texture_resolution;
    CString  m_gpu_default_names;
    int      m_gpu_default_min_memory_MB;
    CString  m_bucket_scanning;
@@ -239,6 +240,7 @@ public:
       m_threads(4),
       m_render_device(L"CPU"),
       m_render_device_fallback(L"error"),
+      m_gpu_max_texture_resolution(0),
       m_gpu_default_names(L"*"),
       m_gpu_default_min_memory_MB(512),
       m_bucket_scanning(L"spiral"),

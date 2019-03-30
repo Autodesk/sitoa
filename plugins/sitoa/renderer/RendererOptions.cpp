@@ -37,6 +37,7 @@ void CRenderOptions::Read(const Property &in_cp)
 
    m_render_device              = ParAcc_GetValue(in_cp,      L"render_device",              DBL_MAX).GetAsText();
    m_render_device_fallback     = ParAcc_GetValue(in_cp,      L"render_device_fallback",     DBL_MAX).GetAsText();
+   m_gpu_max_texture_resolution = (int)ParAcc_GetValue(in_cp, L"gpu_max_texture_resolution", DBL_MAX);
    m_gpu_default_names          = ParAcc_GetValue(in_cp,      L"gpu_default_names",          DBL_MAX).GetAsText();
    m_gpu_default_min_memory_MB  = (int)ParAcc_GetValue(in_cp, L"gpu_default_min_memory_MB",  DBL_MAX);
 
@@ -318,6 +319,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
 
    cpset.AddParameter(L"render_device",              CValue::siString, siPersistable, L"", L"",  L"CPU",   CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"render_device_fallback",     CValue::siString, siPersistable, L"", L"",  L"error", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"gpu_max_texture_resolution", CValue::siInt4,   siPersistable, L"", L"", 0, 0, 10000000, 0, 8192, p);
    cpset.AddParameter(L"gpu_default_names",          CValue::siString, siPersistable, L"", L"",  L"*", CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"gpu_default_min_memory_MB",  CValue::siInt4,   siPersistable, L"", L"", 512, 0, 10000000, 256, 1024, p);
 
@@ -628,6 +630,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       device_fallbacks.Add(L"CPU");   device_fallbacks.Add(L"CPU");
       item = layout.AddEnumControl(L"render_device_fallback", device_fallbacks, L"Render Device Fallback", siControlCombo);
       item.PutAttribute(siUILabelMinPixels, 120);
+      item = layout.AddItem(L"gpu_max_texture_resolution", L"Max Texture Resolution");
       item.PutAttribute(siUILabelMinPixels, 120);
       layout.AddGroup(L"Auto Device Selection");
          item = layout.AddItem(L"gpu_default_names", L"GPU Names");
