@@ -25,6 +25,8 @@ uint8_t GetVisibility(const CRefArray &in_polyProperties, double in_frame, bool 
 uint8_t GetVisibilityFromObject(const X3DObject in_obj, double in_frame, const bool in_checkHideMasterFlag=true);
 // Returns the rays visibility of an xsi object by its id
 uint8_t GetVisibilityFromObjectId(const int in_id, double in_frame, const bool in_checkHideMasterFlag=true);
+// Returns the autobump visibility from Arnold Parameters
+uint8_t GetAutobumpVisibility(CParameterRefArray &in_paramsArray, double in_frame);
 // Evaluates the Arnold Sidedness property and compute the sidedness bitfield. 
 bool GetSidedness(const CRefArray &in_polyProperties, double in_frame, uint8_t &out_result);
 // Load the Arnold Parameters property for an Arnold node

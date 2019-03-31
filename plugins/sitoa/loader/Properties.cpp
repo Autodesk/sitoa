@@ -365,6 +365,15 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
          AiNodeSetArray(in_node, "trace_sets", a);
       }
 
+      // Skip Autobump Visibility. We handle it later.
+      if (!strcmp(charParamName, "autobump_camera") ||
+          !strcmp(charParamName, "autobump_diffuse_reflection") ||
+          !strcmp(charParamName, "autobump_specular_reflection") ||
+          !strcmp(charParamName, "autobump_diffuse_transmission") ||
+          !strcmp(charParamName, "autobump_specular_transmission") ||
+          !strcmp(charParamName, "autobump_volume_scatter"))
+         continue;
+
       // As XSI Custom Parameter, colors are defined as individual parameters 
       // we need to treat it as special & very ugly case. 
       if (strstr(charParamName, "_R") == NULL)
@@ -386,8 +395,47 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
          i+=2;
       }
    }
+   // set the autobump visibility introduced in arnold 5.3
+   CNodeSetter::SetByte(in_node, "autobump_visibility", GetAutobumpVisibility(in_paramsArray, in_frame));
 }
 
+
+// Return the rays visibility of autobump
+//
+// Evaluates the Autobump Visibility in the Arnold Parameter property and returns a bitfield that specifies
+// the visibility for each ray type.
+//
+// @param in_paramsArray            Array of parameters
+// @param in_frame                  the evaluation time
+//
+// @return   the autobump visibility bitfield
+//
+uint8_t GetAutobumpVisibility(CParameterRefArray &in_paramsArray, double in_frame)
+{
+   uint8_t autobump_visibility = AI_RAY_CAMERA;  // default is camera only
+
+   CRef ab_camera = in_paramsArray.GetItem(L"autobump_camera");
+   if (ab_camera.IsValid())
+   {
+      autobump_visibility = AI_RAY_UNDEFINED;
+
+      bool camera                = (bool)in_paramsArray.GetValue(L"autobump_camera", in_frame);
+      bool diffuse_reflection    = (bool)in_paramsArray.GetValue(L"autobump_diffuse_reflection", in_frame);
+      bool specular_reflection   = (bool)in_paramsArray.GetValue(L"autobump_specular_reflection", in_frame);
+      bool diffuse_transmission  = (bool)in_paramsArray.GetValue(L"autobump_diffuse_transmission", in_frame);
+      bool specular_transmission = (bool)in_paramsArray.GetValue(L"autobump_specular_transmission", in_frame);
+      bool volume                = (bool)in_paramsArray.GetValue(L"autobump_volume", in_frame);
+
+      if (camera)                autobump_visibility += AI_RAY_CAMERA;
+      if (diffuse_reflection)    autobump_visibility += AI_RAY_DIFFUSE_REFLECT;
+      if (specular_reflection)   autobump_visibility += AI_RAY_SPECULAR_REFLECT;
+      if (diffuse_transmission)  autobump_visibility += AI_RAY_DIFFUSE_TRANSMIT;
+      if (specular_transmission) autobump_visibility += AI_RAY_SPECULAR_TRANSMIT;
+      if (volume)                autobump_visibility += AI_RAY_VOLUME;
+   }
+
+   return autobump_visibility;
+}
 
 // Evaluate the Arnold Matte property
 //
