@@ -99,7 +99,6 @@ namespace ATSTRING
    const AtString soft_node_type("soft.node_type");
    // sitoa custom ports/types
    const AtString closure("closure");
-   const AtString operator_node("operator");
 };
 
 namespace VERBOSITY
