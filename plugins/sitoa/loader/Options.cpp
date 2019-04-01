@@ -820,6 +820,36 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    {
       CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
       CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
+
+      // Device Selection
+      bool autoDeviceSelect = true;
+      bool tryManualDeviceSelect = GetRenderOptions()->m_enable_manual_devices;
+      if (tryManualDeviceSelect)
+      {
+         CString manualDeviceSelectionString = GetRenderOptions()->m_manual_device_selection;
+         if (manualDeviceSelectionString != L"")
+         {
+            CStringArray manualDevices = manualDeviceSelectionString.Split(L";");
+            int numManualDevicesSelected = manualDevices.GetCount();
+            AtArray* selectedDevices = AiArrayAllocate(1, (uint8_t)numManualDevicesSelected, AI_TYPE_UINT);
+            for (LONG i=0; i<numManualDevicesSelected; i++)
+            {
+               AiArraySetUInt(selectedDevices, i, atoi(manualDevices[i].GetAsciiString()));
+               if (i+1 == numManualDevicesSelected)
+                  autoDeviceSelect = false;
+            }
+
+            if (!autoDeviceSelect)
+               AiDeviceSelect(AI_DEVICE_TYPE_GPU, selectedDevices);
+            else
+               GetMessageQueue()->LogMsg(L"[sitoa] Could not select manual rendering device. Automatic selection will be used.", siWarningMsg);
+            
+            AiArrayDestroy(selectedDevices);
+         }
+      }
+
+      if (autoDeviceSelect)
+         AiDeviceAutoSelect();
    }
 
    // #680

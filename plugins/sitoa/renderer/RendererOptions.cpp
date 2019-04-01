@@ -40,6 +40,8 @@ void CRenderOptions::Read(const Property &in_cp)
    m_gpu_max_texture_resolution = (int)ParAcc_GetValue(in_cp, L"gpu_max_texture_resolution", DBL_MAX);
    m_gpu_default_names          = ParAcc_GetValue(in_cp,      L"gpu_default_names",          DBL_MAX).GetAsText();
    m_gpu_default_min_memory_MB  = (int)ParAcc_GetValue(in_cp, L"gpu_default_min_memory_MB",  DBL_MAX);
+   m_enable_manual_devices      = (bool)ParAcc_GetValue(in_cp, L"enable_manual_devices",     DBL_MAX);
+   m_manual_device_selection    = ParAcc_GetValue(in_cp,      L"manual_device_selection",    DBL_MAX).GetAsText();
 
    m_bucket_scanning       = ParAcc_GetValue(in_cp,       L"bucket_scanning",       DBL_MAX).GetAsText();
    m_bucket_size           = (int)ParAcc_GetValue(in_cp,  L"bucket_size",           DBL_MAX);
@@ -322,6 +324,8 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"gpu_max_texture_resolution", CValue::siInt4,   siPersistable, L"", L"", 0, 0, 10000000, 0, 8192, p);
    cpset.AddParameter(L"gpu_default_names",          CValue::siString, siPersistable, L"", L"",  L"*", CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"gpu_default_min_memory_MB",  CValue::siInt4,   siPersistable, L"", L"", 512, 0, 10000000, 256, 1024, p);
+   cpset.AddParameter(L"enable_manual_devices",      CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"manual_device_selection",    CValue::siString, siPersistable, L"", L"",  L"", CValue(), CValue(), CValue(), CValue(), p);
 
    cpset.AddParameter(L"bucket_scanning",        CValue::siString, siPersistable, L"", L"", L"spiral", CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"bucket_size",            CValue::siInt4,   siPersistable, L"", L"",  64, 16, 256, 16, 256, p);
@@ -637,6 +641,13 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
          item.PutAttribute(siUILabelMinPixels, 120);
          item = layout.AddItem(L"gpu_default_min_memory_MB", L"Min. Memory (MB)");
          item.PutAttribute(siUILabelMinPixels, 120);
+      layout.EndGroup();
+      layout.AddGroup(L"Manual Device Selection");
+         layout.AddItem(L"enable_manual_devices", L"Enable Manual Device Selection");
+         item = layout.AddItem(L"manual_device_selection", L"", siControlListBox);
+         item.PutAttribute(siUIMultiSelectionListBox, true);
+         item.PutAttribute(siUIValueOnly, true);  // hide label
+         item.PutAttribute(siUICY, 60);
       layout.EndGroup();
    layout.EndGroup();
    layout.AddGroup(L"Buckets", true, 0);
@@ -1183,6 +1194,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       MotionBlurTabLogic(cpset);
       SamplingTabLogic(cpset);
       SystemTabLogic(cpset);
+      DeviceSelectionLogic(cpset);
       OutputTabLogic(cpset);
       TexturesTabLogic(cpset);
       ColorManagersTabLogic(cpset, ctxt);
@@ -1488,6 +1500,34 @@ void SystemTabLogic(CustomProperty &in_cp)
 }
 
 
+// Logic for Manual Device Selection in the system tab
+//
+// @param in_cp       The arnold rendering options property
+//
+void DeviceSelectionLogic(CustomProperty &in_cp)
+{
+   // Get a list of GPU rendering devices
+   const AtArray* gpuDeviceIdsArray = AiDeviceGetIds(AI_DEVICE_TYPE_GPU);
+   int gpuDeviceCount = AiArrayGetNumElements(gpuDeviceIdsArray);
+   CValueArray gpuDevices(gpuDeviceCount*2);
+
+   for (LONG i=0; i<gpuDeviceCount; i++)
+   {
+      int gpuDevice = AiArrayGetUInt(gpuDeviceIdsArray, i);
+      CString deviceName = AiDeviceGetName(AI_DEVICE_TYPE_GPU, gpuDevice);
+      int freeMemory = AiDeviceGetMemoryMB(AI_DEVICE_TYPE_GPU, gpuDevice, AI_DEVICE_MEMORY_FREE);
+      int totalMemory = AiDeviceGetMemoryMB(AI_DEVICE_TYPE_GPU, gpuDevice, AI_DEVICE_MEMORY_TOTAL);
+      deviceName += L" (Free: " + CString(freeMemory) + " MB, Total: " + CString(totalMemory) + " MB)";
+      gpuDevices[i*2] = deviceName;   gpuDevices[i*2+1] = CString(gpuDevice);
+   }
+
+   // update the PPGs
+   PPGLayout layout = in_cp.GetPPGLayout();
+   PPGItem item = layout.GetItem(L"manual_device_selection");
+   item.PutUIItems(gpuDevices);
+}
+
+
 // Logic for the output tab
 //
 // @param in_cp       The arnold rendering options property
@@ -1756,6 +1796,7 @@ void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt)
    MotionBlurTabLogic(in_cp);
    SamplingTabLogic(in_cp);
    SystemTabLogic(in_cp);
+   DeviceSelectionLogic(in_cp);
    OutputTabLogic(in_cp);
    TexturesTabLogic(in_cp);
    ColorManagersTabLogic(in_cp, in_ctxt);

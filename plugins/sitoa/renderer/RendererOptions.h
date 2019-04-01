@@ -51,6 +51,8 @@ public:
    int      m_gpu_max_texture_resolution;
    CString  m_gpu_default_names;
    int      m_gpu_default_min_memory_MB;
+   bool     m_enable_manual_devices;
+   CString  m_manual_device_selection;
    CString  m_bucket_scanning;
    int      m_bucket_size;
    bool     m_progressive_minus3;
@@ -243,6 +245,8 @@ public:
       m_gpu_max_texture_resolution(0),
       m_gpu_default_names(L"*"),
       m_gpu_default_min_memory_MB(512),
+      m_enable_manual_devices(false),
+      m_manual_device_selection(L""),
       m_bucket_scanning(L"spiral"),
       m_bucket_size(64),
       m_progressive_minus3(true),
@@ -442,6 +446,8 @@ void DepthOfFieldTabLogic(CustomProperty &in_cp);
 void SamplingTabLogic(CustomProperty &in_cp);
 // Logic for the system tab
 void SystemTabLogic(CustomProperty &in_cp);
+// Logic for Manual Device Selection in the system tab
+void DeviceSelectionLogic(CustomProperty &in_cp);
 // Logic for the output tab
 void OutputTabLogic(CustomProperty &in_cp);
 // Logic for the textures tab
