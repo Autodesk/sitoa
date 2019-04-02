@@ -432,7 +432,19 @@ Shader GetShaderFromSource(const CRef &in_refCnxSrc)
 {
    
    if (in_refCnxSrc.IsA(siShaderID))
-      return in_refCnxSrc;
+   {
+      // check if it's a closure node and bypass it
+      Shader thisShader = in_refCnxSrc;
+      CString shaderName = GetShaderNameFromProgId(thisShader.GetProgID());
+      if (shaderName == L"closure")
+      {
+         CRef nextShader = GetParameterSource(ParAcc_GetParameter(thisShader, L"closure"));
+         if (nextShader.IsA(siShaderID))
+            return nextShader;
+      }
+      else
+         return in_refCnxSrc;
+   }
 
    // If the source is a parameter of any type, get the parent, and attempt to return it as a shader.
    if (in_refCnxSrc.IsA(siParameterID))
