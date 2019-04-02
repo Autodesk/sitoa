@@ -211,8 +211,6 @@ SITOA_CALLBACK ArnoldRender_Query(CRef &in_ctxt)
    return CStatus::OK;
 }
 
-
-
 LockSceneData::LockSceneData()
 : m_renderer((Renderer) GetRenderInstance()->GetRendererRef())
 {

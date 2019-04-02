@@ -208,6 +208,7 @@ public:
    bool         m_ignore_procedurals;
    bool         m_ignore_user_options;
    bool         m_ignore_matte;
+   bool         m_ignore_operators;
 
    // ass archive
    CString m_output_file_tagdir_ass;
@@ -224,6 +225,7 @@ public:
    bool m_output_cameras;
    bool m_output_lights;
    bool m_output_shaders;
+   bool m_output_operators;
 
    // denoiser
    bool m_use_optix_on_main;
@@ -398,6 +400,7 @@ public:
       m_ignore_procedurals(false),
       m_ignore_user_options(false),
       m_ignore_matte(false),
+      m_ignore_operators(false),
 
       // ass archive
       m_output_file_tagdir_ass(L""), // this to be reviewed, see CommonRenderOptions_Define
@@ -414,6 +417,7 @@ public:
       m_output_cameras(false),
       m_output_lights(false),
       m_output_shaders(false),
+      m_output_operators(false),
 
       // denoiser
       m_use_optix_on_main(false),

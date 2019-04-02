@@ -175,10 +175,27 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
          CNodeSetter::SetPointer(in_node, paramScriptName.GetAsciiString(), shaderLinked);
       else
       {
-         if (in_arrayElement != -1)
-            paramScriptName = in_arrayParamName + L"[" + CString(CValue(in_arrayElement).GetAsText()) + L"]";
+         // if we have an arrayParamName then let's get the arnold array type
+         if(!in_arrayParamName.IsEmpty())
+            paramType = GetArnoldParameterType(in_node, in_arrayParamName.GetAsciiString(), true);
 
-         AiNodeLink(shaderLinked, paramScriptName.GetAsciiString(), in_node);
+         // if we have an arnold node array type and in_arrayElement was passed in
+         if (paramType == AI_TYPE_NODE && in_arrayElement != -1)
+         {
+            AtArray* nodes = AiNodeGetArray(in_node, in_arrayParamName.GetAsciiString());
+            if (nodes)
+            {
+               AiArraySetPtr(nodes, in_arrayElement, shaderLinked);
+               AiNodeSetArray(in_node, in_arrayParamName.GetAsciiString(), nodes);
+            }
+         }
+         else
+         {
+            if (in_arrayElement != -1)
+               paramScriptName = in_arrayParamName + L"[" + CString(CValue(in_arrayElement).GetAsText()) + L"]";
+
+            AiNodeLink(shaderLinked, paramScriptName.GetAsciiString(), in_node);
+         }
       }
    }
    else if (sourceID == siShaderArrayParameterID)

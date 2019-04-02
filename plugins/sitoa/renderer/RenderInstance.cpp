@@ -19,6 +19,7 @@ See the License for the specific language governing permissions and limitations 
 #include "renderer/IprCommon.h"
 #include "renderer/IprCreateDestroy.h"
 #include "renderer/IprLight.h"
+#include "renderer/IprOperators.h"
 #include "renderer/IprShader.h"
 #include "renderer/Renderer.h"
 #include "renderer/RenderInstance.h"
@@ -1485,6 +1486,8 @@ CStatus CRenderInstance::ProcessRegion()
       // https://trac.solidangle.com/sitoa/ticket/275
       // We are going to update always what we have connected to current pass shader stack.
       UpdatePassShaderStack(m_pass, m_frame);
+
+      UpdatePassOperator(m_pass, m_frame);
 
       CRefArray visibleObjects = m_renderContext.GetAttribute(L"ObjectList");
 

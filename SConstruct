@@ -403,6 +403,7 @@ PACKAGE_FILES = [
 [os.path.join('plugins', 'helpers', '*.py'),                               os.path.join(addon_path, plugins_path)],
 [os.path.join('plugins', 'helpers', 'Pictures', '*.bmp'),                  os.path.join(addon_path, pictures_path)],
 [os.path.join('shaders', 'metadata', '*.mtd'),                             os.path.join(addon_path, bin_path)],
+[os.path.join('plugins', 'metadata', '*.mtd'),                             os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'lmuti*'),                           os.path.join(addon_path, license_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'rl*'),                              os.path.join(addon_path, license_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'solidangle.*'),                     os.path.join(addon_path, license_path)],
@@ -475,6 +476,7 @@ env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], pictures_path), [glob.glo
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], license_path), [glob.glob(os.path.join(ARNOLD_HOME, 'license', '*'))])
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], pit_path), [glob.glob(os.path.join(ARNOLD_HOME, 'license', 'pit', '*'))])
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join('shaders', 'metadata', '*.mtd'))])
+env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join('plugins', 'metadata', '*.mtd'))])
 
 ################################
 ## TARGETS ALIASES AND DEPENDENCIES
