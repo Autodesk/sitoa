@@ -290,6 +290,8 @@ function ArnoldPassShaders_Init(io_Context)
    xsiMenu.AddCallbackItem("Fog",               "OnShadersMenu");
    xsiMenu.AddSeparatorItem();
    xsiMenu.AddCallbackItem("Cryptomatte",       "OnShadersMenu");
+   xsiMenu.AddSeparatorItem();
+   xsiMenu.AddCallbackItem("Operator",          "OnShadersMenu");
 }
 
 // lights sub-menu
@@ -515,6 +517,9 @@ function OnShadersMenu(in_ctxt)
          break;
       case  "Cryptomatte":
          SITOA_AddShaderStack("Arnold.cryptomatte.1.0", "OutputShaderStack");
+         break;
+      case  "Operator":
+         SITOA_AddShaderStack("Arnold.operator.1.0", "OutputShaderStack");
          break;
     }
 }
