@@ -395,8 +395,15 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
          i+=2;
       }
    }
+
    // set the autobump visibility introduced in arnold 5.3
-   CNodeSetter::SetByte(in_node, "autobump_visibility", GetAutobumpVisibility(in_paramsArray, in_frame));
+   // need to do some logic from LoadParameterValue manually here because that function can't be used for this.
+   const char* aiParamName = "autobump_visibility";
+   int aiParamType = GetArnoldParameterType(in_node, aiParamName, true);
+   if (aiParamType != AI_TYPE_NONE)
+      AiNodeUnlink(in_node, aiParamName);
+   if (aiParamType == AI_TYPE_BYTE)
+      CNodeSetter::SetByte(in_node, aiParamName, GetAutobumpVisibility(in_paramsArray, in_frame));
 }
 
 
