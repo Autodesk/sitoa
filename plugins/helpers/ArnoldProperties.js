@@ -1176,7 +1176,8 @@ function arnold_parameters_OnInit()
    if (oCustomProperty.Parameters("override_motion_step") != null)
       arnold_parameters_override_motion_step_OnChanged();
 
-   arnold_parameters_disp_autobump_OnChanged();
+   if (oCustomProperty.Parameters("disp_autobump") != null)
+      arnold_parameters_disp_autobump_OnChanged();
    
    if (oCustomProperty.Parameters("adaptive_subdivision") != null)
       arnold_parameters_adaptive_subdivision_OnChanged();
