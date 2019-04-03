@@ -534,7 +534,7 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       // Do checks if Arnold Denoising AOVs already exist and if they have the right filter if they do
       if (masterFb.m_fullName == mainFb.m_fullName) // only check if it's a layer in the same exr as main (multilayer-exr)
       {
-         if (thisFb.m_layerName == L"diffuse_albedo")
+         if (thisFb.m_layerName == L"denoise_albedo")
             noiceDA = L"exist";
 
          if (thisFb.m_layerName == L"N")
@@ -591,7 +591,7 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          int i = 0;
          if (noiceDA != L"exist")
          {
-            AiArraySetStr(outputs, activeBuffers+i, CString(L"diffuse_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"denoise_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
             i++;
          }
          if (noiceN != L"exist")
