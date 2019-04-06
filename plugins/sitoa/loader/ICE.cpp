@@ -887,6 +887,7 @@ CStatus LoadSinglePointCloud(const X3DObject &in_xsiObj, double in_frame,
       {
          strandIndex = 0;
          int offset=0;
+         int nbStrandPoints;
          for (LONG pointOffset=0; pointOffset < pointCount; pointOffset+=ICE_CHUNK_SIZE)
          {
             LONG nbPoints = pointCount - pointOffset < ICE_CHUNK_SIZE ? pointCount - pointOffset : ICE_CHUNK_SIZE;
@@ -901,9 +902,10 @@ CStatus LoadSinglePointCloud(const X3DObject &in_xsiObj, double in_frame,
                // just once in one of the previous points loops
                if (iceAttributes.GetStrandPosition(pointIndex, strandPos) && (strandPos.GetCount() > 1)) 
                {
-                  iceObjects.m_strands[0].DeclareAttributes(&iceAttributes, in_frame, pointIndex, strandIndex, offset);
+                  nbStrandPoints = (int)strandPos.GetCount();
+                  iceObjects.m_strands[0].DeclareAttributes(&iceAttributes, in_frame, pointIndex, strandIndex, offset, nbStrandPoints);
                   // the index for the array to be written. So, increment it by the strand's number of points
-                  offset+= (int)iceObjects.m_strands[0].m_strands[strandIndex].m_points.size();
+                  offset+= nbStrandPoints;
                   strandIndex++;
                }
             }

@@ -1904,10 +1904,11 @@ bool CIceObjectBase::SetICEAttributeAsNodeParameter(CIceAttribute *in_attr, CMat
 // @param in_count:          The size of the array to be allocated
 // @param in_offset:         Used only for varying type, ie for strands. It's the offset where to start writing data into the array
 // @param in_strandCount:    For strands only: the total number of strands
+// @param in_nbStrandPoints: For strands only: The number of points on this single strand
 //
 void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayIndex, CIceAttribute *in_attr, 
                                                double in_frame, eDeclICEAttr in_declareType, LONG in_count, 
-                                               LONG in_offset, int in_strandCount)
+                                               LONG in_offset, int in_strandCount, int in_nbStrandPoints)
 {
    // check if pointers are valid
    if (m_node == NULL || in_attr == NULL || !in_attr->m_isDefined)
@@ -3971,12 +3972,13 @@ bool CIceObjectStrand::MakeCurve(CustomProperty in_arnoldParameters, double in_f
 // @param in_pointIndex:     The index of the ice point 
 // @param in_dataArrayIndex: The index of the point.
 // @param in_offset:         Where the strand points begin in the points array
+// @param in_nbStrandPoints: Number of strand points on this strand
 //
-void CIceObjectStrand::DeclareAttributes(CIceAttributesSet *in_attributes, double in_frame, int in_pointIndex, int in_dataArrayIndex, int in_offset)
+void CIceObjectStrand::DeclareAttributes(CIceAttributesSet *in_attributes, double in_frame, int in_pointIndex, int in_dataArrayIndex, int in_offset, int in_nbStrandPoints)
 {
    AttrMap::iterator attribIt;
    for (attribIt = in_attributes->m_requiredAttributesMap.begin(); attribIt != in_attributes->m_requiredAttributesMap.end(); attribIt++)
-      DeclareICEAttributeOnNode(in_pointIndex, in_dataArrayIndex, attribIt->second, in_frame, eDeclICEAttr_Varying, m_nbPoints, in_offset, this->GetNbStrands());
+      DeclareICEAttributeOnNode(in_pointIndex, in_dataArrayIndex, attribIt->second, in_frame, eDeclICEAttr_Varying, m_nbPoints, in_offset, this->GetNbStrands(), in_nbStrandPoints);
 }
 
 
