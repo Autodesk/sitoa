@@ -2255,6 +2255,9 @@ void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayI
             {
                case siICENodeDataBool:
                {
+                  // get the subarray
+                  in_attr->m_bData2D.GetSubArray(attrIndex, in_attr->m_bData);
+                  int nbAttributeValues = in_attr->m_bData.GetCount();
                   if (in_index == 0)
                   {
                      // The first time we try to write into the array, we must also allocate it.
@@ -2263,8 +2266,7 @@ void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayI
                      // so we must default to "uniform", which in the case of curves means "one data per curve strand".
                      // For instance, one could use "Set Particle Color" on a strand, to give the same color to the entire strand.
                      // In this case, the size of the array to be allocated is, of course, equal to the number of strands
-                     in_attr->m_bData2D.GetSubArray(attrIndex, in_attr->m_bData);
-                     if (in_attr->m_bData.GetCount() == 1)
+                     if (nbAttributeValues == 1)
                      {
                         if (AiNodeDeclare(m_node, in_attr->m_name.GetAsciiString(), "uniform BOOL"))
                            AiNodeSetArray(m_node, in_attr->m_name.GetAsciiString(), AiArrayAllocate(in_strandCount, 1, AI_TYPE_BOOLEAN));
@@ -2277,21 +2279,35 @@ void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayI
                   }
                   AtArray * dataArray = AiNodeGetArray(m_node, in_attr->m_name.GetAsciiString());
 
-                  // get the sub array
-                  in_attr->m_bData2D.GetSubArray(attrIndex, in_attr->m_bData);
-                  if (in_attr->m_bData2D.GetCount() == 1) // the offset, so WHERE to write, is then equal to incoming strand index
+                  int nbArrayValues = nbAttributeValues;
+                  if (nbAttributeValues == 1) // the offset, so WHERE to write, is then equal to incoming strand index
                      in_offset = in_index;
+                  else
+                  {
+                     if (nbAttributeValues != in_nbStrandPoints)
+                     {
+                        nbArrayValues = in_nbStrandPoints;  // override nbArrayValues if it's mismatch so that we always set the right amount ov values to the array, Github #70
+                        GetMessageQueue()->LogMsg(L"[sitoa] Strand #" + CString(in_index) + L": " + in_attr->m_name + L" array count mismatch. ("+ in_attr->m_name + L": " + CString(nbAttributeValues) + L", StrandPosition: " + CString(in_nbStrandPoints) + L")", siWarningMsg);
+                     }
+                  }
 
-                  for (ULONG i=0; i<in_attr->m_bData.GetCount(); i++, in_offset++)
-                     AiArraySetBool(dataArray, in_offset, in_attr->GetBool(i));
+                  for (ULONG i=0; i<nbArrayValues; i++, in_offset++)
+                  {
+                     if (i < nbAttributeValues)
+                        AiArraySetBool(dataArray, in_offset, in_attr->GetBool(i));
+                     else
+                        AiArraySetBool(dataArray, in_offset, false);
+                  }
                   break;
                } // all the other cases work the same way, except for the data type
                case siICENodeDataLong:
                {
+                  // get the sub array
+                  in_attr->m_lData2D.GetSubArray(attrIndex, in_attr->m_lData);
+                  int nbAttributeValues = in_attr->m_lData.GetCount();
                   if (in_index == 0)
                   {
-                     in_attr->m_lData2D.GetSubArray(attrIndex, in_attr->m_lData);
-                     if (in_attr->m_lData.GetCount() == 1)
+                     if (nbAttributeValues == 1)
                      {
                         if (AiNodeDeclare(m_node, in_attr->m_name.GetAsciiString(), "uniform INT"))
                            AiNodeSetArray(m_node, in_attr->m_name.GetAsciiString(), AiArrayAllocate(in_strandCount, 1, AI_TYPE_INT));
@@ -2304,21 +2320,35 @@ void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayI
                   }
                   AtArray * dataArray = AiNodeGetArray(m_node, in_attr->m_name.GetAsciiString());
 
-                  // get the sub array
-                  in_attr->m_lData2D.GetSubArray(attrIndex, in_attr->m_lData);
-                  if (in_attr->m_lData2D.GetCount() == 1)
+                  int nbArrayValues = nbAttributeValues;
+                  if (nbAttributeValues == 1)
                      in_offset = in_index;
+                  else
+                  {
+                     if (nbAttributeValues != in_nbStrandPoints)
+                     {
+                        nbArrayValues = in_nbStrandPoints;  // override nbArrayValues if it's mismatch so that we always set the right amount ov values to the array, Github #70
+                        GetMessageQueue()->LogMsg(L"[sitoa] Strand #" + CString(in_index) + L": " + in_attr->m_name + L" array count mismatch. ("+ in_attr->m_name + L": " + CString(nbAttributeValues) + L", StrandPosition: " + CString(in_nbStrandPoints) + L")", siWarningMsg);
+                     }
+                  }
 
-                  for (ULONG i=0; i<in_attr->m_lData.GetCount(); i++, in_offset++)
-                     AiArraySetInt(dataArray, in_offset, in_attr->GetInt(i));
+                  for (ULONG i=0; i<nbArrayValues; i++, in_offset++)
+                  {
+                     if (i < nbAttributeValues)
+                        AiArraySetInt(dataArray, in_offset, in_attr->GetInt(i));
+                     else
+                        AiArraySetInt(dataArray, in_offset, 0);
+                  }
                   break;
                }
                case siICENodeDataFloat:
                {
+                  // get the sub array
+                  in_attr->m_fData2D.GetSubArray(attrIndex, in_attr->m_fData);
+                  int nbAttributeValues = in_attr->m_fData.GetCount();
                   if (in_index == 0)
                   {
-                     in_attr->m_fData2D.GetSubArray(attrIndex, in_attr->m_fData);
-                     if (in_attr->m_fData.GetCount() == 1)
+                     if (nbAttributeValues == 1)
                      {
                         if (AiNodeDeclare(m_node, in_attr->m_name.GetAsciiString(), "uniform FLOAT"))
                            AiNodeSetArray(m_node, in_attr->m_name.GetAsciiString(), AiArrayAllocate(in_strandCount, 1, AI_TYPE_FLOAT));
@@ -2331,20 +2361,35 @@ void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayI
                   }
                   AtArray * dataArray = AiNodeGetArray(m_node, in_attr->m_name.GetAsciiString());
 
-                  in_attr->m_fData2D.GetSubArray(attrIndex, in_attr->m_fData);
-                  if (in_attr->m_fData.GetCount() == 1)
+                  int nbArrayValues = nbAttributeValues;
+                  if (nbAttributeValues == 1)
                      in_offset = in_index;
+                  else
+                  {
+                     if (nbAttributeValues != in_nbStrandPoints)
+                     {
+                        nbArrayValues = in_nbStrandPoints;  // override nbArrayValues if it's mismatch so that we always set the right amount ov values to the array, Github #70
+                        GetMessageQueue()->LogMsg(L"[sitoa] Strand #" + CString(in_index) + L": " + in_attr->m_name + L" array count mismatch. ("+ in_attr->m_name + L": " + CString(nbAttributeValues) + L", StrandPosition: " + CString(in_nbStrandPoints) + L")", siWarningMsg);
+                     }
+                  }
 
-                  for (ULONG i=0; i<in_attr->m_fData.GetCount(); i++, in_offset++)
-                     AiArraySetFlt(dataArray, in_offset, in_attr->GetFloat(i));
+                  for (ULONG i=0; i<nbArrayValues; i++, in_offset++)
+                  {
+                     if (i < nbAttributeValues)
+                        AiArraySetFlt(dataArray, in_offset, in_attr->GetFloat(i));
+                     else
+                        AiArraySetFlt(dataArray, in_offset, 0.0f);
+                  }
                   break;
                }
                case siICENodeDataVector3:
                {
+                  // get the sub array
+                  in_attr->m_v3Data2D.GetSubArray(attrIndex, in_attr->m_v3Data);
+                  int nbAttributeValues = in_attr->m_v3Data.GetCount();
                   if (in_index == 0)
                   {
-                     in_attr->m_v3Data2D.GetSubArray(attrIndex, in_attr->m_v3Data);
-                     if (in_attr->m_v3Data2D.GetCount() == 1)
+                     if (nbAttributeValues == 1)
                      {
                         if (AiNodeDeclare(m_node, in_attr->m_name.GetAsciiString(), "uniform VECTOR"))
                            AiNodeSetArray(m_node, in_attr->m_name.GetAsciiString(), AiArrayAllocate(in_strandCount, 1, AI_TYPE_VECTOR));
@@ -2357,25 +2402,37 @@ void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayI
                   }
                   AtArray * dataArray = AiNodeGetArray(m_node, in_attr->m_name.GetAsciiString());
 
-                  // get the sub array
-                  in_attr->m_v3Data2D.GetSubArray(attrIndex, in_attr->m_v3Data);
-                  if (in_attr->m_v3Data2D.GetCount() == 1)
+                  int nbArrayValues = nbAttributeValues;
+                  if (nbAttributeValues == 1)
                      in_offset = in_index;
+                  else
+                  {
+                     if (nbAttributeValues != in_nbStrandPoints)
+                     {
+                        nbArrayValues = in_nbStrandPoints;  // override nbArrayValues if it's mismatch so that we always set the right amount ov values to the array, Github #70
+                        GetMessageQueue()->LogMsg(L"[sitoa] Strand #" + CString(in_index) + L": " + in_attr->m_name + L" array count mismatch. ("+ in_attr->m_name + L": " + CString(nbAttributeValues) + L", StrandPosition: " + CString(in_nbStrandPoints) + L")", siWarningMsg);
+                     }
+                  }
 
                   AtVector vec;
-                  for (ULONG i=0; i<in_attr->m_v3Data.GetCount(); i++, in_offset++)
+                  for (ULONG i=0; i<nbArrayValues; i++, in_offset++)
                   {
-                     CUtilities().S2A(in_attr->GetVector3f(i), vec);
+                     if (i < nbAttributeValues)
+                        CUtilities().S2A(in_attr->GetVector3f(i), vec);
+                     else
+                        vec = AtVector(0.0f, 0.0f, 0.0f);
                      AiArraySetVec(dataArray, in_offset, vec);
                   }
                   break;
                }
                case siICENodeDataColor4:
                {
+                  // get the sub array
+                  in_attr->m_cData2D.GetSubArray(attrIndex, in_attr->m_cData);
+                  int nbAttributeValues = in_attr->m_cData.GetCount();
                   if (in_index == 0)
                   {
-                     in_attr->m_cData2D.GetSubArray(attrIndex, in_attr->m_cData);
-                     if (in_attr->m_cData.GetCount() == 1)
+                     if (nbAttributeValues == 1)
                      {
                         if (AiNodeDeclare(m_node, in_attr->m_name.GetAsciiString(), "uniform RGBA"))
                            AiNodeSetArray(m_node, in_attr->m_name.GetAsciiString(), AiArrayAllocate(in_strandCount, 1, AI_TYPE_RGBA));
@@ -2388,25 +2445,37 @@ void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayI
                   }
                   AtArray * dataArray = AiNodeGetArray(m_node, in_attr->m_name.GetAsciiString());
 
-                  // get the sub array
-                  in_attr->m_cData2D.GetSubArray(attrIndex, in_attr->m_cData);
-                  if (in_attr->m_cData.GetCount() == 1)
+                  int nbArrayValues = nbAttributeValues;
+                  if (nbAttributeValues == 1)
                      in_offset = in_index;
+                  else
+                  {
+                     if (nbAttributeValues != in_nbStrandPoints)
+                     {
+                        nbArrayValues = in_nbStrandPoints;  // override nbArrayValues if it's mismatch so that we always set the right amount ov values to the array, Github #70
+                        GetMessageQueue()->LogMsg(L"[sitoa] Strand #" + CString(in_index) + L": " + in_attr->m_name + L" array count mismatch. ("+ in_attr->m_name + L": " + CString(nbAttributeValues) + L", StrandPosition: " + CString(in_nbStrandPoints) + L")", siWarningMsg);
+                     }
+                  }
 
                   AtRGBA rgba;
-                  for (ULONG i=0; i<in_attr->m_cData.GetCount(); i++, in_offset++)
+                  for (ULONG i=0; i<nbArrayValues; i++, in_offset++)
                   {
-                     CUtilities().S2A(in_attr->GetColor4f(i), rgba);
+                     if (i < nbAttributeValues)
+                        CUtilities().S2A(in_attr->GetColor4f(i), rgba);
+                     else
+                        rgba = AI_RGBA_ZERO;
                      AiArraySetRGBA(dataArray, in_offset, rgba);
                   }
                   break;
                }
                case siICENodeDataMatrix44:
                {
+                  // get the sub array
+                  in_attr->m_m4Data2D.GetSubArray(attrIndex, in_attr->m_m4Data);
+                  int nbAttributeValues = in_attr->m_m4Data.GetCount();
                   if (in_index == 0)
                   {
-                     in_attr->m_m4Data2D.GetSubArray(attrIndex, in_attr->m_m4Data);
-                     if (in_attr->m_m4Data2D.GetCount() == 1)
+                     if (nbAttributeValues == 1)
                      {
                         if (AiNodeDeclare(m_node, in_attr->m_name.GetAsciiString(), "uniform MATRIX"))
                            AiNodeSetArray(m_node, in_attr->m_name.GetAsciiString(), AiArrayAllocate(in_strandCount, 1, AI_TYPE_MATRIX));
@@ -2419,15 +2488,25 @@ void CIceObjectBase::DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayI
                   }
                   AtArray * dataArray = AiNodeGetArray(m_node, in_attr->m_name.GetAsciiString());
 
-                  // get the sub array
-                  in_attr->m_m4Data2D.GetSubArray(attrIndex, in_attr->m_m4Data);
-                  if (in_attr->m_m4Data2D.GetCount() == 1)
+                  int nbArrayValues = nbAttributeValues;
+                  if (nbAttributeValues == 1)
                      in_offset = in_index;
+                  else
+                  {
+                     if (nbAttributeValues != in_nbStrandPoints)
+                     {
+                        nbArrayValues = in_nbStrandPoints;  // override nbArrayValues if it's mismatch so that we always set the right amount ov values to the array, Github #70
+                        GetMessageQueue()->LogMsg(L"[sitoa] Strand #" + CString(in_index) + L": " + in_attr->m_name + L" array count mismatch. ("+ in_attr->m_name + L": " + CString(nbAttributeValues) + L", StrandPosition: " + CString(in_nbStrandPoints) + L")", siWarningMsg);
+                     }
+                  }
 
                   AtMatrix matrix;
-                  for (ULONG i=0; i<in_attr->m_m4Data.GetCount(); i++, in_offset++)
+                  for (ULONG i=0; i<nbArrayValues; i++, in_offset++)
                   {
-                     CUtilities().S2A(in_attr->GetMatrix4f(i), matrix);
+                     if (i < nbAttributeValues)
+                        CUtilities().S2A(in_attr->GetMatrix4f(i), matrix);
+                     else
+                        matrix = AiM4Identity();
                      AiArraySetMtx(dataArray, in_offset, matrix);
                   }
                   break;
