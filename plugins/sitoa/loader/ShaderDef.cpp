@@ -753,22 +753,7 @@ void CShaderDefShader::Layout()
    }
    // unfortunately the following does not work (in the case the definition already exists)
    else // if there is no specific desc metadata, set the help to the shader page
-      layout.PutAttribute(siUIHelpFile, m_has_desc ? m_desc : SITOA_SHADERS_URL);
-
-   // setup ppg logic
-   layout.PutLanguage(L"JScript");
-   if (m_name == L"closure") 
-   {
-      // github issue #33
-      // for closure connector node whenever it's inspected show the shader connected to it
-      layout.PutLogic(
-         L"function OnInit()\n"
-         L"{\n"
-         L"   var src = PPG.closure.Source;\n"
-         L"   if (src != null) InspectObj(src.Parent);\n"
-         L"}\n"
-         );
-   }
+      layout.PutAttribute(siUIHelpFile, m_has_desc ? m_desc : SITOA_SHADERS_URL);      
 }
 
 
