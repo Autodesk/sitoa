@@ -398,7 +398,6 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
 
          AiMsgDebug("[sitoa] Writing ASS file");
 
-         // BypassClosurePassthroughForAss();
          AiASSWrite(assOutputName.GetAsciiString(), 
                     output_cameras + output_drivers_filters + output_lights + output_options + output_geometry + output_shaders + output_operators, 
                     GetRenderOptions()->m_open_procs,
@@ -534,46 +533,3 @@ CStatus PostLoadSingleObject(const CRef in_ref, double in_frame, CRefArray &in_s
 
    return CStatus::Unexpected;
 }
-
-// remove all the SItoA closure nodes, for a clean ass.
-//
-/*
-void BypassClosurePassthroughForAss()
-{
-   set <AtNode*> closures;
-   AtNodeIterator *iter = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
-   while (!AiNodeIteratorFinished(iter))
-   {
-      AtNode *node = AiNodeIteratorGetNext(iter);
-      if (!node)
-         break;
-
-      const AtNodeEntry* node_entry = AiNodeGetNodeEntry(node);
-      if (AiNodeEntryLookUpParameter(node_entry, "shader"))
-      {
-         AtNode* shader = (AtNode*)AiNodeGetPtr(node, "shader");
-         if (shader)
-         {
-            const AtNodeEntry* shader_node_entry = AiNodeGetNodeEntry(shader);
-            AtString shader_node_entry_name(AiNodeEntryGetName(shader_node_entry));
-            if (shader_node_entry_name == ATSTRING::closure)
-            {
-               // bypass:
-               AtNode* main_shader = AiNodeGetLink(shader, "closure");
-               if (main_shader)
-               {
-                  AiNodeSetPtr(node, "shader", main_shader);
-                  closures.insert(shader); // add to the set of closure nodes, to be destroyed at the end
-               }
-            }
-         }
-      }
-   }
-
-   AiNodeIteratorDestroy(iter);
-
-   for (set <AtNode*>::iterator it = closures.begin(); it != closures.end(); it++)
-      AiNodeDestroy(*it);
-}
-*/
-
