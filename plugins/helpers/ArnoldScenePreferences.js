@@ -74,7 +74,7 @@ function SetSceneForArnold()
             SIConnectShaderToCnxPoint(shader, light.ActivePrimitive + ".LightShader", true);
 
             DisconnectAndDeleteOrUnnestShaders("light.light.soft_light", "light.light");
-            SetValue(shader + ".intensity", 3.5, "");
+            SetValue(shader + ".intensity", 4.0, "");
             SetValue(shader + ".angle", 0.53, "");
          }
       
