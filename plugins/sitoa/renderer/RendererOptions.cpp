@@ -45,6 +45,7 @@ void CRenderOptions::Read(const Property &in_cp)
 
    m_bucket_scanning       = ParAcc_GetValue(in_cp,       L"bucket_scanning",       DBL_MAX).GetAsText();
    m_bucket_size           = (int)ParAcc_GetValue(in_cp,  L"bucket_size",           DBL_MAX);
+   m_larger_ipr_buckets    = (bool)ParAcc_GetValue(in_cp, L"larger_ipr_buckets",    DBL_MAX);
    m_progressive_minus3    = (bool)ParAcc_GetValue(in_cp, L"progressive_minus3",    DBL_MAX);
    m_progressive_minus2    = (bool)ParAcc_GetValue(in_cp, L"progressive_minus2",    DBL_MAX);
    m_progressive_minus1    = (bool)ParAcc_GetValue(in_cp, L"progressive_minus1",    DBL_MAX);
@@ -331,6 +332,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
 
    cpset.AddParameter(L"bucket_scanning",        CValue::siString, siPersistable, L"", L"", L"spiral", CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"bucket_size",            CValue::siInt4,   siPersistable, L"", L"",  64, 16, 256, 16, 256, p);
+   cpset.AddParameter(L"larger_ipr_buckets",     CValue::siBool,   siPersistable, L"", L"",  false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"progressive_minus3",     CValue::siBool,   siPersistable, L"", L"",  true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"progressive_minus2",     CValue::siBool,   siPersistable, L"", L"",  true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"progressive_minus1",     CValue::siBool,   siPersistable, L"", L"",  true, CValue(), CValue(), CValue(), CValue(), p);
@@ -666,6 +668,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUIWidthPercentage, 60);
       layout.AddItem(L"bucket_size",    L"Size");
       layout.EndRow();
+      layout.AddItem(L"larger_ipr_buckets", L"Enlarge buckets in progressive IPR");
    layout.EndGroup();
    layout.AddGroup(L"Progressive Refinement", true, 0);
       layout.AddRow();
@@ -1503,6 +1506,7 @@ void SystemTabLogic(CustomProperty &in_cp)
    ParAcc_GetParameter(in_cp, L"GI_transmission_samples").PutCapabilityFlag(siReadOnly, useGPU);
    ParAcc_GetParameter(in_cp, L"GI_sss_samples").PutCapabilityFlag(siReadOnly, useGPU);
    ParAcc_GetParameter(in_cp, L"GI_volume_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"enable_progressive_render").PutCapabilityFlag(siReadOnly, useGPU);
 }
 
 

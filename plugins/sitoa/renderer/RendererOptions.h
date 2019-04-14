@@ -55,6 +55,7 @@ public:
    CString  m_manual_device_selection;
    CString  m_bucket_scanning;
    int      m_bucket_size;
+   bool     m_larger_ipr_buckets;
    bool     m_progressive_minus3;
    bool     m_progressive_minus2;
    bool     m_progressive_minus1;
@@ -251,6 +252,7 @@ public:
       m_manual_device_selection(L""),
       m_bucket_scanning(L"spiral"),
       m_bucket_size(64),
+      m_larger_ipr_buckets(false),
       m_progressive_minus3(true),
       m_progressive_minus2(true),
       m_progressive_minus1(true),

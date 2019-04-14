@@ -206,7 +206,7 @@ unsigned int CRenderInstance::UpdateRenderRegion(unsigned int in_width, unsigned
 }
 
 
-int CRenderInstance::RenderProgressiveScene()
+int CRenderInstance::RenderProgressiveScene(int displayArea)
 {
    int render_result = AI_INTERRUPT;
    
@@ -215,6 +215,7 @@ int CRenderInstance::RenderProgressiveScene()
 
    int  aa_max = GetRenderOptions()->m_AA_samples;
    bool dither = GetRenderOptions()->m_dither;
+   int bucket_size = GetRenderOptions()->m_bucket_size;
 
    int verbosity = AiMsgGetConsoleFlags(); // current log level
 
@@ -227,11 +228,23 @@ int CRenderInstance::RenderProgressiveScene()
    if ((aa_max > -1) && GetRenderOptions()->m_progressive_minus1)
       aa_steps.insert(-1);
 
+   // calculate a good bucket size for the progressive passes, and round down to nearest 8
+   int progressiveBucketSize = AiMax(((int)sqrt(displayArea / 16) & (INT_MAX-7)), bucket_size);
+
    AtNode* options = AiUniverseGetOptions();
 
-   // if progressive rendering, ignore the 1 aa step because that is already the first step in progressive
-   if (!AiNodeGetBool(options, "enable_progressive_render"))
+   // set a larger bucket size if we render progressive (or GPU), Github #67
+   if (AiNodeGetBool(options, "enable_progressive_render"))
    {
+      if ((progressiveBucketSize > bucket_size) && GetRenderOptions()->m_larger_ipr_buckets)
+      {
+         CNodeSetter::SetInt(options, "bucket_size", progressiveBucketSize);
+         AiMsgInfo(CString(L"[sitoa] Bucket size have been enlarged to " + CString(progressiveBucketSize) + L" to get a faster response in Softimage Render Region.").GetAsciiString());
+      }
+   }
+   else
+   {
+      // if not progressive rendering, we can set the 1 aa step
       if ((aa_max > 1) && GetRenderOptions()->m_progressive_plus1)
          aa_steps.insert(1);
    }
@@ -1472,6 +1485,7 @@ CStatus CRenderInstance::ProcessRegion()
          return status;
    }
 
+   unsigned int displayArea;
    { // do not remove the {} as we need the local scope for the thread lock (see trac#1044)
       LockSceneData lock;
       if (lock.m_status != CStatus::OK)
@@ -1516,7 +1530,7 @@ CStatus CRenderInstance::ProcessRegion()
       }
 
       // Updating RenderRegion and DisplayArea
-      unsigned int displayArea = UpdateRenderRegion(m_renderWidth, m_renderHeight);
+      displayArea = UpdateRenderRegion(m_renderWidth, m_renderHeight);
 
       // for these new render options (1.12), let's check their existance. Else, filterColorAov defaults to false,
       // and all the previously saved scenes render aliased
@@ -1527,7 +1541,7 @@ CStatus CRenderInstance::ProcessRegion()
       SetLogSettings(L"Region", m_frame);
    }
   
-   int renderStatus = RenderProgressiveScene();
+   int renderStatus = RenderProgressiveScene(displayArea);
 
    if (renderStatus != AI_SUCCESS)
    {
