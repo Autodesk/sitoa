@@ -437,7 +437,7 @@ public:
    // Attach a given attributes to this node
    void    DeclareICEAttributeOnNode(LONG in_index, LONG in_dataArrayIndex, CIceAttribute* in_attribute, double in_frame, 
                                      eDeclICEAttr in_declareType = eDeclICEAttr_Constant, LONG in_count=0, LONG in_offset=0, 
-                                     int in_strandCount=0);
+                                     int in_strandCount=0, int in_nbStrandPoints=0);
    // Attach a given attributes to a polymesh node
    void    DeclareICEAttributeOnMeshNode(CIceAttribute* in_attribute, const AtArray *in_indices);
    // Attach a given attributes to a volume node
@@ -831,7 +831,7 @@ public:
    // Build all the curves stuff
    bool MakeCurve(CustomProperty in_arnoldParameters, double in_frame, CDoubleArray in_defKeys, float in_secondsPerFrame, bool in_exactMb);
    // Attach all the required attributes for a strand
-   void DeclareAttributes(CIceAttributesSet *in_attributes, double in_frame, int in_pointIndex, int in_dataArrayIndex, int in_offset);
+   void DeclareAttributes(CIceAttributesSet *in_attributes, double in_frame, int in_pointIndex, int in_dataArrayIndex, int in_offset, int nbStrandPoints);
    // Set the Arnold Parameters set 
    void SetArnoldParameters(CustomProperty in_property, double in_frame);
 };
