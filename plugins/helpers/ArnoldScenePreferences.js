@@ -74,8 +74,22 @@ function SetSceneForArnold()
             SIConnectShaderToCnxPoint(shader, light.ActivePrimitive + ".LightShader", true);
 
             DisconnectAndDeleteOrUnnestShaders("light.light.soft_light", "light.light");
+            SetValue(shader + ".intensity", 4.0, "");
+            SetValue(shader + ".angle", 0.53, "");
          }
       
+         // Modify Scene_Material to use standard_surface
+         var sceneMaterial = Dictionary.GetObject("Sources.Materials.DefaultLib.Scene_Material");
+         var currentShader = sceneMaterial.Surface.Source.Parent;
+         if (currentShader.Name == "Phong")
+         {
+            var shader = CreateShaderFromProgID("Arnold.standard_surface.1.0", sceneMaterial, null);
+            var closure = CreateShaderFromProgID("Arnold.closure.1.0", sceneMaterial, null);
+            SIConnectShaderToCnxPoint(shader, closure.closure, false);
+            SIConnectShaderToCnxPoint(closure, sceneMaterial.Surface, false);
+            DisconnectAndDeleteOrUnnestShaders(sceneMaterial + ".Phong", sceneMaterial);
+         }
+
          // Use pass render options as the view render options are not supported for the moment
          SetValue("Views.ViewA.RenderRegion.UsePassOptions,Views.ViewB.RenderRegion.UsePassOptions,"+
                   "Views.ViewC.RenderRegion.UsePassOptions,Views.ViewD.RenderRegion.UsePassOptions",
