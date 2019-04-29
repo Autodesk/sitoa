@@ -4839,10 +4839,6 @@ bool CIceObjectStrandInstance::LoadStrandInstance(Model in_modelMaster, CRefArra
       vlist = AiArrayAllocate((int)strandInstance->m_points.size(), (uint8_t)nbDefKeys, AI_TYPE_VECTOR);
       nlist = AiArrayAllocate((int)strandInstance->m_normals.size(), (uint8_t)nbDefKeys, AI_TYPE_VECTOR);
 
-      // Give the arrays to the cloned node
-      AiNodeSetArray(shape.m_node, "vlist", vlist);
-      AiNodeSetArray(shape.m_node, "nlist", nlist);
-
       if (nbDefKeys == 1)
       {
          // Bend the instanced objects along the strand
@@ -4882,6 +4878,10 @@ bool CIceObjectStrandInstance::LoadStrandInstance(Model in_modelMaster, CRefArra
             strandInstance->Get(vlist, nlist, iDefKey);
          }
       }
+
+      // Give the arrays to the cloned node
+      AiNodeSetArray(shape.m_node, "vlist", vlist);
+      AiNodeSetArray(shape.m_node, "nlist", nlist);
 
       // get the matrices of the masterNode, just to get their count
       AtArray* masterNodeMatrices = AiNodeGetArray(masterNode, "matrix");
