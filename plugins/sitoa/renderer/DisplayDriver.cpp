@@ -451,7 +451,7 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
 
     // if layerName is RGBA (Main) and use_optix_on_main is ON,
     // we will add the denoised main to the new_outputs
-   if (layerName == "RGBA" && m_useOptixOnMain)
+   if (layerName == L"RGBA" && m_useOptixOnMain)
    {
       // we need to check if the optix filter exist. If it doesn't exist, we create one.
       CString optixFilterName = L"sitoa_RGBA_denoise_optix_filter_display";
