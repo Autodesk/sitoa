@@ -203,6 +203,7 @@ driver_process_bucket
 
    // don't update progressbar if Main (RGBA) is being denoised
    if (!displayDriver->m_useOptixOnMain ||
+       displayDriver->m_gpu || // TODO FIXIT: Temporary workaround for GPU to work with Optix Denoiser
          (displayDriver->m_useOptixOnMain &&
           !strcmp(aov_name, "RGBA_denoise") == 0))
    {
@@ -380,6 +381,17 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
    RenderChannel renderchannel = frameBuffer.GetRenderChannel();
    CString layerName = GetLayerName(renderchannel.GetName());
    CString layerdataType;
+
+   // TODO FIXIT
+   // Temporary workaround for GPU to work with Optix Denoiser
+   // GPU can only work with one filter at the time, so we can only send the denoised output.
+   m_gpu = strcmp(AiNodeGetStr(options, "render_device"), "GPU") == 0;
+   if (layerName == L"RGBA" && m_useOptixOnMain && m_gpu)
+    {
+      layerName = L"RGBA_denoise";
+      m_onlyShowDenoise = true;
+    }
+   // END TODO FIXIT
 
    if (m_renderContext.GetAttribute(L"FileOutput"))
    {          
