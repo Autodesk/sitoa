@@ -9,6 +9,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License.
 ************************************************************************************************************************************/
 
+#include <thread>
+
 #include "common/ParamsCamera.h"
 #include "common/Tools.h"
 #include "loader/Cameras.h"
@@ -228,8 +230,9 @@ int CRenderInstance::RenderProgressiveScene(int displayArea)
    if ((aa_max > -1) && GetRenderOptions()->m_progressive_minus1)
       aa_steps.insert(-1);
 
-   // calculate a good bucket size for the progressive passes, and round down to nearest 8
-   int progressiveBucketSize = AiMax(((int)sqrt(displayArea / 16) & (INT_MAX-7)), bucket_size);
+   // calculate a good bucket size for the progressive passes so that the total number of buckets = CPU_cores * 2
+   int numCores = std::thread::hardware_concurrency();
+   int progressiveBucketSize = AiMax(((int)sqrt(displayArea / (numCores*2))), bucket_size);
 
    AtNode* options = AiUniverseGetOptions();
 
