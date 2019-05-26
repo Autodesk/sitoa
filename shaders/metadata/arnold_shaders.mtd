@@ -4021,6 +4021,12 @@ desc STRING "Changes the V angle (for spherical mapping only)."
 softmin FLOAT 0
 softmax FLOAT 360
 
+[attr clamp]
+desc STRING "Only applies the projection if the position is inside a unit box/sphere/cylinder (depending on the projection mode), otherwise uses the Default Color (disabled by default)."
+
+[attr default_color]
+desc STRING "The color to be used for unmapped points."
+
 [attr matrix]
 desc STRING "Defines the 3D texture’s positioning and orientation in world space."
 
