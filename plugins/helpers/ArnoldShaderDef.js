@@ -24,6 +24,10 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("abs", 1, 0);
    in_reg.RegisterShader("add", 1, 0);
    in_reg.RegisterShader("ambient_occlusion", 1, 0);
+   in_reg.RegisterShader("aov_read_float", 1, 0);
+   in_reg.RegisterShader("aov_read_int", 1, 0);
+   in_reg.RegisterShader("aov_read_rgb", 1, 0);
+   in_reg.RegisterShader("aov_read_rgba", 1, 0);
    in_reg.RegisterShader("aov_write_float", 1, 0);
    in_reg.RegisterShader("aov_write_int", 1, 0);
    in_reg.RegisterShader("aov_write_rgb", 1, 0);
@@ -164,6 +168,14 @@ function Arnold_add_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_add_1_0_Define(in_ctxt) { return true; }
 function Arnold_ambient_occlusion_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_ambient_occlusion_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_read_float_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_read_float_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_read_int_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_read_int_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_read_rgb_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_read_rgb_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_read_rgba_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_read_rgba_1_0_Define(in_ctxt) { return true; }
 function Arnold_aov_write_float_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_aov_write_float_1_0_Define(in_ctxt) { return true; }
 function Arnold_aov_write_int_1_0_DefineInfo(in_ctxt) { return true; }

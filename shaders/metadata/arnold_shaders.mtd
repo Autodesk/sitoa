@@ -86,6 +86,34 @@ desc STRING "If on, the tracing works in inclusive mode, else in exclusive, as d
 desc STRING "Gather occlusion against the shaded object only."
 
 ##############################################################################
+[node aov_read_float]
+soft.category STRING "AOV"
+
+[attr aov_name]
+desc STRING "Name of the AOV."
+
+##############################################################################
+[node aov_read_int]
+soft.category STRING "AOV"
+
+[attr aov_name]
+desc STRING "Name of the AOV."
+
+##############################################################################
+[node aov_read_rgb]
+soft.category STRING "AOV"
+
+[attr aov_name]
+desc STRING "Name of the AOV."
+
+##############################################################################
+[node aov_read_rgba]
+soft.category STRING "AOV"
+
+[attr aov_name]
+desc STRING "Name of the AOV."
+
+##############################################################################
 [node aov_write_float]
 soft.label STRING "AOV Write Float"
 soft.category STRING "AOV"
