@@ -590,6 +590,19 @@ desc STRING "The minimum value for the color channels to be used in the output."
 [attr max_color]
 desc STRING "The maximum value for the color channels to be used in the output."
 
+##############################################################################
+[node clip_geo]
+soft.category STRING "Utility"
+
+[attr intersection]
+desc STRING "The color or shader applied to the result of the clipping."
+
+[attr trace_set]
+desc STRING "It is possible to tag objects to be part of one or many trace sets. You can use trace sets to control which objects are clipped."
+
+[attr inclusive]
+desc STRING "If on, the tracing works in inclusive mode, else in exclusive, as described above."
+
 # SItoA specific
 ##############################################################################
 [node closure]

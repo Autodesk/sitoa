@@ -39,6 +39,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("cell_noise", 1, 0);
    in_reg.RegisterShader("checkerboard", 1, 0);
    in_reg.RegisterShader("clamp", 1, 0);
+   in_reg.RegisterShader("clip_geo", 1, 0);
    in_reg.RegisterShader("closure", 1, 0); // SItoA
    in_reg.RegisterShader("color_convert", 1, 0);
    in_reg.RegisterShader("color_correct", 1, 0);
@@ -193,6 +194,8 @@ function Arnold_checkerboard_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_checkerboard_1_0_Define(in_ctxt) { return true; }
 function Arnold_clamp_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_clamp_1_0_Define(in_ctxt) { return true; }
+function Arnold_clip_geo_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_clip_geo_1_0_Define(in_ctxt) { return true; }
 function Arnold_closure_1_0_DefineInfo(in_ctxt) { return true; } // SItoA
 function Arnold_closure_1_0_Define(in_ctxt) { return true; }     // SItoA
 function Arnold_color_convert_1_0_DefineInfo(in_ctxt) { return true; }
