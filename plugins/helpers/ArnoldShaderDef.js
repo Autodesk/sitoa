@@ -220,8 +220,8 @@ function Arnold_compare_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_compare_1_0_Define(in_ctxt) { return true; }
 function Arnold_complement_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_complement_1_0_Define(in_ctxt) { return true; }
-function Arnold_complex_ior_1_0_DefineInfo(in_ctxt) { return true; }
-function Arnold_complex_ior_1_0_Define(in_ctxt) { return true; }
+function Arnold_complex_ior_1_0_DefineInfo(in_ctxt) { return true; } // deprecated
+function Arnold_complex_ior_1_0_Define(in_ctxt) { return true; }     // deprecated
 function Arnold_composite_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_composite_1_0_Define(in_ctxt) { return true; }
 function Arnold_cross_1_0_DefineInfo(in_ctxt) { return true; }
