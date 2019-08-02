@@ -245,6 +245,13 @@ function ShaderHelperObj()
       paramDef.MainPort = false;       
    }
 
+   this.AddOutputNode = function(in_params)
+   {
+      paramOptions = XSIFactory.CreateShaderParamDefOptions();
+      paramDef = in_params.AddParamDef("out", siShaderDataTypeReference, paramOptions);
+      paramDef.MainPort = false;
+   }
+
    this.AddArnoldRendererDef = function(in_shaderDef)
    {
       var h = SItoAToolHelper();
