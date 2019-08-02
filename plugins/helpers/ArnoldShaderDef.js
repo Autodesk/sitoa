@@ -408,23 +408,25 @@ function Arnold_volume_sample_rgb_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_volume_sample_rgb_1_0_Define(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_Define(in_ctxt) { return true; }
+
 // operators
+function Arnold_collection_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_collection_1_0_Define(in_ctxt) { return true; }
+function Arnold_disable_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_disable_1_0_Define(in_ctxt) { return true; }
+function Arnold_include_graph_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_include_graph_1_0_Define(in_ctxt) { return true; }
 function Arnold_materialx_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_materialx_1_0_Define(in_ctxt) { return true; }
 function Arnold_merge_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_merge_1_0_Define(in_ctxt) { return true; }
-function Arnold_set_parameter_1_0_DefineInfo(in_ctxt) { return true; }
-function Arnold_set_parameter_1_0_Define(in_ctxt) { return true; }
-function Arnold_disable_1_0_DefineInfo(in_ctxt) { return true; }
-function Arnold_disable_1_0_Define(in_ctxt) { return true; }
-function Arnold_switch_operator_1_0_DefineInfo(in_ctxt) { return true; }
-function Arnold_switch_operator_1_0_Define(in_ctxt) { return true; }
+//function Arnold_set_parameter_1_0_DefineInfo(in_ctxt) { return true; }
+//function Arnold_set_parameter_1_0_Define(in_ctxt) { return true; }
 function Arnold_set_transform_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_set_transform_1_0_Define(in_ctxt) { return true; }
-function Arnold_collection_1_0_DefineInfo(in_ctxt) { return true; }
-function Arnold_collection_1_0_Define(in_ctxt) { return true; }
-function Arnold_include_graph_1_0_DefineInfo(in_ctxt) { return true; }
-function Arnold_include_graph_1_0_Define(in_ctxt) { return true; }
+function Arnold_switch_operator_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_switch_operator_1_0_Define(in_ctxt) { return true; }
+
 
 ///////////////////////////////////////////////////
 /////////////// shaders that require a dedicated UI
