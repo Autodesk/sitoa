@@ -76,7 +76,7 @@ function AddPointLight_Execute(in_name)
    light.Parameters("LightAreaGeom").value  = 3;   
    // Mapping Arnold Light Parameter to XSI Light Parameter..   
    var spotRadius = light.Parameters("LightAreaXformSX");
-   spotRadius.AddExpression(light.FullName+".light.arnold_point_light.radius");
+   spotRadius.AddExpression(light.FullName+".light.point_light.radius");
    return light; // return the light
 }
 
@@ -110,8 +110,10 @@ function AddSpotLight_Execute(in_name)
    
    ApplyLightShader(lightPrim, "arnold_spot_light");
    // Mapping Arnold Light Parameters to XSI Light Parameters..
+   var coneAngle = lightPrim.Parameters("LightCone");
+   coneAngle.AddExpression(lightPrim.FullName+".light.spot_light.cone_angle");
    var spotRadius = lightPrim.Parameters("LightAreaXformSX");
-   spotRadius.AddExpression(lightPrim.FullName+".light.arnold_spot_light.radius")   
+   spotRadius.AddExpression(lightPrim.FullName+".light.spot_light.radius");
    lightPrim.LightArea = true;   
    lightPrim.LightAreaGeom = 2;
    return lightPrim;
