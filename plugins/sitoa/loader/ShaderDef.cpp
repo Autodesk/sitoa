@@ -117,7 +117,10 @@ siShaderReferenceFilterType GetShaderReferenceFilterType(CString in_type)
    else if (in_type == L"userdata")
       return siUserDataBlobReferenceFilter;
    else
+   {
+      GetMessageQueue()->LogMsg(L"[sitoa] Unknown ReferenceFilterType: \"" + in_type + L"\". Check your metadata file.", siWarningMsg);
       return siUnknownReferenceFilter;
+   }
 }
 
 
@@ -226,35 +229,60 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
    else if (!m_has_softmin && m_has_softmax)
       GetMessageQueue()->LogMsg(L"[sitoa] " + in_shader_name + L"." + m_name + " has softmax metadata, but no softmin.", siWarningMsg);
 
-   // if the Arnold type is an array, we create a single parameter of the type of the array elements
-   int paramType = m_type == AI_TYPE_ARRAY ? m_arrayType : m_type;
-   ShaderParamDef pDef;
-   if (m_type == AI_TYPE_CLOSURE)
-      pDef = in_paramDef.AddParamDef(m_name, L"closure", defOptions);
-   else
+
+   bool paramIsArray = m_type == AI_TYPE_ARRAY;
+   int paramType = paramIsArray ? m_arrayType : m_type;
+   CString customNodeType = L"";
+
+   // check for node type overrides
+   // strings can also be overriden to nodes
+   if ((paramType == AI_TYPE_STRING || paramType == AI_TYPE_NODE) && m_has_node_type)
    {
-      // adds the ability for string types to have a node picker
-      // also implements filter for the node types
-      if ((m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE) && m_has_node_type)
+      // override node type be AI_TYPE_NODE
+      paramType = AI_TYPE_NODE;
+      CStringArray nodeTypes = CStringUtilities().ToLower(m_node_type).Split(L" ");
+      CString nodeType = nodeTypes[0];
+
+      // force node type even if string (toon shader uses this)
+      paramType = AI_TYPE_NODE;
+      // set the reference filter type
+      defOptions.SetAttribute(siReferenceFilterAttribute, GetShaderReferenceFilterType(nodeType));
+
+      if (nodeTypes.GetCount() > 1)
       {
-         CStringArray nodeTypes = CStringUtilities().ToLower(m_node_type).Split(L" ");
-         defOptions.SetAttribute(siReferenceFilterAttribute, GetShaderReferenceFilterType(nodeTypes[0]));
-
-         if (nodeTypes.GetCount() > 1)
+         if (nodeTypes[1] == L"array")
          {
-            if (nodeTypes[1] == L"array")
-            {
-               // shaderarrays doesn't use the label but uses SetLongName instead
-               // label has to be specified in .mtd or else it will just show the parameter name
-               if (m_has_label)
-                  defOptions.SetLongName(m_label);
-
-               pDef = in_paramDef.AddArrayParamDef(m_name, siShaderDataTypeReference, defOptions);
-            }
+            // if array is specified in the soft.node_type metadata, a parameter array will be created even though it's not an array in arnold
+            // toon shader uses this for lights, but it's data is converted to semicolon-delimited string on rendering/export
+            paramIsArray = true;
          }
          else
-            pDef = in_paramDef.AddParamDef(m_name, siShaderDataTypeReference, defOptions);
+            GetMessageQueue()->LogMsg(L"[sitoa] " + in_shader_name + L"." + m_name + " has unknown node type override: " + m_node_type, siWarningMsg);
       }
+   }
+   else if (paramType == AI_TYPE_CLOSURE)
+      customNodeType = L"closure";
+
+   ShaderParamDef pDef;
+   if (paramIsArray)
+   {
+      // shaderarrays doesn't use the label but uses SetLongName instead
+      CString label;
+      if (m_has_label)
+         label = m_label;
+      else
+         label = CStringUtilities().PrettifyParameterName(m_name);
+      defOptions.SetLongName(label);
+
+      if (customNodeType != "")
+         pDef = in_paramDef.AddArrayParamDef(m_name, customNodeType, defOptions);
+      else
+         pDef = in_paramDef.AddArrayParamDef(m_name, GetParamSdType(paramType), defOptions);
+   }
+   else
+   {
+      if (customNodeType != "")
+         pDef = in_paramDef.AddParamDef(m_name, customNodeType, defOptions);
       else
          pDef = in_paramDef.AddParamDef(m_name, GetParamSdType(paramType), defOptions);
    }
@@ -343,23 +371,7 @@ void CShaderDefParameter::Layout(PPGLayout &in_layout)
    if (m_has_label)
       label = m_label;
    else
-   {
-      // replace "_" with " ". "_" is very common in the Arnold nodes
-      // Ex: "emission_color" -> "emission color: 
-      CString t_label = CStringUtilities().ReplaceString(L"_", L" ", m_name);
-
-      // capitalize the first char of the name, and each token after a space, as we do for the SItoA shaders
-      // Ex: "emission color" -> "Emission Color: 
-      for (ULONG i=0; i<t_label.Length(); i++)
-      {
-         if (i==0)
-            label+= (char)toupper(t_label[i]);
-         else if (t_label[i-1] == ' ')
-            label+= (char)toupper(t_label[i]);
-         else
-            label+= t_label[i];
-      }
-   }
+      label = CStringUtilities().PrettifyParameterName(m_name);
 
    // if a string parameter is called "filename", it's reasonable to provide a file browser widget
    if (m_type == AI_TYPE_STRING && m_name == ATSTRING::filename)
@@ -378,19 +390,13 @@ void CShaderDefParameter::Layout(PPGLayout &in_layout)
          dropdown.Add(enum_string); dropdown.Add(enum_string);
       }
       item = in_layout.AddEnumControl(m_name, dropdown, label, siControlCombo);
-      item.PutAttribute(siUILabelMinPixels, 120);
+      item.PutAttribute(siUILabelMinPixels, 110);
       item.PutAttribute(siUILabelPercentage, 35);
    }
    else
    {
-      // if the Arnold type is array, add " (array)" to the label of the parameter,
-      // which we expose as a single value. So, even if we don't support arrays yet, 
-      // we have a way to spot the case by the label name. Also, this way the user gets
-      // "warned" that this parameter won't work as expected
-      if (m_arrayType != AI_TYPE_UNDEFINED)
-         label+= L" (array)";
       item = in_layout.AddItem(m_name, label);
-      item.PutAttribute(siUILabelMinPixels, 120);
+      item.PutAttribute(siUILabelMinPixels, 110);
       item.PutAttribute(siUILabelPercentage, 35);
    }
 
@@ -443,7 +449,9 @@ CShaderDefShader::CShaderDefShader(AtNodeEntry* in_node_entry, const bool in_clo
    else // since we're storing the names by so/dll + " " + name, we can't let this void
       m_so_name = L"core";
 
-   m_is_camera_node = AiNodeEntryGetType(m_node_entry) == AI_NODE_CAMERA;
+   int entry_type = AiNodeEntryGetType(m_node_entry);
+   m_is_camera_node = entry_type == AI_NODE_CAMERA;
+   m_is_operator_node = entry_type == AI_NODE_OPERATOR;
 
    if (in_clone_vector_map)
       m_type = AI_TYPE_FLOAT;
@@ -544,6 +552,13 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
          category = category + L"/" + m_category;
    }
 
+   if (m_is_operator_node)
+   {
+      category = L"Arnold/Operators";
+      if (m_has_category)
+         category = category + L"/" + m_category;
+   }
+
    m_sd.PutCategory(category);
 
    if (m_has_deprecated && m_deprecated)
@@ -566,6 +581,8 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
 
    if (m_is_passthrough_closure) // hack the closure output for the closure connector to color
       outParamDef.AddParamDef("out", siShaderDataTypeColor4, outOpts);
+   else if (m_is_operator_node)
+      outParamDef.AddParamDef("out", siShaderDataTypeReference, outOpts);
    else
    {
       if (m_type == AI_TYPE_CLOSURE)
@@ -756,14 +773,19 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
    // load the plugins (installation, + the ones in the shader search path)
    GetRenderInstance()->GetPluginsSearchPath().Put(in_plugin_origin_path, true);
    GetRenderInstance()->GetPluginsSearchPath().LoadPlugins();
-   // load the metadata file
+   // load the shader metadata file
    CString metadata_path = CUtils::BuildPath(in_plugin_origin_path, L"arnold_shaders.mtd");
    bool metadata_exists = AiMetaDataLoadFile(metadata_path.GetAsciiString());
    if (!metadata_exists)
       GetMessageQueue()->LogMsg(L"[sitoa] Missing shader metadata file " + metadata_path, siWarningMsg);
+   // load the operator metadata file
+   metadata_path = CUtils::BuildPath(in_plugin_origin_path, L"arnold_operators.mtd");
+   metadata_exists = AiMetaDataLoadFile(metadata_path.GetAsciiString());
+   if (!metadata_exists)
+      GetMessageQueue()->LogMsg(L"[sitoa] Missing operator metadata file " + metadata_path, siWarningMsg);
 
    // iterate the nodes
-   AtNodeEntryIterator* node_entry_it = AiUniverseGetNodeEntryIterator(AI_NODE_SHADER | AI_NODE_CAMERA);
+   AtNodeEntryIterator* node_entry_it = AiUniverseGetNodeEntryIterator(AI_NODE_SHADER | AI_NODE_CAMERA | AI_NODE_OPERATOR);
    while (!AiNodeEntryIteratorFinished(node_entry_it))
    {
       AtNodeEntry* node_entry = AiNodeEntryIteratorGetNext(node_entry_it);

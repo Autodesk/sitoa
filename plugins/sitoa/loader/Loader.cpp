@@ -18,6 +18,7 @@ See the License for the specific language governing permissions and limitations 
 #include "loader/Polymeshes.h"
 #include "loader/Shaders.h"
 #include "loader/Procedurals.h"
+#include "loader/Operators.h"
 #include "renderer/RenderMessages.h"
 #include "renderer/Renderer.h"
 
@@ -110,16 +111,18 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
    int output_cameras         = AI_NODE_CAMERA;
    int output_lights          = AI_NODE_LIGHT;
    int output_shaders         = AI_NODE_SHADER;
+   int output_operators       = AI_NODE_OPERATOR;
 
    CPathString outputAssDir, assOutputName;
    bool useTranslation;
 
    output_options  = toRender || GetRenderOptions()->m_output_options ? AI_NODE_OPTIONS + AI_NODE_COLOR_MANAGER: 0;
    output_drivers_filters = toRender || GetRenderOptions()->m_output_drivers_filters ? AI_NODE_DRIVER + AI_NODE_FILTER : 0;
-   output_geometry = toRender || GetRenderOptions()->m_output_geometry  ? AI_NODE_SHAPE : 0;
-   output_cameras  = toRender || GetRenderOptions()->m_output_cameras ? AI_NODE_CAMERA : 0;
-   output_lights   = toRender || GetRenderOptions()->m_output_lights  ? AI_NODE_LIGHT  : 0;
-   output_shaders  = toRender || GetRenderOptions()->m_output_shaders ? AI_NODE_SHADER : 0;
+   output_geometry   = toRender || GetRenderOptions()->m_output_geometry  ? AI_NODE_SHAPE : 0;
+   output_cameras    = toRender || GetRenderOptions()->m_output_cameras ? AI_NODE_CAMERA : 0;
+   output_lights     = toRender || GetRenderOptions()->m_output_lights  ? AI_NODE_LIGHT  : 0;
+   output_shaders    = toRender || GetRenderOptions()->m_output_shaders ? AI_NODE_SHADER : 0;
+   output_operators  = toRender || GetRenderOptions()->m_output_operators ? AI_NODE_OPERATOR : 0;
 
    SceneRenderProperty sceneRenderProp(app.GetActiveProject().GetActiveScene().GetPassContainer().GetProperties().GetItem(L"Scene Render Options"));
 
@@ -258,6 +261,19 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
          }
       }
 
+      //////////// Operators ////////////
+      if (!in_createStandIn)
+      {
+         AiMsgDebug("[sitoa] Loading Operators");
+         status = LoadPassOperator(iframe);
+
+         if (progressBar.IsCancelPressed() || status == CStatus::Abort)
+         {
+            AbortFrameLoadScene();
+            break;
+         }
+      }
+
       //////////// Cameras //////////// 
       if (!in_createStandIn && output_cameras == AI_NODE_CAMERA)
       {
@@ -382,9 +398,8 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
 
          AiMsgDebug("[sitoa] Writing ASS file");
 
-         // BypassClosurePassthroughForAss();
          AiASSWrite(assOutputName.GetAsciiString(), 
-                    output_cameras + output_drivers_filters + output_lights + output_options + output_geometry + output_shaders, 
+                    output_cameras + output_drivers_filters + output_lights + output_options + output_geometry + output_shaders + output_operators, 
                     GetRenderOptions()->m_open_procs,
                     GetRenderOptions()->m_binary_ass
                    );
@@ -518,46 +533,3 @@ CStatus PostLoadSingleObject(const CRef in_ref, double in_frame, CRefArray &in_s
 
    return CStatus::Unexpected;
 }
-
-// remove all the SItoA closure nodes, for a clean ass.
-//
-/*
-void BypassClosurePassthroughForAss()
-{
-   set <AtNode*> closures;
-   AtNodeIterator *iter = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
-   while (!AiNodeIteratorFinished(iter))
-   {
-      AtNode *node = AiNodeIteratorGetNext(iter);
-      if (!node)
-         break;
-
-      const AtNodeEntry* node_entry = AiNodeGetNodeEntry(node);
-      if (AiNodeEntryLookUpParameter(node_entry, "shader"))
-      {
-         AtNode* shader = (AtNode*)AiNodeGetPtr(node, "shader");
-         if (shader)
-         {
-            const AtNodeEntry* shader_node_entry = AiNodeGetNodeEntry(shader);
-            AtString shader_node_entry_name(AiNodeEntryGetName(shader_node_entry));
-            if (shader_node_entry_name == ATSTRING::closure)
-            {
-               // bypass:
-               AtNode* main_shader = AiNodeGetLink(shader, "closure");
-               if (main_shader)
-               {
-                  AiNodeSetPtr(node, "shader", main_shader);
-                  closures.insert(shader); // add to the set of closure nodes, to be destroyed at the end
-               }
-            }
-         }
-      }
-   }
-
-   AiNodeIteratorDestroy(iter);
-
-   for (set <AtNode*>::iterator it = closures.begin(); it != closures.end(); it++)
-      AiNodeDestroy(*it);
-}
-*/
-

@@ -175,10 +175,27 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
          CNodeSetter::SetPointer(in_node, paramScriptName.GetAsciiString(), shaderLinked);
       else
       {
-         if (in_arrayElement != -1)
-            paramScriptName = in_arrayParamName + L"[" + CString(CValue(in_arrayElement).GetAsText()) + L"]";
+         // if we have an arrayParamName then let's get the arnold array type
+         if(!in_arrayParamName.IsEmpty())
+            paramType = GetArnoldParameterType(in_node, in_arrayParamName.GetAsciiString(), true);
 
-         AiNodeLink(shaderLinked, paramScriptName.GetAsciiString(), in_node);
+         // if we have an arnold node array type and in_arrayElement was passed in
+         if (paramType == AI_TYPE_NODE && in_arrayElement != -1)
+         {
+            AtArray* nodes = AiNodeGetArray(in_node, in_arrayParamName.GetAsciiString());
+            if (nodes)
+            {
+               AiArraySetPtr(nodes, in_arrayElement, shaderLinked);
+               AiNodeSetArray(in_node, in_arrayParamName.GetAsciiString(), nodes);
+            }
+         }
+         else
+         {
+            if (in_arrayElement != -1)
+               paramScriptName = in_arrayParamName + L"[" + CString(CValue(in_arrayElement).GetAsText()) + L"]";
+
+            AiNodeLink(shaderLinked, paramScriptName.GetAsciiString(), in_node);
+         }
       }
    }
    else if (sourceID == siShaderArrayParameterID)
@@ -215,6 +232,65 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
          }
          CNodeSetter::SetString(in_node, aiParamName, paramValue.GetAsciiString());
       }
+      else if (in_entryName == L"set_parameter" && in_param.GetScriptName() == L"assignment")
+      {
+         // set_parameters could be used to override a shader on a node
+         // since sitoa shaders have their name translated, we should do a name lookup and translate the name
+         AtArray* entries = AiArrayAllocate(paramArray.GetCount(), 1, AI_TYPE_STRING);
+         AiNodeSetArray(in_node, in_param.GetScriptName().GetAsciiString(), entries);
+
+         // Iterate through all the parameters of the parameters array
+         for (LONG i=0; i<paramArray.GetCount(); i++)
+         {
+            bool ordinaryParamLoad = true;
+            Parameter theParam(paramArray[i]);
+            CString paramValue = theParam.GetValue();
+
+            // split the string to key value pairs
+            CStringArray paramKeyValue = paramValue.Split(L"=");
+            // remove whitespaces and "' on key and value
+            for (LONG x=0; x<paramKeyValue.GetCount(); x++)
+            {
+               paramKeyValue[x].TrimLeft(L" \"'"); paramKeyValue[x].TrimRight(L" \"'");
+            }
+
+            // if it's a shader we set, lets fix the translating of it.
+            if (paramKeyValue[0] == L"shader")
+            {
+               CRef value;
+               value.Set(paramKeyValue[1]);
+               if (value.IsValid())
+               {
+                  AtNode* shaderNode = NULL;
+                  if (value.IsA(siMaterialID))
+                  {
+                     Material material(value);
+                     shaderNode = LoadMaterial(material, LOAD_MATERIAL_SURFACE, in_frame);
+                  }
+                  else if (value.IsA(siShaderID))
+                  {
+                     Shader surfaceShader(value);
+                     if (surfaceShader.IsValid())
+                     {
+                        shaderNode = GetRenderInstance()->ShaderMap().Get(surfaceShader, in_frame);
+                        if (!shaderNode)
+                           shaderNode = LoadShader(surfaceShader, in_frame, in_ref, RECURSE_FALSE);
+                     }
+                  }
+
+                  if (shaderNode)
+                  {
+                     CString shaderName = CNodeUtilities().GetName(shaderNode);
+                     CString newParamValue = L"shader = \"" + shaderName + "\"";
+                     AiArraySetStr(entries, i, newParamValue.GetAsciiString());
+                     ordinaryParamLoad = false;
+                  }
+               }
+            }
+            if (ordinaryParamLoad)
+               LoadShaderParameter(in_node, in_entryName, theParam, in_frame, in_ref, in_recursively, paramArray.GetScriptName(), i);
+         }
+      } // end of special case for set_parameter operator
       else
       {
          AtArray *values(NULL);
@@ -415,7 +491,19 @@ Shader GetShaderFromSource(const CRef &in_refCnxSrc)
 {
    
    if (in_refCnxSrc.IsA(siShaderID))
-      return in_refCnxSrc;
+   {
+      // check if it's a closure node and bypass it
+      Shader thisShader = in_refCnxSrc;
+      CString shaderName = GetShaderNameFromProgId(thisShader.GetProgID());
+      if (shaderName == L"closure")
+      {
+         CRef nextShader = GetParameterSource(ParAcc_GetParameter(thisShader, L"closure"));
+         if (nextShader.IsA(siShaderID))
+            return nextShader;
+      }
+      else
+         return in_refCnxSrc;
+   }
 
    // If the source is a parameter of any type, get the parent, and attempt to return it as a shader.
    if (in_refCnxSrc.IsA(siParameterID))

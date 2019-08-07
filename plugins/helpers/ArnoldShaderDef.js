@@ -71,6 +71,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("layer_shader", 1, 0);
    in_reg.RegisterShader("length", 1, 0);
    in_reg.RegisterShader("log", 1, 0);
+   in_reg.RegisterShader("matrix_interpolate", 1, 0);
    in_reg.RegisterShader("matrix_multiply_vector", 1, 0);
    in_reg.RegisterShader("matrix_transform", 1, 0);
    in_reg.RegisterShader("matte", 1, 0);
@@ -129,6 +130,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("user_data_rgba", 1, 0);
    in_reg.RegisterShader("user_data_string", 1, 0);
    in_reg.RegisterShader("utility", 1, 0);
+   in_reg.RegisterShader("uv_projection", 1, 0);
    in_reg.RegisterShader("uv_transform", 1, 0);
    in_reg.RegisterShader("vector_displacement", 1, 0); // extra, clone of vector_map with float output
    in_reg.RegisterShader("vector_map", 1, 0);
@@ -137,6 +139,16 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("volume_sample_float", 1, 0);
    in_reg.RegisterShader("volume_sample_rgb", 1, 0);
    in_reg.RegisterShader("wireframe", 1, 0);
+   // operators
+   in_reg.RegisterShader("operator", 1, 0);
+   in_reg.RegisterShader("materialx", 1, 0);
+   in_reg.RegisterShader("merge", 1, 0);
+   in_reg.RegisterShader("set_parameter", 1, 0);
+   in_reg.RegisterShader("disable", 1, 0);
+   in_reg.RegisterShader("switch_operator", 1, 0);
+   in_reg.RegisterShader("set_transform", 1, 0);
+   in_reg.RegisterShader("collection", 1, 0);
+   in_reg.RegisterShader("include_graph", 1, 0);
 
    // in_reg.Help = "https://support.solidangle.com/display/A5SItoAUG/Shaders";
 
@@ -245,6 +257,8 @@ function Arnold_length_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_length_1_0_Define(in_ctxt) { return true; }
 function Arnold_log_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_log_1_0_Define(in_ctxt) { return true; }
+function Arnold_matrix_interpolate_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_matrix_interpolate_1_0_Define(in_ctxt) { return true; }
 function Arnold_matrix_multiply_vector_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_matrix_multiply_vector_1_0_Define(in_ctxt) { return true; }
 function Arnold_matrix_transform_1_0_DefineInfo(in_ctxt) { return true; }
@@ -361,6 +375,8 @@ function Arnold_user_data_string_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_user_data_string_1_0_Define(in_ctxt) { return true; }
 function Arnold_utility_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_utility_1_0_Define(in_ctxt) { return true; }
+function Arnold_uv_projection_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_uv_projection_1_0_Define(in_ctxt) { return true; }
 function Arnold_uv_transform_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_uv_transform_1_0_Define(in_ctxt) { return true; }
 function Arnold_vector_displacement_1_0_DefineInfo(in_ctxt) { return true; } // extra, clone of vector_map with float output
@@ -377,7 +393,24 @@ function Arnold_volume_sample_rgb_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_volume_sample_rgb_1_0_Define(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_Define(in_ctxt) { return true; }
- 
+// operators
+function Arnold_materialx_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_materialx_1_0_Define(in_ctxt) { return true; }
+function Arnold_merge_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_merge_1_0_Define(in_ctxt) { return true; }
+function Arnold_set_parameter_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_set_parameter_1_0_Define(in_ctxt) { return true; }
+function Arnold_disable_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_disable_1_0_Define(in_ctxt) { return true; }
+function Arnold_switch_operator_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_switch_operator_1_0_Define(in_ctxt) { return true; }
+function Arnold_set_transform_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_set_transform_1_0_Define(in_ctxt) { return true; }
+function Arnold_collection_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_collection_1_0_Define(in_ctxt) { return true; }
+function Arnold_include_graph_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_include_graph_1_0_Define(in_ctxt) { return true; }
+
 ///////////////////////////////////////////////////
 /////////////// shaders that require a dedicated UI
 ///////////////////////////////////////////////////
@@ -515,4 +548,31 @@ function physical_sky_RemoveExpression_OnClicked()
    RemoveAnimation(pset + ".Z.x", null, null, null, null, null);
    RemoveAnimation(pset + ".Z.y", null, null, null, null, null);
    RemoveAnimation(pset + ".Z.z", null, null, null, null, null);
+}
+
+function Arnold_operator_1_0_DefineInfo(in_ctxt)
+{
+   in_ctxt.SetAttribute("DisplayName", "operator");
+   in_ctxt.SetAttribute("Category", "Arnold/Operators");
+   return true;
+}
+
+function Arnold_operator_1_0_Define(in_ctxt)
+{
+   var h = SItoAShaderDefHelpers(); // helper object
+
+   var shaderDef = in_ctxt.GetAttribute("Definition");
+   shaderDef.AddShaderFamily(siShaderFamilyTexture);
+ 
+   // INPUT      
+   params = shaderDef.InputParamDefs;
+   h.AddNode(params, "operator");
+
+   // OUTPUT
+   h.AddOutputColor4(shaderDef.OutputParamDefs);
+
+   // Renderer definition
+   h.AddArnoldRendererDef(shaderDef);
+
+   return true;
 }

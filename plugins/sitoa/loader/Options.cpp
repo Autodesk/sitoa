@@ -534,7 +534,7 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       // Do checks if Arnold Denoising AOVs already exist and if they have the right filter if they do
       if (masterFb.m_fullName == mainFb.m_fullName) // only check if it's a layer in the same exr as main (multilayer-exr)
       {
-         if (thisFb.m_layerName == L"diffuse_albedo")
+         if (thisFb.m_layerName == L"denoise_albedo")
             noiceDA = L"exist";
 
          if (thisFb.m_layerName == L"N")
@@ -591,7 +591,7 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          int i = 0;
          if (noiceDA != L"exist")
          {
-            AiArraySetStr(outputs, activeBuffers+i, CString(L"diffuse_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"denoise_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
             i++;
          }
          if (noiceN != L"exist")
@@ -737,10 +737,12 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_subdivision",  GetRenderOptions()->m_ignore_subdivision);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_displacement", GetRenderOptions()->m_ignore_displacement);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_bump",         GetRenderOptions()->m_ignore_bump);
-   CNodeSetter::SetBoolean(in_optionsNode, "ignore_motion_blur",  GetRenderOptions()->m_ignore_motion_blur);
+   CNodeSetter::SetBoolean(in_optionsNode, "ignore_motion",       GetRenderOptions()->m_ignore_motion);
+   CNodeSetter::SetBoolean(in_optionsNode, "ignore_motion_blur",  GetRenderOptions()->m_ignore_motion_blur);  // property is located in motion blur tab on PPG
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_smoothing",    GetRenderOptions()->m_ignore_smoothing);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_sss",          GetRenderOptions()->m_ignore_sss);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_dof",          GetRenderOptions()->m_ignore_dof);
+   CNodeSetter::SetBoolean(in_optionsNode, "ignore_operators",    GetRenderOptions()->m_ignore_operators);
 
    // Error colors
    CNodeSetter::SetRGB(in_optionsNode, "error_color_bad_texture", GetRenderOptions()->m_error_color_bad_map.GetR(), 
@@ -799,9 +801,57 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    int nb_threads = GetRenderOptions()->m_autodetect_threads ? 0 : GetRenderOptions()->m_threads;
    CNodeSetter::SetInt(in_optionsNode, "threads", nb_threads); 
 
-   // GPU devices
-   CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
-   CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
+   // Devices
+   CNodeSetter::SetString(in_optionsNode, "render_device", GetRenderOptions()->m_render_device.GetAsciiString());
+   CNodeSetter::SetString(in_optionsNode, "render_device_fallback", GetRenderOptions()->m_render_device_fallback.GetAsciiString());
+   bool gpuRender = (GetRenderOptions()->m_render_device == L"GPU");
+   bool optixDenoiser = GetRenderOptions()->m_use_optix_on_main;
+
+   if (gpuRender)
+      CNodeSetter::SetInt(in_optionsNode, "gpu_max_texture_resolution", GetRenderOptions()->m_gpu_max_texture_resolution);
+
+   // For GPU render, we want to force options.enable_progressive_render to be ON, even if its value is ignored by Arnold.
+   // At least we can take this parameter into account later on, for example when IPR needs to do special things depending on 
+   // whether this option is enabled or not. See MtoA #3627
+   if (gpuRender && Application().IsInteractive() && (renderType != L"Export"))
+      CNodeSetter::SetBoolean(in_optionsNode, "enable_progressive_render", true);
+
+   // Only export GPU settings if we use a GPU for something;
+   if (gpuRender || optixDenoiser)
+   {
+      CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
+      CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
+
+      // Device Selection
+      bool autoDeviceSelect = true;
+      bool tryManualDeviceSelect = GetRenderOptions()->m_enable_manual_devices;
+      if (tryManualDeviceSelect)
+      {
+         CString manualDeviceSelectionString = GetRenderOptions()->m_manual_device_selection;
+         if (manualDeviceSelectionString != L"")
+         {
+            CStringArray manualDevices = manualDeviceSelectionString.Split(L";");
+            int numManualDevicesSelected = manualDevices.GetCount();
+            AtArray* selectedDevices = AiArrayAllocate(1, (uint8_t)numManualDevicesSelected, AI_TYPE_UINT);
+            for (LONG i=0; i<numManualDevicesSelected; i++)
+            {
+               AiArraySetUInt(selectedDevices, i, atoi(manualDevices[i].GetAsciiString()));
+               if (i+1 == numManualDevicesSelected)
+                  autoDeviceSelect = false;
+            }
+
+            if (!autoDeviceSelect)
+               AiDeviceSelect(AI_DEVICE_TYPE_GPU, selectedDevices);
+            else
+               GetMessageQueue()->LogMsg(L"[sitoa] Could not select manual rendering device. Automatic selection will be used.", siWarningMsg);
+            
+            AiArrayDestroy(selectedDevices);
+         }
+      }
+
+      if (autoDeviceSelect)
+         AiDeviceAutoSelect();
+   }
 
    // #680
    LoadUserOptions(in_optionsNode, in_arnoldOptions, in_frame);

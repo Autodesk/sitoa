@@ -1,0 +1,103 @@
+#####################################################################################################################################
+# Copyright 2017 Autodesk, Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. 
+# You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, 
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+# See the License for the specific language governing permissions and limitations under the License.
+#####################################################################################################################################
+
+###########################################################################
+[node collection]
+
+[attr enable]
+linkable BOOL false
+
+###########################################################################
+[node disable]
+
+[attr enable]
+linkable BOOL false
+
+[attr mode]
+linkable BOOL false
+
+[attr shapes]
+linkable BOOL false
+
+[attr lights]
+linkable BOOL false
+
+[attr shaders]
+linkable BOOL false
+
+[attr operators]
+linkable BOOL false
+
+###########################################################################
+[node materialx]
+
+[attr enable]
+linkable BOOL false
+
+[attr assign_materials]
+linkable BOOL false
+
+[attr assign_properties]
+linkable BOOL false
+
+[attr assign_visibilities]
+linkable BOOL false
+
+###########################################################################
+[node merge]
+
+[attr enable]
+linkable BOOL false
+
+###########################################################################
+[node set_parameter]
+
+[attr enable]
+linkable BOOL false
+
+[attr assignment]
+linkable BOOL false
+
+###########################################################################
+[node set_transform]
+
+[attr enable]
+linkable BOOL false
+
+[attr translate]
+linkable BOOL false
+
+[attr rotate]
+linkable BOOL false
+
+[attr scale]
+linkable BOOL false
+
+###########################################################################
+[node switch_operator]
+
+[attr enable]
+linkable BOOL false
+
+[attr index]
+linkable BOOL false
+
+###########################################################################
+[node include_graph]
+
+[attr enable]
+linkable BOOL false
+
+[attr filename]
+linkable BOOL false
+
+[attr target]
+linkable BOOL false

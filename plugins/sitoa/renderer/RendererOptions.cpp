@@ -35,11 +35,17 @@ void CRenderOptions::Read(const Property &in_cp)
    m_autodetect_threads    = (bool)ParAcc_GetValue(in_cp, L"autodetect_threads",    DBL_MAX);
    m_threads               = (int) ParAcc_GetValue(in_cp, L"threads",               DBL_MAX);
 
-   m_gpu_default_names         = ParAcc_GetValue(in_cp,       L"gpu_default_names",         DBL_MAX).GetAsText();
-   m_gpu_default_min_memory_MB = (int) ParAcc_GetValue(in_cp, L"gpu_default_min_memory_MB", DBL_MAX);
+   m_render_device              = ParAcc_GetValue(in_cp,      L"render_device",              DBL_MAX).GetAsText();
+   m_render_device_fallback     = ParAcc_GetValue(in_cp,      L"render_device_fallback",     DBL_MAX).GetAsText();
+   m_gpu_max_texture_resolution = (int)ParAcc_GetValue(in_cp, L"gpu_max_texture_resolution", DBL_MAX);
+   m_gpu_default_names          = ParAcc_GetValue(in_cp,      L"gpu_default_names",          DBL_MAX).GetAsText();
+   m_gpu_default_min_memory_MB  = (int)ParAcc_GetValue(in_cp, L"gpu_default_min_memory_MB",  DBL_MAX);
+   m_enable_manual_devices      = (bool)ParAcc_GetValue(in_cp, L"enable_manual_devices",     DBL_MAX);
+   m_manual_device_selection    = ParAcc_GetValue(in_cp,      L"manual_device_selection",    DBL_MAX).GetAsText();
 
    m_bucket_scanning       = ParAcc_GetValue(in_cp,       L"bucket_scanning",       DBL_MAX).GetAsText();
    m_bucket_size           = (int)ParAcc_GetValue(in_cp,  L"bucket_size",           DBL_MAX);
+   m_larger_ipr_buckets    = (bool)ParAcc_GetValue(in_cp, L"larger_ipr_buckets",    DBL_MAX);
    m_progressive_minus3    = (bool)ParAcc_GetValue(in_cp, L"progressive_minus3",    DBL_MAX);
    m_progressive_minus2    = (bool)ParAcc_GetValue(in_cp, L"progressive_minus2",    DBL_MAX);
    m_progressive_minus1    = (bool)ParAcc_GetValue(in_cp, L"progressive_minus1",    DBL_MAX);
@@ -146,6 +152,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_motion_step_deform     = (int) ParAcc_GetValue(in_cp, L"motion_step_deform",    DBL_MAX);
    m_exact_ice_mb           = (bool)ParAcc_GetValue(in_cp, L"exact_ice_mb",          DBL_MAX);
    
+   m_ignore_motion_blur          = (bool)ParAcc_GetValue(in_cp, L"ignore_motion_blur",    DBL_MAX);
    m_motion_shutter_length       = (float)ParAcc_GetValue(in_cp, L"motion_shutter_length",       DBL_MAX);
    m_motion_shutter_custom_start = (float)ParAcc_GetValue(in_cp, L"motion_shutter_custom_start", DBL_MAX);
    m_motion_shutter_custom_end   = (float)ParAcc_GetValue(in_cp, L"motion_shutter_custom_end",   DBL_MAX);
@@ -209,7 +216,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_ignore_displacement    = (bool)ParAcc_GetValue(in_cp, L"ignore_displacement",    DBL_MAX);
    m_ignore_bump            = (bool)ParAcc_GetValue(in_cp, L"ignore_bump",            DBL_MAX);
    m_ignore_smoothing       = (bool)ParAcc_GetValue(in_cp, L"ignore_smoothing",       DBL_MAX);
-   m_ignore_motion_blur     = (bool)ParAcc_GetValue(in_cp, L"ignore_motion_blur",     DBL_MAX);
+   m_ignore_motion          = (bool)ParAcc_GetValue(in_cp, L"ignore_motion",          DBL_MAX);
    m_ignore_dof             = (bool)ParAcc_GetValue(in_cp, L"ignore_dof", DBL_MAX);
    m_ignore_sss             = (bool)ParAcc_GetValue(in_cp, L"ignore_sss", DBL_MAX);
    m_ignore_hair            = (bool)ParAcc_GetValue(in_cp, L"ignore_hair", DBL_MAX);
@@ -217,6 +224,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_ignore_procedurals     = (bool)ParAcc_GetValue(in_cp, L"ignore_procedurals", DBL_MAX);
    m_ignore_user_options    = (bool)ParAcc_GetValue(in_cp, L"ignore_user_options", DBL_MAX);
    m_ignore_matte           = (bool)ParAcc_GetValue(in_cp, L"ignore_matte", DBL_MAX);
+   m_ignore_operators       = (bool)ParAcc_GetValue(in_cp, L"ignore_operators", DBL_MAX);
 
    // ass archive
    m_output_file_tagdir_ass = ParAcc_GetValue(in_cp,       L"output_file_tagdir_ass", DBL_MAX).GetAsText();
@@ -232,6 +240,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_output_cameras = (bool)ParAcc_GetValue(in_cp, L"output_cameras", DBL_MAX);
    m_output_lights = (bool)ParAcc_GetValue(in_cp, L"output_lights", DBL_MAX);
    m_output_shaders = (bool)ParAcc_GetValue(in_cp, L"output_shaders", DBL_MAX);
+   m_output_operators = (bool)ParAcc_GetValue(in_cp, L"output_operators", DBL_MAX);
 
    // denoiser
    m_use_optix_on_main = (bool)ParAcc_GetValue(in_cp, L"use_optix_on_main", DBL_MAX);
@@ -313,11 +322,17 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"autodetect_threads",     CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"threads",                CValue::siInt4,   siPersistable, L"", L"", 4, -AI_MAX_THREADS, AI_MAX_THREADS, 1, AI_MAX_THREADS, p);
 
-   cpset.AddParameter(L"gpu_default_names",         CValue::siString, siPersistable, L"", L"",  L"*", CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"gpu_default_min_memory_MB", CValue::siInt4,   siPersistable, L"", L"", 512, 0, 10000000, 256, 1024, p);
+   cpset.AddParameter(L"render_device",              CValue::siString, siPersistable, L"", L"",  L"CPU",   CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"render_device_fallback",     CValue::siString, siPersistable, L"", L"",  L"error", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"gpu_max_texture_resolution", CValue::siInt4,   siPersistable, L"", L"", 0, 0, 10000000, 0, 8192, p);
+   cpset.AddParameter(L"gpu_default_names",          CValue::siString, siPersistable, L"", L"",  L"*", CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"gpu_default_min_memory_MB",  CValue::siInt4,   siPersistable, L"", L"", 512, 0, 10000000, 256, 1024, p);
+   cpset.AddParameter(L"enable_manual_devices",      CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"manual_device_selection",    CValue::siString, siPersistable, L"", L"",  L"", CValue(), CValue(), CValue(), CValue(), p);
 
    cpset.AddParameter(L"bucket_scanning",        CValue::siString, siPersistable, L"", L"", L"spiral", CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"bucket_size",            CValue::siInt4,   siPersistable, L"", L"",  64, 16, 256, 16, 256, p);
+   cpset.AddParameter(L"larger_ipr_buckets",     CValue::siBool,   siPersistable, L"", L"",  false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"progressive_minus3",     CValue::siBool,   siPersistable, L"", L"",  true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"progressive_minus2",     CValue::siBool,   siPersistable, L"", L"",  true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"progressive_minus1",     CValue::siBool,   siPersistable, L"", L"",  true, CValue(), CValue(), CValue(), CValue(), p);
@@ -410,8 +425,8 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"enable_progressive_render", CValue::siBool, siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
 
    cpset.AddParameter(L"enable_adaptive_sampling", CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 8, -3, 100, 0, 10, p);
-   cpset.AddParameter(L"AA_adaptive_threshold",    CValue::siDouble, siPersistable, L"", L"", 0.05f, 0.0f, 1.0f, 0.0f, 100.0f, p);
+   cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 20, -3, 1000, 0, 50, p);
+   cpset.AddParameter(L"AA_adaptive_threshold",    CValue::siDouble, siPersistable, L"", L"", 0.015f, 0.0f, 1.0f, 0.0f, 0.1f, p);
 
    cpset.AddParameter(L"indirect_specular_blur",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 1.0f, 0.0f, 2.0f, 0.0f, 100.0f, p);
    
@@ -433,6 +448,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"enable_motion_deform",   CValue::siBool,   siPersistable,                L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"motion_step_deform",     CValue::siInt4,   siPersistable,                L"", L"", 2, 2, 200, 2, 15, p);
    cpset.AddParameter(L"exact_ice_mb",           CValue::siBool,   siPersistable,                L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ignore_motion_blur",     CValue::siBool,   siPersistable,                L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"motion_shutter_length",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 0.5f ,  0, 999999, 0, 2, p);
    cpset.AddParameter(L"motion_shutter_custom_start", CValue::siDouble, siPersistable | siAnimatable, L"", L"", -0.25f , -100, 100, -100, 100, p);
    cpset.AddParameter(L"motion_shutter_custom_end",   CValue::siDouble, siPersistable | siAnimatable, L"", L"", 0.25f , -100, 100, -100, 100, p);
@@ -496,7 +512,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"ignore_displacement",    CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_bump",            CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_smoothing",       CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"ignore_motion_blur",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ignore_motion",          CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_dof",             CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_sss",             CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_hair",            CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
@@ -504,6 +520,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"ignore_procedurals",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_user_options",    CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_matte",           CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ignore_operators",       CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"show_samples",           CValue::siString, siPersistable, L"", L"", L"off", 0, 10, 0, 10, p);
 
    // ass archive
@@ -521,6 +538,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"output_cameras",         CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_lights",          CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_shaders",         CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"output_operators",       CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
 
    // denoiser
    cpset.AddParameter(L"use_optix_on_main",      CValue::siBool,   siPersistable, L"", L"", false,          CValue(), CValue(), CValue(), CValue(), p);
@@ -612,10 +630,31 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUILabelPercentage, 100);
    layout.EndGroup();
    layout.AddGroup(L"Devices");
-      item = layout.AddItem(L"gpu_default_names", L"GPU Names");
-      item.PutAttribute(siUILabelMinPixels, 100);
-      item = layout.AddItem(L"gpu_default_min_memory_MB", L"Min. Memory (MB)");
-      item.PutAttribute(siUILabelMinPixels, 100);
+      CValueArray devices;
+      devices.Add(L"CPU");        devices.Add(L"CPU");
+      devices.Add(L"GPU (BETA)"); devices.Add(L"GPU");
+      item = layout.AddEnumControl(L"render_device", devices, L"Render Device", siControlCombo);
+      item.PutAttribute(siUILabelMinPixels, 120);
+      CValueArray device_fallbacks;
+      device_fallbacks.Add(L"error"); device_fallbacks.Add(L"error");
+      device_fallbacks.Add(L"CPU");   device_fallbacks.Add(L"CPU");
+      item = layout.AddEnumControl(L"render_device_fallback", device_fallbacks, L"Render Device Fallback", siControlCombo);
+      item.PutAttribute(siUILabelMinPixels, 120);
+      item = layout.AddItem(L"gpu_max_texture_resolution", L"Max Texture Resolution");
+      item.PutAttribute(siUILabelMinPixels, 120);
+      layout.AddGroup(L"Auto Device Selection");
+         item = layout.AddItem(L"gpu_default_names", L"GPU Names");
+         item.PutAttribute(siUILabelMinPixels, 120);
+         item = layout.AddItem(L"gpu_default_min_memory_MB", L"Min. Memory (MB)");
+         item.PutAttribute(siUILabelMinPixels, 120);
+      layout.EndGroup();
+      layout.AddGroup(L"Manual Device Selection");
+         layout.AddItem(L"enable_manual_devices", L"Enable Manual Device Selection");
+         item = layout.AddItem(L"manual_device_selection", L"", siControlListBox);
+         item.PutAttribute(siUIMultiSelectionListBox, true);
+         item.PutAttribute(siUIValueOnly, true);  // hide label
+         item.PutAttribute(siUICY, 60);
+      layout.EndGroup();
    layout.EndGroup();
    layout.AddGroup(L"Buckets", true, 0);
       CValueArray scanning;
@@ -629,6 +668,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUIWidthPercentage, 60);
       layout.AddItem(L"bucket_size",    L"Size");
       layout.EndRow();
+      layout.AddItem(L"larger_ipr_buckets", L"Enlarge buckets in progressive IPR");
    layout.EndGroup();
    layout.AddGroup(L"Progressive Refinement", true, 0);
       layout.AddRow();
@@ -898,6 +938,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
    item = layout.AddItem(L"exact_ice_mb",     L"Exact ICE Blur");
 
    layout.AddGroup(L"Geometry Shutter", true, 0); 
+      item = layout.AddItem(L"ignore_motion_blur", L"Instantaneous Shutter (overrides camera settings)");
       CValueArray onFrame, shutterType;
       onFrame.Add(L"Start on Frame");  onFrame.Add(eMbPos_Start);
       onFrame.Add(L"Center on Frame"); onFrame.Add(eMbPos_Center);
@@ -1070,7 +1111,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.AddItem(L"ignore_displacement", L"Displacement");
       layout.AddItem(L"ignore_bump",         L"Bump");
       layout.AddItem(L"ignore_smoothing",    L"Normal Smoothing");
-      layout.AddItem(L"ignore_motion_blur",  L"Motion Blur");
+      layout.AddItem(L"ignore_motion",       L"Motion");
       layout.AddItem(L"ignore_dof",          L"Depth of Field");	  
       layout.AddItem(L"ignore_sss",          L"Sub-Surface Scattering");
       layout.AddItem(L"ignore_hair",         L"Hair");
@@ -1078,6 +1119,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.AddItem(L"ignore_procedurals",  L"Procedurals");
       layout.AddItem(L"ignore_user_options", L"User Options");
       layout.AddItem(L"ignore_matte",        L"Matte Properties");
+      layout.AddItem(L"ignore_operators",    L"Operators");
    layout.EndGroup();
 
    layout.AddTab(L"ASS Archives");
@@ -1104,6 +1146,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
          layout.AddItem(L"output_cameras", L"Cameras");
          layout.AddItem(L"output_lights", L"Lights");
          layout.AddItem(L"output_shaders", L"Shaders");
+         layout.AddItem(L"output_operators", L"Operators");
       layout.EndGroup();
       layout.AddRow();
       item = layout.AddButton(L"ExportASS", L"Export Frame");
@@ -1160,6 +1203,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       MotionBlurTabLogic(cpset);
       SamplingTabLogic(cpset);
       SystemTabLogic(cpset);
+      DeviceSelectionLogic(cpset);
       OutputTabLogic(cpset);
       TexturesTabLogic(cpset);
       ColorManagersTabLogic(cpset, ctxt);
@@ -1326,6 +1370,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
 
       if (paramName == L"enable_motion_blur"     || 
           paramName == L"enable_motion_deform"   ||
+          paramName == L"ignore_motion_blur"     ||
           paramName == L"motion_shutter_onframe")
          MotionBlurTabLogic(cpset);
 
@@ -1334,7 +1379,8 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
                paramName == L"output_filter")
          SamplingTabLogic(cpset);
 
-      else if (paramName == L"autodetect_threads")
+      else if (paramName == L"autodetect_threads" ||
+               paramName == L"render_device")
          SystemTabLogic(cpset);
 
       else if (paramName == L"overscan" || 
@@ -1395,19 +1441,22 @@ void MotionBlurTabLogic(CustomProperty &in_cp)
    // Enabling / Disabling Blur settings
    bool transfOn = (bool)ParAcc_GetValue(in_cp, L"enable_motion_blur",   DBL_MAX);
    bool defOn    = (bool)ParAcc_GetValue(in_cp, L"enable_motion_deform", DBL_MAX);
+   bool ignoreMB = (bool)ParAcc_GetValue(in_cp, L"ignore_motion_blur",   DBL_MAX);
    bool transfOrDefOn = transfOn || defOn;
+   bool shuttersOn = transfOrDefOn && !ignoreMB;
    int  onFrame = (int)ParAcc_GetValue(in_cp, L"motion_shutter_onframe", DBL_MAX);
-   bool customOn = transfOrDefOn && (onFrame == eMbPos_Custom);
-   bool lengthOn = transfOrDefOn && (onFrame != eMbPos_Custom);
+   bool customOn = shuttersOn && (onFrame == eMbPos_Custom);
+   bool lengthOn = shuttersOn && (onFrame != eMbPos_Custom);
 
    ParAcc_GetParameter(in_cp, L"motion_step_transform").PutCapabilityFlag(siReadOnly, !transfOn);
    ParAcc_GetParameter(in_cp, L"motion_step_deform").PutCapabilityFlag(siReadOnly, !defOn); 
    ParAcc_GetParameter(in_cp, L"exact_ice_mb").PutCapabilityFlag(siReadOnly, !defOn); 
 
+   ParAcc_GetParameter(in_cp, L"ignore_motion_blur").PutCapabilityFlag(siReadOnly, !transfOrDefOn);
+   ParAcc_GetParameter(in_cp, L"motion_shutter_onframe").PutCapabilityFlag(siReadOnly, !shuttersOn);
    ParAcc_GetParameter(in_cp, L"motion_shutter_length").PutCapabilityFlag(siReadOnly, !lengthOn); 
    ParAcc_GetParameter(in_cp, L"motion_shutter_custom_start").PutCapabilityFlag(siReadOnly, !customOn); 
    ParAcc_GetParameter(in_cp, L"motion_shutter_custom_end").PutCapabilityFlag(siReadOnly, !customOn); 
-   ParAcc_GetParameter(in_cp, L"motion_shutter_onframe").PutCapabilityFlag(siReadOnly, !transfOrDefOn); 
 }
 
 
@@ -1446,6 +1495,46 @@ void SystemTabLogic(CustomProperty &in_cp)
 {
    bool autoDetect = (bool)ParAcc_GetValue(in_cp, L"autodetect_threads", DBL_MAX);
    ParAcc_GetParameter(in_cp, L"threads").PutCapabilityFlag(siReadOnly, autoDetect);
+
+   // GPU logic
+   bool useGPU = (bool)(ParAcc_GetValue(in_cp, L"render_device", DBL_MAX) == L"GPU");
+   ParAcc_GetParameter(in_cp, L"render_device_fallback").PutCapabilityFlag(siReadOnly, !useGPU);
+   ParAcc_GetParameter(in_cp, L"gpu_max_texture_resolution").PutCapabilityFlag(siReadOnly, !useGPU);
+   // When rendering with GPU, disable all secondary sample params on the Sampling tab
+   ParAcc_GetParameter(in_cp, L"GI_diffuse_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"GI_specular_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"GI_transmission_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"GI_sss_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"GI_volume_samples").PutCapabilityFlag(siReadOnly, useGPU);
+   ParAcc_GetParameter(in_cp, L"enable_progressive_render").PutCapabilityFlag(siReadOnly, useGPU);
+}
+
+
+// Logic for Manual Device Selection in the system tab
+//
+// @param in_cp       The arnold rendering options property
+//
+void DeviceSelectionLogic(CustomProperty &in_cp)
+{
+   // Get a list of GPU rendering devices
+   const AtArray* gpuDeviceIdsArray = AiDeviceGetIds(AI_DEVICE_TYPE_GPU);
+   int gpuDeviceCount = AiArrayGetNumElements(gpuDeviceIdsArray);
+   CValueArray gpuDevices(gpuDeviceCount*2);
+
+   for (LONG i=0; i<gpuDeviceCount; i++)
+   {
+      int gpuDevice = AiArrayGetUInt(gpuDeviceIdsArray, i);
+      CString deviceName = AiDeviceGetName(AI_DEVICE_TYPE_GPU, gpuDevice);
+      int freeMemory = AiDeviceGetMemoryMB(AI_DEVICE_TYPE_GPU, gpuDevice, AI_DEVICE_MEMORY_FREE);
+      int totalMemory = AiDeviceGetMemoryMB(AI_DEVICE_TYPE_GPU, gpuDevice, AI_DEVICE_MEMORY_TOTAL);
+      deviceName += L" (Free: " + CString(freeMemory) + " MB, Total: " + CString(totalMemory) + " MB)";
+      gpuDevices[i*2] = deviceName;   gpuDevices[i*2+1] = CString(gpuDevice);
+   }
+
+   // update the PPGs
+   PPGLayout layout = in_cp.GetPPGLayout();
+   PPGItem item = layout.GetItem(L"manual_device_selection");
+   item.PutUIItems(gpuDevices);
 }
 
 
@@ -1717,6 +1806,7 @@ void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt)
    MotionBlurTabLogic(in_cp);
    SamplingTabLogic(in_cp);
    SystemTabLogic(in_cp);
+   DeviceSelectionLogic(in_cp);
    OutputTabLogic(in_cp);
    TexturesTabLogic(in_cp);
    ColorManagersTabLogic(in_cp, in_ctxt);

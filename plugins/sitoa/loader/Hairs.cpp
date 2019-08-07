@@ -918,47 +918,38 @@ CStatus LoadSingleHairInstance(const X3DObject &in_xsiObj, SIObject in_group, do
                   // Clone the master node, and assign it to the clonedNodes array
                   cloneNode = AiNodeClone(masterNode);
                   clonedNodes[currentStrandIndex][j] = cloneNode;
-
-                  if (CNodeUtilities().GetEntryName(cloneNode) == L"curves")
-                  {
-                     // allocate the points array for the curves node 
-                     vlist = AiArrayAllocate((int)strandInstance->m_points.size(), (uint8_t)nbDefKeys, AI_TYPE_VECTOR);
-                     nlist = NULL;
-                     // Give the arrays to the cloned node
-                     AiNodeSetArray(cloneNode, "points", vlist);
-                  }
-                  else
-                  {
-                     // Allocate as many vertices and normals as needed.
-                     // We need to allocate, instead of re-using the master vectors, since the number
-                     // of mb keys could differ from the master ones.
-                     vlist = AiArrayAllocate((int)strandInstance->m_points.size(), (uint8_t)nbDefKeys, AI_TYPE_VECTOR);
-                     nlist = AiArrayAllocate((int)strandInstance->m_normals.size(), (uint8_t)nbDefKeys, AI_TYPE_VECTOR);
-                     // Give the arrays to the cloned node
-                     AiNodeSetArray(cloneNode, "vlist", vlist);
-                     AiNodeSetArray(cloneNode, "nlist", nlist);
-                  }
                }
                else // Retrieve the clone from the currentStrandIndex-th strand, so to store the extra mb points/vectors
-               {
                   cloneNode = clonedNodes[currentStrandIndex][j];
-                  if (CNodeUtilities().GetEntryName(cloneNode) == L"curves")
-                  {
-                     // for curves, get the points array into vlist
-                     vlist = AiNodeGetArray(cloneNode, "points");
-                     nlist = NULL;
-                  }
-                  else
-                  {
-                     vlist = AiNodeGetArray(cloneNode, "vlist");
-                     nlist = AiNodeGetArray(cloneNode, "nlist");
-                  }
+
+               if (CNodeUtilities().GetEntryName(cloneNode) == L"curves")
+               {
+                  // allocate the points array for the curves node 
+                  vlist = AiArrayAllocate((int)strandInstance->m_points.size(), (uint8_t)nbDefKeys, AI_TYPE_VECTOR);
+                  nlist = NULL;
+               }
+               else
+               {
+                  // Allocate as many vertices and normals as needed.
+                  // We need to allocate, instead of re-using the master vectors, since the number
+                  // of mb keys could differ from the master ones.
+                  vlist = AiArrayAllocate((int)strandInstance->m_points.size(), (uint8_t)nbDefKeys, AI_TYPE_VECTOR);
+                  nlist = AiArrayAllocate((int)strandInstance->m_normals.size(), (uint8_t)nbDefKeys, AI_TYPE_VECTOR);
                }
 
                // Bend the instanced objects along the strand
                strandInstance->BendOnStrand(hair.m_strands[strandIndex]);
                // Assign the bended points/normals to the iDefKey-th array of vlist and nlist
                strandInstance->Get(vlist, nlist, iDefKey);
+
+               // Give the arrays to the cloned node
+               if (CNodeUtilities().GetEntryName(cloneNode) == L"curves")
+                  AiNodeSetArray(cloneNode, "points", vlist);
+               else
+               {
+                  AiNodeSetArray(cloneNode, "vlist", vlist);
+                  AiNodeSetArray(cloneNode, "nlist", nlist);
+               }
 
                // Set the matrices on the clone. Let's do it only once, not for every deform step
                if (iDefKey == 0)

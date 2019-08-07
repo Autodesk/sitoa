@@ -9,6 +9,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License.
 ************************************************************************************************************************************/
 
+#include <thread>
+
 #include "common/ParamsCamera.h"
 #include "common/Tools.h"
 #include "loader/Cameras.h"
@@ -19,6 +21,7 @@ See the License for the specific language governing permissions and limitations 
 #include "renderer/IprCommon.h"
 #include "renderer/IprCreateDestroy.h"
 #include "renderer/IprLight.h"
+#include "renderer/IprOperators.h"
 #include "renderer/IprShader.h"
 #include "renderer/Renderer.h"
 #include "renderer/RenderInstance.h"
@@ -205,7 +208,7 @@ unsigned int CRenderInstance::UpdateRenderRegion(unsigned int in_width, unsigned
 }
 
 
-int CRenderInstance::RenderProgressiveScene()
+int CRenderInstance::RenderProgressiveScene(int displayArea)
 {
    int render_result = AI_INTERRUPT;
    
@@ -214,6 +217,7 @@ int CRenderInstance::RenderProgressiveScene()
 
    int  aa_max = GetRenderOptions()->m_AA_samples;
    bool dither = GetRenderOptions()->m_dither;
+   int bucket_size = GetRenderOptions()->m_bucket_size;
 
    int verbosity = AiMsgGetConsoleFlags(); // current log level
 
@@ -225,9 +229,25 @@ int CRenderInstance::RenderProgressiveScene()
       aa_steps.insert(-2);
    if ((aa_max > -1) && GetRenderOptions()->m_progressive_minus1)
       aa_steps.insert(-1);
-   // if progressive rendering, ignore the 1 aa step because that is already the first step in progressive
-   if (!GetRenderOptions()->m_enable_progressive_render)
+
+   // calculate a good bucket size for the progressive passes so that the total number of buckets = CPU_cores * 2
+   int numCores = std::thread::hardware_concurrency();
+   int progressiveBucketSize = AiMax(((int)sqrt(displayArea / (numCores*2))), bucket_size);
+
+   AtNode* options = AiUniverseGetOptions();
+
+   // set a larger bucket size if we render progressive (or GPU), Github #67
+   if (AiNodeGetBool(options, "enable_progressive_render"))
    {
+      if ((progressiveBucketSize > bucket_size) && GetRenderOptions()->m_larger_ipr_buckets)
+      {
+         CNodeSetter::SetInt(options, "bucket_size", progressiveBucketSize);
+         AiMsgInfo(CString(L"[sitoa] Bucket size have been enlarged to " + CString(progressiveBucketSize) + L" to get a faster response in Softimage Render Region.").GetAsciiString());
+      }
+   }
+   else
+   {
+      // if not progressive rendering, we can set the 1 aa step
       if ((aa_max > 1) && GetRenderOptions()->m_progressive_plus1)
          aa_steps.insert(1);
    }
@@ -235,7 +255,6 @@ int CRenderInstance::RenderProgressiveScene()
    aa_steps.insert(aa_max); // the main value for aa, so aa_steps is never empty, and aaMax will always be the final step used
    
    // We need to change some values of the aspect ratio and camera when we are in an IPR render
-   AtNode* options = AiUniverseGetOptions();
    // override the aspect ratio, for the viewport is always 1.0
    CNodeSetter::SetFloat(options, "pixel_aspect_ratio", 1.0);   
    // disable adaptive sampling during negative aa passes
@@ -1469,6 +1488,7 @@ CStatus CRenderInstance::ProcessRegion()
          return status;
    }
 
+   unsigned int displayArea;
    { // do not remove the {} as we need the local scope for the thread lock (see trac#1044)
       LockSceneData lock;
       if (lock.m_status != CStatus::OK)
@@ -1483,6 +1503,8 @@ CStatus CRenderInstance::ProcessRegion()
       // https://trac.solidangle.com/sitoa/ticket/275
       // We are going to update always what we have connected to current pass shader stack.
       UpdatePassShaderStack(m_pass, m_frame);
+
+      UpdatePassOperator(m_pass, m_frame);
 
       CRefArray visibleObjects = m_renderContext.GetAttribute(L"ObjectList");
 
@@ -1511,7 +1533,7 @@ CStatus CRenderInstance::ProcessRegion()
       }
 
       // Updating RenderRegion and DisplayArea
-      unsigned int displayArea = UpdateRenderRegion(m_renderWidth, m_renderHeight);
+      displayArea = UpdateRenderRegion(m_renderWidth, m_renderHeight);
 
       // for these new render options (1.12), let's check their existance. Else, filterColorAov defaults to false,
       // and all the previously saved scenes render aliased
@@ -1522,7 +1544,7 @@ CStatus CRenderInstance::ProcessRegion()
       SetLogSettings(L"Region", m_frame);
    }
   
-   int renderStatus = RenderProgressiveScene();
+   int renderStatus = RenderProgressiveScene(displayArea);
 
    if (renderStatus != AI_SUCCESS)
    {

@@ -72,6 +72,7 @@ public:
    int   m_paintedDisplayArea;
    bool  m_useOptixOnMain;
    bool  m_onlyShowDenoise;
+   bool  m_gpu; // TODO FIXIT: Temporary workaround for GPU to work with Optix Denoiser
 };
 
 
