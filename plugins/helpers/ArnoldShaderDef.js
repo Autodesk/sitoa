@@ -145,15 +145,15 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("volume_sample_rgb", 1, 0);
    in_reg.RegisterShader("wireframe", 1, 0);
    // operators
-   in_reg.RegisterShader("operator", 1, 0);
-   in_reg.RegisterShader("materialx", 1, 0);
-   in_reg.RegisterShader("merge", 1, 0);
-   in_reg.RegisterShader("set_parameter", 1, 0);
    in_reg.RegisterShader("disable", 1, 0);
-   in_reg.RegisterShader("switch_operator", 1, 0);
-   in_reg.RegisterShader("set_transform", 1, 0);
    in_reg.RegisterShader("collection", 1, 0);
    in_reg.RegisterShader("include_graph", 1, 0);
+   in_reg.RegisterShader("materialx", 1, 0);
+   in_reg.RegisterShader("merge", 1, 0);
+   in_reg.RegisterShader("operator", 1, 0);
+   in_reg.RegisterShader("set_parameter", 1, 0);
+   in_reg.RegisterShader("set_transform", 1, 0);
+   in_reg.RegisterShader("switch_operator", 1, 0);
 
    // in_reg.Help = "https://support.solidangle.com/display/A5SItoAUG/Shaders";
 
