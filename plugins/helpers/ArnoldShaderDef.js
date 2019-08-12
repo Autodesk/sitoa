@@ -50,7 +50,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("color_jitter", 1, 0);
    in_reg.RegisterShader("compare", 1, 0);
    in_reg.RegisterShader("complement", 1, 0);
-   in_reg.RegisterShader("complex_ior", 1, 0);
+   in_reg.RegisterShader("complex_ior", 1, 0); // deprecated
    in_reg.RegisterShader("composite", 1, 0);
    in_reg.RegisterShader("cross", 1, 0);
    in_reg.RegisterShader("cryptomatte", 1, 0);
