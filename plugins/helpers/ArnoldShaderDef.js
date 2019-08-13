@@ -306,7 +306,7 @@ function Arnold_osl_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_osl_1_0_Define(in_ctxt) { return true; }
 function Arnold_passthrough_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_passthrough_1_0_Define(in_ctxt) { return true; }
-// function Arnold_physical_sky_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_physical_sky_1_0_DefineInfo(in_ctxt) { return true; }
 // function Arnold_physical_sky_1_0_Define(in_ctxt) { return true; }
 function Arnold_pow_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_pow_1_0_Define(in_ctxt) { return true; }
@@ -432,39 +432,9 @@ function Arnold_switch_operator_1_0_Define(in_ctxt) { return true; }
 /////////////// shaders that require a dedicated UI
 ///////////////////////////////////////////////////
 
-function Arnold_physical_sky_1_0_DefineInfo(in_ctxt) 
+function Arnold_physical_sky_1_0_Define(in_ctxt)
 {
-   return true;
-}
-
-function Arnold_physical_sky_1_0_Define(in_ctxt) 
-{
-   var h = SItoAShaderDefHelpers(); // helper object
-
    var shaderDef = in_ctxt.GetAttribute("Definition");
-   shaderDef.AddShaderFamily(siShaderFamilyTexture);
- 
-   // INPUT      
-   params = shaderDef.InputParamDefs;
-   h.AddScalar (params, "turbidity",     3.0, 1.0, 10.0, 1.0, 10.0, true, false, true);
-   h.AddColor3 (params, "ground_albedo", 0.1, 0.1, 0.1, true, false, true);
-   h.AddScalar (params, "elevation",     45.0, 0.0, 180.0, 0.0, 180.0, true, false, true);
-   h.AddScalar (params, "azimuth",       90.0, 0.0, 360.0, 0.0, 360.0, true, false, true);
-   h.AddBoolean(params, "enable_sun",    true, true, false, true);
-   h.AddScalar (params, "sun_size",      0.51, 0.0, 180.0, 0.0, 5.0, true, false, true);
-   h.AddScalar (params, "intensity",     1.0, 0.0, 10.0, 0.0, 10.0, true, false, true);
-   h.AddColor3 (params, "sky_tint",      1.0, 1.0, 1.0, true, false, true);
-   h.AddColor3 (params, "sun_tint",      1.0, 1.0, 1.0, true, false, true);
-   h.AddVector3(params, "X",             1.0, 0.0, 0.0, -1.0, 1.0, -1.0, 1.0);
-   h.AddVector3(params, "Y",             0.0, 1.0, 0.0, -1.0, 1.0, -1.0, 1.0);
-   h.AddVector3(params, "Z",             0.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0);
-
-   // OUTPUT
-   h.AddOutputColor4(shaderDef.OutputParamDefs);
-
-   // Renderer definition
-   h.AddArnoldRendererDef(shaderDef);
-   
    physical_sky_Layout(shaderDef.PPGLayout);
 
    return true;
@@ -472,29 +442,12 @@ function Arnold_physical_sky_1_0_Define(in_ctxt)
 
 function physical_sky_Layout(in_layout)
 {
-   in_layout.Clear();
-   in_layout.SetAttribute(siUIHelpFile, "https://support.solidangle.com/display/SItoAUG/Physical+Sky");    
+   in_layout.SetAttribute(siUIHelpFile, "https://support.solidangle.com/display/SItoAUG/Physical+Sky");
 
-   item = in_layout.AddItem("turbidity",     "Turbidity");
-   item = in_layout.AddItem("ground_albedo", "Ground Albedo");
-   item = in_layout.AddItem("elevation",     "Elevation");
-   item = in_layout.AddItem("azimuth",       "Azimuth");
-   item = in_layout.AddItem("intensity",     "Intensity");
-   item = in_layout.AddItem("sky_tint",      "Sky Tint");
-   item = in_layout.AddItem("enable_sun",    "Enable Sun");
-   item = in_layout.AddItem("sun_tint",      "Sun Tint");
-   item = in_layout.AddItem("sun_size",      "Sun Size");
-   in_layout.AddGroup("Orientation");
-      in_layout.AddGroup("");
-         item = in_layout.AddItem("X", "X");
-         item = in_layout.AddItem("Y", "Y");
-         item = in_layout.AddItem("Z", "Z");
-      in_layout.EndGroup();
-      in_layout.AddRow();
-         item = in_layout.AddButton("SetExpression",    "Set Expression");
-         item = in_layout.AddButton("RemoveExpression", "Remove Expression");
-      in_layout.EndRow();
-   in_layout.EndGroup();
+   in_layout.AddRow();
+      item = in_layout.AddButton("SetExpression",    "Set Expression");
+      item = in_layout.AddButton("RemoveExpression", "Remove Expression");
+   in_layout.EndRow();
 
    in_layout.SetAttribute(siUILogicPrefix, "physical_sky_");
 }
@@ -502,12 +455,20 @@ function physical_sky_Layout(in_layout)
 function physical_sky_OnInit()
 {
    physical_sky_enable_sun_OnChanged();
+   physical_sky_use_degrees_OnChanged();
+}
+
+function physical_sky_use_degrees_OnChanged()
+{
+   PPG.azimuth.Enable(PPG.use_degrees.Value);
+   PPG.elevation.Enable(PPG.use_degrees.Value);
+   PPG.sun_direction.Enable(!PPG.use_degrees.Value);
 }
 
 function physical_sky_enable_sun_OnChanged()
 {
-   PPG.sun_size.Enable(PPG.enable_sun.Value);   
-   PPG.sun_tint.Enable(PPG.enable_sun.Value);   
+   PPG.sun_size.Enable(PPG.enable_sun.Value);
+   PPG.sun_tint.Enable(PPG.enable_sun.Value);
 }
 
 // Xx = cy*cz;

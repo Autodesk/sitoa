@@ -565,9 +565,6 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
       m_sd.PutDisplayName(m_name + L" (deprecated)");
 
    m_sd.AddRendererDef(L"Arnold Render");
-   
-   if (m_name == L"physical_sky") // defined in js, just categorize and bail out
-      return L"";
 
    vector <CShaderDefParameter>::iterator it;
    for (it=m_parameters.begin(); it!=m_parameters.end(); it++)

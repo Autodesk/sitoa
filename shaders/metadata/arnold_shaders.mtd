@@ -2294,11 +2294,12 @@ soft.inspectable BOOL false
 ##############################################################################
 [node physical_sky]
 soft.category STRING "Environment"
-soft.order STRING "use_degrees azimuth elevation sun_direction enable_sun sun_size sun_tint sky_tint ground_albedo intensity turbidity X Y Z"
+soft.order STRING "turbidity ground_albedo use_degrees azimuth elevation sun_direction enable_sun sun_size sun_tint sky_tint intensity "
+"BeginGroup Orientation X Y Z EndGroup"
 
 [attr use_degrees]
 linkable BOOL false
-soft.label STRING "Azimuth / Elevation"
+soft.label STRING "Use Azimuth / Elevation"
 desc STRING "Switch between Azimuth/Elevation mode and Direction for defining the sun position. "
 
 [attr azimuth]
