@@ -813,6 +813,15 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
       if (shader_def.m_so_name == L"core" && shader_def.m_is_camera_node)
           continue;
 
+      // xsibatch needs to completely skip the shaders defined in ArnoldShaderDef.js
+      // there's no need to categorize them when in batch anyway
+      // https://github.com/Autodesk/sitoa/issues/77
+      if (!Application().IsInteractive())
+      {
+         if (node_name == L"set_parameter")
+            continue;
+      }
+
       progId = shader_def.Define(); // build parameters and the UI
 
       if (!progId.IsEmpty()) // enter in the list only the shaders whose definition was actually created
