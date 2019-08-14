@@ -420,7 +420,7 @@ function Arnold_materialx_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_materialx_1_0_Define(in_ctxt) { return true; }
 function Arnold_merge_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_merge_1_0_Define(in_ctxt) { return true; }
-//function Arnold_set_parameter_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_set_parameter_1_0_DefineInfo(in_ctxt) { return true; }
 //function Arnold_set_parameter_1_0_Define(in_ctxt) { return true; }
 function Arnold_set_transform_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_set_transform_1_0_Define(in_ctxt) { return true; }
@@ -553,4 +553,63 @@ function Arnold_operator_1_0_Define(in_ctxt)
    h.AddArnoldRendererDef(shaderDef);
 
    return true;
+}
+
+function Arnold_set_parameter_1_0_Define(in_ctxt)
+{
+   var h = SItoAShaderDefHelpers(); // helper object
+
+   var shaderDef = in_ctxt.GetAttribute("Definition");
+   shaderDef.AddShaderFamily(siShaderFamilyTexture);
+ 
+   // INPUT
+   params = shaderDef.InputParamDefs;
+
+   h.AddBoolean(params, "enable", true, true, false, true);
+
+   paramOptions = XSIFactory.CreateShaderParamDefOptions();
+   paramOptions.SetLongName("Inputs");
+   h.SetCapability(paramOptions, false, true, true);
+   params.AddArrayParamDef("inputs", siShaderDataTypeReference, paramOptions);
+
+   h.AddString(params, "selection", "");
+
+   paramOptions = XSIFactory.CreateShaderParamDefOptions();
+   paramOptions.SetLongName("Assignments");
+   var paramDef = params.AddArrayParamDef("assignments", siShaderDataTypeStructure, paramOptions);
+   var subParamDefs = paramDef.ItemDef.SubParamDefs;
+
+   paramOptions = XSIFactory.CreateShaderParamDefOptions();
+   h.SetCapability(paramOptions, true, false, true);
+   paramOptions.SetDefaultValue(true);
+   paramOptions.SetLongName("Enable");
+   subParamDefs.AddParamDef("enable_assignment", siShaderDataTypeBoolean, paramOptions);
+
+   paramOptions = XSIFactory.CreateShaderParamDefOptions();
+   h.SetCapability(paramOptions, false, false, true);
+   paramOptions.SetLongName("Assignment");
+   subParamDefs.AddParamDef("assignment", siShaderDataTypeString, paramOptions);
+
+   // OUTPUT
+   h.AddOutputNode(shaderDef.OutputParamDefs);
+
+   // Renderer definition
+   h.AddArnoldRendererDef(shaderDef);
+
+   set_parameter_Layout(shaderDef.PPGLayout);
+
+   return true;
+}
+
+function set_parameter_Layout(in_layout)
+{
+   in_layout.Clear();
+   in_layout.SetAttribute(siUIHelpFile, "https://docs.arnoldrenderer.com/display/A5NodeRef/set_parameter");
+
+   item = in_layout.AddItem("enable", "Enable");
+   item = in_layout.AddItem("inputs", "Inputs");
+   item = in_layout.AddItem("selection", "Selection");
+   item = in_layout.AddItem("assignments");
+
+   in_layout.SetAttribute(siUILogicPrefix, "set_parameter_");
 }

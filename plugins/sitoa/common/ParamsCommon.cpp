@@ -79,6 +79,9 @@ CStatus LoadParameterValue(AtNode *in_node, const CString &in_entryName, const C
           in_entryName == L"ScalarSwitch" ||
           in_entryName == L"Vector3Switch")
          return LoadArraySwitcherParameter(in_node, in_param, in_frame, arrayElement, in_ref);
+
+      if (in_entryName == L"set_parameter" && in_paramName == L"assignments")
+         return LoadArrayAssignmentParameter(in_node, in_param, in_frame, arrayElement, in_ref);
    }
 
    // Compound param (with subcomponents)

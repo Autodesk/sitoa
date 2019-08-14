@@ -27,6 +27,8 @@ CStatus LoadShaderParameters(AtNode* in_node, CRefArray &in_paramsArray, double 
 CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parameter &in_param, double in_frame, const CRef &in_ref, bool in_recursively, const CString& in_arrayParamName=CString(), int in_arrayElement=-1);
 // Load the n-th element of the array parameters of the array switcher shaders.
 CStatus LoadArraySwitcherParameter(AtNode *in_node, const Parameter &in_param, double in_frame, int in_arrayElement, CRef in_ref);
+// Load the n-th element of the asignments array parameter of the set_parameter operator.
+CStatus LoadArrayAssignmentParameter(AtNode *in_node, const Parameter &in_param, double in_frame, int in_arrayElement, CRef in_ref);
 // Get the shader from a given source
 Shader GetShaderFromSource(const CRef &in_refCnxSrc);
 // Get the shader from a parameter
