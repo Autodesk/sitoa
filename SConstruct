@@ -455,6 +455,69 @@ env['BUILDERS']['PackageDeploy']  = Builder(action = Action(deploy,  "Deploying 
 DEPLOY = env.PackageDeploy('deploy', package_name)
 
 ################################
+## PATCH ADLM
+################################
+
+def patch_adlm(target, source, env):
+   new_adlmint_last_char = '2'  # ONLY ONE CHARACTER
+   if system.os() == 'windows':
+      adclmhub_name = 'AdClmHub_1.dll'
+      adlmint_name = 'adlmint.dll'
+      size = 383280
+      seek_pos = 266236
+   else:
+      adclmhub_name = 'libAdClmHub.so'
+      adlmint_name = 'libadlmint.so'
+      size = 1853576
+      seek_pos = 779034
+
+   new_adlmint_name = os.path.splitext(adlmint_name)[0][:-1] + new_adlmint_last_char + get_library_extension()
+
+   wg_bin_path = os.path.normpath(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path))
+   adclmhub_path = os.path.join(wg_bin_path, adclmhub_name)
+   adlmint_path = os.path.join(wg_bin_path, adlmint_name)
+   new_adlmint_path = os.path.join(wg_bin_path, new_adlmint_name)
+
+   need_to_patch = False
+
+   if os.path.isfile(adclmhub_path):
+      # check file size as a way to see if patching is needed
+      if os.path.getsize(adclmhub_path) == size:
+         need_to_patch = True
+      
+   if not os.path.isfile(adlmint_path):
+      need_to_patch = False
+
+   if need_to_patch:
+      # patch AdClmHub_1
+      with open(adclmhub_path, 'r+b') as f:
+         f.seek(seek_pos)
+         letter = f.read(1)
+         if letter == 't':
+            print 'Patching {} ...'.format(adclmhub_name)
+            f.seek(seek_pos)
+            f.write(new_adlmint_last_char)
+            print '{} patched!'.format(adclmhub_name)
+         else:
+            print '{} already patched. Skipping ...'.format(adclmhub_name)
+
+      # rename adlmint.dll
+      if os.path.isfile(new_adlmint_path):
+         print 'Removing old {} ...'.format(new_adlmint_name)
+         os.remove(new_adlmint_path)
+      print 'Renaming {} to {} ...'.format(adlmint_name, new_adlmint_name)
+      os.rename(adlmint_path, new_adlmint_path)
+
+      print 'done patching ADLM.'
+
+   else:
+      print 'No need to patch.'
+
+env['BUILDERS']['Patch']  = Builder(action = Action(patch_adlm,  "Patching AdLM ..."))
+
+PATCH = env.Patch('patch', SITOA)
+
+################################
 ## INSTALL TO WORKGROUP
 ################################
 
@@ -495,6 +558,7 @@ top_level_alias(env, 'pack', PACKAGE)
 top_level_alias(env, 'deploy', DEPLOY)
 top_level_alias(env, 'install', env['TARGET_WORKGROUP_PATH'])
 top_level_alias(env, 'testsuite', TESTSUITE)
+top_level_alias(env, 'patch', PATCH)
 env.AlwaysBuild(PACKAGE)
 env.AlwaysBuild('install')
 
