@@ -119,6 +119,8 @@ public:
    void ExportSubdivision(double in_frame);
    // Export the pref points, ie the points at the modeling stage
    void ExportPref(double in_frame);
+   // Export the nref normals, ie the normals at the modeling stage
+   void ExportNref(double in_frame);
    // Export the visibility, sidedness, custom parameters, user options and blob data
    void ExportVizSidednessAndOptions(double in_frame);
    // Export motion_start, motion_end

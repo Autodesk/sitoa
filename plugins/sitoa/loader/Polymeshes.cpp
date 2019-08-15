@@ -1602,6 +1602,46 @@ void CMesh::ExportPref(double in_frame)
 }
 
 
+// Export the nref normals, ie the normals at the modeling stage
+// https://github.com/Autodesk/sitoa/issues/78
+//
+// @param in_frame          The frame time
+//
+void CMesh::ExportNref(double in_frame)
+{
+   // Export the Nref data if checked
+   if (!(bool)ParAcc_GetValue(m_paramProperty, L"export_nref", in_frame))
+      return;
+
+   AiNodeDeclare(m_node, "Nref", "indexed VECTOR");  // Nrefidxs seems to be defined automatically by this.
+
+   PolygonMesh polyMeshBindPose = CObjectUtilities().GetGeometryAtFrame(m_xsiObj, siConstructionModeModeling, in_frame);
+   CGeometryAccessor geoAccessorBindPose = polyMeshBindPose.GetGeometryAccessor(siConstructionModeModeling, siCatmullClark, 0, false, 
+                                                                                m_useDiscontinuity, m_discontinuityAngle);
+
+   CLongArray NodeIndicesBindPose;
+   geoAccessorBindPose.GetNodeIndices(NodeIndicesBindPose);
+   AtArray* nidxsBindPose = AiArrayCopy(LongArrayToUIntArray(NodeIndicesBindPose));
+   LONG nodeCountBindPose = AiArrayGetNumElements(nidxsBindPose);
+
+   AtArray* nlistBindPose = AiArrayAllocate(nodeCountBindPose, 1, AI_TYPE_VECTOR);
+   CFloatArray nodeNormalsBindPose;
+
+   if (m_hasIceNodeUserNormal)
+      GetIceNodeUserNormals(polyMeshBindPose, nodeNormalsBindPose);
+   else // Eric Mootz for #704
+      GetGeoAccessorNormals(geoAccessorBindPose, nodeCountBindPose, nodeNormalsBindPose);
+
+   for (LONG i=0; i < nodeCountBindPose; ++i)
+   {
+      AiArraySetVec(nlistBindPose, i, AtVector((float)nodeNormalsBindPose[3*i], (float)nodeNormalsBindPose[3*i + 1], (float)nodeNormalsBindPose[3*i + 2]));
+   }
+
+   AiNodeSetArray(m_node, "Nrefidxs", nidxsBindPose);
+   AiNodeSetArray(m_node, "Nref", nlistBindPose);
+}
+
+
 // Export the visibility, sidedness, custom parameters, user options and blob data
 //
 // @param in_frame          The frame time
@@ -1727,6 +1767,7 @@ CStatus LoadSinglePolymesh(X3DObject &in_xsiObj, double in_frame, CRefArray &in_
    mesh.ExportEnvironment();
    mesh.ExportLightGroup();
    mesh.ExportPref(in_frame);
+   mesh.ExportNref(in_frame);
    mesh.ExportMotionStartEnd();
    mesh.ExportVizSidednessAndOptions(in_frame);
  

@@ -389,6 +389,7 @@ CRef CRenderInstance::GetUpdateType(const CRef &in_ref, eUpdateType &out_updateT
          incompatible.Add(L"skip_license_check");
          incompatible.Add(L"abort_on_license_fail");
          incompatible.Add(L"export_pref");
+         incompatible.Add(L"export_nref");
          incompatible.Add(L"subdiv_smooth_derivs");
          // #1240
          incompatible.Add(L"procedurals_path");
