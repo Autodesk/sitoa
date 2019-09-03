@@ -108,12 +108,6 @@ To build and install the plugins and the shaders in `TARGET_WORKGROUP_PATH`
 abuild install
 ```
 
-To patch AdLM (#74), run:
-
-```
-abuild patch
-```
-
 To generate a Softimage add-on, run:
 
 ```
