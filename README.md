@@ -72,6 +72,8 @@ TARGET_WORKGROUP_PATH  = r'./Softimage_2015/Addons/SItoA'
 WARN_LEVEL = 'strict'
 MODE       = 'debug'
 SHOW_CMDS  = True
+
+PATCH_ADLM = True
 ```
 
 Default configuration files for Windows and Linux reside in `config`. If you

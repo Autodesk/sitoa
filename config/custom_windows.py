@@ -16,3 +16,5 @@ TARGET_WORKGROUP_PATH  = r'./Softimage_2015/Addons/SItoA'
 WARN_LEVEL = 'strict'
 MODE       = 'opt'
 SHOW_CMDS  = True
+
+PATCH_ADLM = True
