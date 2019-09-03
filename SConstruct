@@ -20,7 +20,7 @@ import SCons
 def make_package(target, source, env):
    package_name = str(target[0]) + ".xsiaddon"
    zip_name = str(target[0])
-   base_pkg_dir = os.path.join('dist', 'package_temp' + get_softimage_version(env['XSISDK_ROOT']));
+   base_pkg_dir = os.path.join('dist', 'package_temp' + get_softimage_version(env['XSISDK_ROOT']))
    
    # First we make sure the temp directory doesn't exist
    #if os.path.exists(base_pkg_dir):
