@@ -75,8 +75,8 @@ function AddPointLight_Execute(in_name)
    light.Parameters("LightArea").value  = true;
    light.Parameters("LightAreaGeom").value  = 3;   
    // Mapping Arnold Light Parameter to XSI Light Parameter..   
-   var spotRadius = light.Parameters("LightAreaXformSX");
-   spotRadius.AddExpression(light.FullName+".light.point_light.radius");
+   var lightRadius = light.Parameters("LightAreaXformSX");
+   lightRadius.AddExpression("this.light.point_light.radius");
    return light; // return the light
 }
 
@@ -111,9 +111,9 @@ function AddSpotLight_Execute(in_name)
    ApplyLightShader(lightPrim, "arnold_spot_light");
    // Mapping Arnold Light Parameters to XSI Light Parameters..
    var coneAngle = lightPrim.Parameters("LightCone");
-   coneAngle.AddExpression(lightPrim.FullName+".light.spot_light.cone_angle");
-   var spotRadius = lightPrim.Parameters("LightAreaXformSX");
-   spotRadius.AddExpression(lightPrim.FullName+".light.spot_light.radius");
+   coneAngle.AddExpression("this.light.spot_light.cone_angle");
+   var lightRadius = lightPrim.Parameters("LightAreaXformSX");
+   lightRadius.AddExpression("this.light.spot_light.radius");
    lightPrim.LightArea = true;   
    lightPrim.LightAreaGeom = 2;
    return lightPrim;
@@ -145,6 +145,8 @@ function AddQuadLight_Execute(in_name)
    var name = in_name == null ? "Quad" : in_name;
    var light = GetPrimLight("Light_Box.Preset", name, "", null, null, null);
    var lightPrim = light.Light;
+   var lightType = lightPrim.Parameters("Type");
+   lightType.Value = 1; // Infinite light gizmo
    
    ApplyLightShader(lightPrim, "arnold_quad_light"); 
    return lightPrim;   
