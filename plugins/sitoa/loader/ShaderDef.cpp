@@ -565,8 +565,8 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
       m_sd.PutDisplayName(m_name + L" (deprecated)");
 
    m_sd.AddRendererDef(L"Arnold Render");
-   
-   if (m_name == L"physical_sky") // defined in js, just categorize and bail out
+
+   if (m_name == L"set_parameter") // defined in js, just categorize and bail out
       return L"";
 
    vector <CShaderDefParameter>::iterator it;
@@ -812,6 +812,15 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
       // skip the core camera nodes, already exposed by the camera options property
       if (shader_def.m_so_name == L"core" && shader_def.m_is_camera_node)
           continue;
+
+      // xsibatch needs to completely skip the shaders defined in ArnoldShaderDef.js
+      // there's no need to categorize them when in batch anyway
+      // https://github.com/Autodesk/sitoa/issues/77
+      if (!Application().IsInteractive())
+      {
+         if (node_name == L"set_parameter")
+            continue;
+      }
 
       progId = shader_def.Define(); // build parameters and the UI
 

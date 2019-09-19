@@ -510,6 +510,7 @@ function AddParamsShape(in_prop)
    in_prop.AddParameter2("self_shadows",       siBool, 1, 0, 1, 0, 5, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("receive_shadows",    siBool, 1, 0, 1, 0, 5, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("export_pref",               siBool, false, null, null, null, null);
+   in_prop.AddParameter2("export_nref",               siBool, false, null, null, null, null);
    in_prop.AddParameter2("subdiv_smooth_derivs",      siBool, false, null, null, null, null);
    in_prop.AddParameter2("sss_setname", siString, "", null, null, null, null, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("toon_id",     siString, "", null, null, null, null, 0, siPersistable|siAnimatable);
@@ -686,7 +687,8 @@ function arnold_parameters_DefineLayout(io_Context)
       xsiLayout.AddItem("invert_normals",       "Invert Normals");
       xsiLayout.AddItem("self_shadows",         "Self Shadows");
       xsiLayout.AddItem("receive_shadows",      "Receive Shadows");
-      xsiLayout.AddItem("export_pref",          "Export Bind Pose (Pref)");
+      xsiLayout.AddItem("export_pref",          "Export Bind Pose Positions (Pref)");
+      xsiLayout.AddItem("export_nref",          "Export Bind Pose Normals (Nref)");
       xsiLayout.AddItem("subdiv_smooth_derivs", "Smooth Subdiv Tangents");
    xsiLayout.EndGroup();
 

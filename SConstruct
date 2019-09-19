@@ -534,7 +534,7 @@ env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [str(SITOA[0])
                                                                    str(SITOA_SHADERS[0])])
 
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join(ARNOLD_BINARIES, '*'))])
-env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..'), [glob.glob(ARNOLD_PLUGINS)])
+env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..', 'plugins'), [glob.glob(os.path.join(ARNOLD_PLUGINS, '*'))])
 
 # Copying Scripting Plugins 
 # (if you modify the files directly on workgroup they will be overwritted with trunk version)

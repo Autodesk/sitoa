@@ -1,0 +1,57 @@
+=======================================================
+ Autodesk Softimage 13.2.163.0
+=======================================================
+
+License information: using [Processing]
+00:00:00   208MB         | log started Fri Aug 16 00:23:54 2019
+00:00:00   208MB         | Arnold 5.4.0.0 [b7d9819c] windows icc-17.0.2 oiio-2.1.0 osl-1.11.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.4.2 optix-6.0.0 2019/07/26 08:50:52
+00:00:00   208MB         | running on Jenus, pid=33684
+00:00:00   208MB         |  1 x Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz (4 cores, 8 logical) with 16333MB
+00:00:00   208MB         |  NVIDIA driver version 430.86 (Optix 60102)
+00:00:00   208MB         |  GPU 0: GeForce GTX 1070 @ 1771MHz (compute 6.1) with 8192MB (6789MB available) (NVLink:0)
+00:00:00   208MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00   208MB         |  soft limit for open files raised from 512 to 2048
+00:00:00   208MB         |  
+00:00:00   208MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\..\plugins ...
+00:00:00   208MB         | loaded 4 plugins from 2 lib(s) in 0:00.00
+00:00:00   208MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
+00:00:00   209MB         | loaded 103 plugins from 1 lib(s) in 0:00.03
+
+
+
+
+00:00:00   217MB         |  
+00:00:00   217MB         | releasing resources
+00:00:00   215MB         | Arnold shutdown
+// INFO : [sitoa] SItoA 5.4.0 win loaded.
+// INFO : [sitoa] Arnold 5.4.0.0 detected.
+InstallCustomPreferences("ArnoldRenderPreferences", "Arnold Render");
+COMMAND: -processing -script "execute_test.js" -main main
+// INFO : C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
+>Loading: C:\Users\lindg\GitHub\sitoa\build\windows_x86_64\msvc_opt\si_13000\testsuite\test_0272\test.scn...
+// INFO : 4034 - Loaded scene was created with build number: 13.2.163.0 - compatibility version: 1300
+OpenScene("C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0272\\test.scn", null, null);
+SetValue("Passes.RenderOptions.ImageLockAspectRatio", false, null);
+SetValue("Passes.RenderOptions.ImageWidth", 160, null);
+SetValue("Passes.RenderOptions.ImageHeight", 120, null);
+SetValue("Passes.Default_Pass.Main.Filename", "C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0272\\testrender.####.tif", null);
+SetValue("Passes.Default_Pass.Main.Format", "tif", null);
+SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, null);
+SetValue("Passes.Arnold_Render_Options.enable_log_file", true, null);
+SetValue("Passes.Arnold_Render_Options.log_level", 1, null);
+SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0272", null);
+SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\Users\\lindg\\GitHub\\sitoa\\testsuite\\XSIProject\\Pictures", null);
+SetValue("Passes.Arnold_Render_Options.save_texture_paths", false, null);
+// INFO : Rendering pass 'Default_Pass'...
+// INFO : Rendering frame 1 (0.0% done)
+// INFO : [sitoa] Frame 1 exported to Arnold in 0.137 sec.
+// INFO : Render completed (100% done)
+RenderAllPasses(null, null, null, null, siRenderVerbosityDefault);
+Warning: return value of the executed script is not an integer
+// INFO : Characters has been unloaded.
+// INFO : polymatricksPlugin has been unloaded.
+// INFO : [sitoa] SItoA 5.4.0 win has been unloaded.
+// INFO : TransformUVsPlugin has been unloaded.
+// INFO : FBX-XSI import/export Plug-in has been unloaded.
+// INFO : Unfold3D Plugin has been unloaded.
+

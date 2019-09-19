@@ -278,7 +278,9 @@ function AddShadersSubMenu(in_menu)
    in_menu.AddSeparatorItem();
    in_menu.AddCallbackItem("Standard Volume",   "OnShadersMenu");
    in_menu.AddSeparatorItem();
-   in_menu.AddCallbackItem("Physical Sky",      "OnShadersMenu");   
+   in_menu.AddCallbackItem("Physical Sky",      "OnShadersMenu");
+   in_menu.AddSeparatorItem();
+   in_menu.AddCallbackItem("Clip Geo",          "OnShadersMenu");
 }
 
 
@@ -520,6 +522,9 @@ function OnShadersMenu(in_ctxt)
          break;
       case  "Operator":
          SITOA_AddShaderStack("Arnold.operator.1.0", "OutputShaderStack");
+         break;
+      case  "Clip Geo":
+         SITOA_AddShader("Arnold.clip_geo.1.0", "surface");
          break;
     }
 }

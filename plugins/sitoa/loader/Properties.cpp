@@ -297,6 +297,7 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
       {
          // sss does not apply on curves, points, etc (just polymesh), so skip these params
          if ( !strcmp(charParamName, "export_pref") || 
+              !strcmp(charParamName, "export_nref") || 
               !strcmp(charParamName, "sss_setname"))
          {
             if (!isMesh)

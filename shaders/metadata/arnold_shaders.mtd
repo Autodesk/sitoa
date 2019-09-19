@@ -86,6 +86,34 @@ desc STRING "If on, the tracing works in inclusive mode, else in exclusive, as d
 desc STRING "Gather occlusion against the shaded object only."
 
 ##############################################################################
+[node aov_read_float]
+soft.category STRING "AOV"
+
+[attr aov_name]
+desc STRING "Name of the AOV."
+
+##############################################################################
+[node aov_read_int]
+soft.category STRING "AOV"
+
+[attr aov_name]
+desc STRING "Name of the AOV."
+
+##############################################################################
+[node aov_read_rgb]
+soft.category STRING "AOV"
+
+[attr aov_name]
+desc STRING "Name of the AOV."
+
+##############################################################################
+[node aov_read_rgba]
+soft.category STRING "AOV"
+
+[attr aov_name]
+desc STRING "Name of the AOV."
+
+##############################################################################
 [node aov_write_float]
 soft.label STRING "AOV Write Float"
 soft.category STRING "AOV"
@@ -589,6 +617,19 @@ desc STRING "The minimum value for the color channels to be used in the output."
 
 [attr max_color]
 desc STRING "The maximum value for the color channels to be used in the output."
+
+##############################################################################
+[node clip_geo]
+soft.category STRING "Utility"
+
+[attr intersection]
+desc STRING "The color or shader applied to the result of the clipping."
+
+[attr trace_set]
+desc STRING "It is possible to tag objects to be part of one or many trace sets. You can use trace sets to control which objects are clipped."
+
+[attr inclusive]
+desc STRING "If on, the tracing works in inclusive mode, else in exclusive, as described above."
 
 # SItoA specific
 ##############################################################################
@@ -2253,11 +2294,12 @@ soft.inspectable BOOL false
 ##############################################################################
 [node physical_sky]
 soft.category STRING "Environment"
-soft.order STRING "use_degrees azimuth elevation sun_direction enable_sun sun_size sun_tint sky_tint ground_albedo intensity turbidity X Y Z"
+soft.order STRING "turbidity ground_albedo use_degrees azimuth elevation sun_direction enable_sun sun_size sun_tint sky_tint intensity "
+"BeginGroup Orientation X Y Z EndGroup"
 
 [attr use_degrees]
 linkable BOOL false
-soft.label STRING "Azimuth / Elevation"
+soft.label STRING "Use Azimuth / Elevation"
 desc STRING "Switch between Azimuth/Elevation mode and Direction for defining the sun position. "
 
 [attr azimuth]
