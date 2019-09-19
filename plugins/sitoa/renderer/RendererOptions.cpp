@@ -1524,7 +1524,8 @@ void DeviceSelectionLogic(CustomProperty &in_cp)
    for (LONG i=0; i<gpuDeviceCount; i++)
    {
       int gpuDevice = AiArrayGetUInt(gpuDeviceIdsArray, i);
-      CString deviceName = AiDeviceGetName(AI_DEVICE_TYPE_GPU, gpuDevice);
+      AtString dn = AiDeviceGetName(AI_DEVICE_TYPE_GPU, gpuDevice);
+      CString deviceName(dn.c_str()); 
       int freeMemory = AiDeviceGetMemoryMB(AI_DEVICE_TYPE_GPU, gpuDevice, AI_DEVICE_MEMORY_FREE);
       int totalMemory = AiDeviceGetMemoryMB(AI_DEVICE_TYPE_GPU, gpuDevice, AI_DEVICE_MEMORY_TOTAL);
       deviceName += L" (Free: " + CString(freeMemory) + " MB, Total: " + CString(totalMemory) + " MB)";

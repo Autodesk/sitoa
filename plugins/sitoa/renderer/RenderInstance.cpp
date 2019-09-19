@@ -9,7 +9,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License.
 ************************************************************************************************************************************/
 
+#ifdef _WINDOWS
 #include <thread>
+#endif
 
 #include "common/ParamsCamera.h"
 #include "common/Tools.h"
@@ -231,7 +233,11 @@ int CRenderInstance::RenderProgressiveScene(int displayArea)
       aa_steps.insert(-1);
 
    // calculate a good bucket size for the progressive passes so that the total number of buckets = CPU_cores * 2
+ #ifdef _WINDOWS  
    int numCores = std::thread::hardware_concurrency();
+#else
+   int numCores = sysconf(_SC_NPROCESSORS_ONLN);
+#endif
    int progressiveBucketSize = AiMax(((int)sqrt(displayArea / (numCores*2))), bucket_size);
 
    AtNode* options = AiUniverseGetOptions();
