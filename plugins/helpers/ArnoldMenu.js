@@ -278,7 +278,9 @@ function AddShadersSubMenu(in_menu)
    in_menu.AddSeparatorItem();
    in_menu.AddCallbackItem("Standard Volume",   "OnShadersMenu");
    in_menu.AddSeparatorItem();
-   in_menu.AddCallbackItem("Physical Sky",      "OnShadersMenu");   
+   in_menu.AddCallbackItem("Physical Sky",      "OnShadersMenu");
+   in_menu.AddSeparatorItem();
+   in_menu.AddCallbackItem("Clip Geo",          "OnShadersMenu");
 }
 
 
@@ -290,6 +292,8 @@ function ArnoldPassShaders_Init(io_Context)
    xsiMenu.AddCallbackItem("Fog",               "OnShadersMenu");
    xsiMenu.AddSeparatorItem();
    xsiMenu.AddCallbackItem("Cryptomatte",       "OnShadersMenu");
+   xsiMenu.AddSeparatorItem();
+   xsiMenu.AddCallbackItem("Operator",          "OnShadersMenu");
 }
 
 // lights sub-menu
@@ -515,6 +519,12 @@ function OnShadersMenu(in_ctxt)
          break;
       case  "Cryptomatte":
          SITOA_AddShaderStack("Arnold.cryptomatte.1.0", "OutputShaderStack");
+         break;
+      case  "Operator":
+         SITOA_AddShaderStack("Arnold.operator.1.0", "OutputShaderStack");
+         break;
+      case  "Clip Geo":
+         SITOA_AddShader("Arnold.clip_geo.1.0", "surface");
          break;
     }
 }

@@ -212,7 +212,7 @@ private:
    // Create the directories for all the output filenames of all the buffers
    bool OutputDirectoryExists();
 
-   int RenderProgressiveScene();
+   int RenderProgressiveScene(int displayArea);
 
    // Detect what type of Update we have to do for the given Reference
    CRef GetUpdateType(const CRef &in_ref, eUpdateType &out_updateType);

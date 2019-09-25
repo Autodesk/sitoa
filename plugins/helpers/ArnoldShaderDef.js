@@ -24,6 +24,10 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("abs", 1, 0);
    in_reg.RegisterShader("add", 1, 0);
    in_reg.RegisterShader("ambient_occlusion", 1, 0);
+   in_reg.RegisterShader("aov_read_float", 1, 0);
+   in_reg.RegisterShader("aov_read_int", 1, 0);
+   in_reg.RegisterShader("aov_read_rgb", 1, 0);
+   in_reg.RegisterShader("aov_read_rgba", 1, 0);
    in_reg.RegisterShader("aov_write_float", 1, 0);
    in_reg.RegisterShader("aov_write_int", 1, 0);
    in_reg.RegisterShader("aov_write_rgb", 1, 0);
@@ -39,13 +43,14 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("cell_noise", 1, 0);
    in_reg.RegisterShader("checkerboard", 1, 0);
    in_reg.RegisterShader("clamp", 1, 0);
+   in_reg.RegisterShader("clip_geo", 1, 0);
    in_reg.RegisterShader("closure", 1, 0); // SItoA
    in_reg.RegisterShader("color_convert", 1, 0);
    in_reg.RegisterShader("color_correct", 1, 0);
    in_reg.RegisterShader("color_jitter", 1, 0);
    in_reg.RegisterShader("compare", 1, 0);
    in_reg.RegisterShader("complement", 1, 0);
-   in_reg.RegisterShader("complex_ior", 1, 0);
+   in_reg.RegisterShader("complex_ior", 1, 0); // deprecated
    in_reg.RegisterShader("composite", 1, 0);
    in_reg.RegisterShader("cross", 1, 0);
    in_reg.RegisterShader("cryptomatte", 1, 0);
@@ -71,6 +76,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("layer_shader", 1, 0);
    in_reg.RegisterShader("length", 1, 0);
    in_reg.RegisterShader("log", 1, 0);
+   in_reg.RegisterShader("matrix_interpolate", 1, 0);
    in_reg.RegisterShader("matrix_multiply_vector", 1, 0);
    in_reg.RegisterShader("matrix_transform", 1, 0);
    in_reg.RegisterShader("matte", 1, 0);
@@ -129,6 +135,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("user_data_rgba", 1, 0);
    in_reg.RegisterShader("user_data_string", 1, 0);
    in_reg.RegisterShader("utility", 1, 0);
+   in_reg.RegisterShader("uv_projection", 1, 0);
    in_reg.RegisterShader("uv_transform", 1, 0);
    in_reg.RegisterShader("vector_displacement", 1, 0); // extra, clone of vector_map with float output
    in_reg.RegisterShader("vector_map", 1, 0);
@@ -137,6 +144,16 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("volume_sample_float", 1, 0);
    in_reg.RegisterShader("volume_sample_rgb", 1, 0);
    in_reg.RegisterShader("wireframe", 1, 0);
+   // operators
+   in_reg.RegisterShader("disable", 1, 0);
+   in_reg.RegisterShader("collection", 1, 0);
+   in_reg.RegisterShader("include_graph", 1, 0);
+   in_reg.RegisterShader("materialx", 1, 0);
+   in_reg.RegisterShader("merge", 1, 0);
+   in_reg.RegisterShader("operator", 1, 0);
+   in_reg.RegisterShader("set_parameter", 1, 0);
+   in_reg.RegisterShader("set_transform", 1, 0);
+   in_reg.RegisterShader("switch_operator", 1, 0);
 
    // in_reg.Help = "https://support.solidangle.com/display/A5SItoAUG/Shaders";
 
@@ -151,6 +168,14 @@ function Arnold_add_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_add_1_0_Define(in_ctxt) { return true; }
 function Arnold_ambient_occlusion_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_ambient_occlusion_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_read_float_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_read_float_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_read_int_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_read_int_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_read_rgb_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_read_rgb_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_read_rgba_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_read_rgba_1_0_Define(in_ctxt) { return true; }
 function Arnold_aov_write_float_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_aov_write_float_1_0_Define(in_ctxt) { return true; }
 function Arnold_aov_write_int_1_0_DefineInfo(in_ctxt) { return true; }
@@ -181,6 +206,8 @@ function Arnold_checkerboard_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_checkerboard_1_0_Define(in_ctxt) { return true; }
 function Arnold_clamp_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_clamp_1_0_Define(in_ctxt) { return true; }
+function Arnold_clip_geo_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_clip_geo_1_0_Define(in_ctxt) { return true; }
 function Arnold_closure_1_0_DefineInfo(in_ctxt) { return true; } // SItoA
 function Arnold_closure_1_0_Define(in_ctxt) { return true; }     // SItoA
 function Arnold_color_convert_1_0_DefineInfo(in_ctxt) { return true; }
@@ -193,8 +220,8 @@ function Arnold_compare_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_compare_1_0_Define(in_ctxt) { return true; }
 function Arnold_complement_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_complement_1_0_Define(in_ctxt) { return true; }
-function Arnold_complex_ior_1_0_DefineInfo(in_ctxt) { return true; }
-function Arnold_complex_ior_1_0_Define(in_ctxt) { return true; }
+function Arnold_complex_ior_1_0_DefineInfo(in_ctxt) { return true; } // deprecated
+function Arnold_complex_ior_1_0_Define(in_ctxt) { return true; }     // deprecated
 function Arnold_composite_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_composite_1_0_Define(in_ctxt) { return true; }
 function Arnold_cross_1_0_DefineInfo(in_ctxt) { return true; }
@@ -245,6 +272,8 @@ function Arnold_length_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_length_1_0_Define(in_ctxt) { return true; }
 function Arnold_log_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_log_1_0_Define(in_ctxt) { return true; }
+function Arnold_matrix_interpolate_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_matrix_interpolate_1_0_Define(in_ctxt) { return true; }
 function Arnold_matrix_multiply_vector_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_matrix_multiply_vector_1_0_Define(in_ctxt) { return true; }
 function Arnold_matrix_transform_1_0_DefineInfo(in_ctxt) { return true; }
@@ -277,7 +306,7 @@ function Arnold_osl_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_osl_1_0_Define(in_ctxt) { return true; }
 function Arnold_passthrough_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_passthrough_1_0_Define(in_ctxt) { return true; }
-// function Arnold_physical_sky_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_physical_sky_1_0_DefineInfo(in_ctxt) { return true; }
 // function Arnold_physical_sky_1_0_Define(in_ctxt) { return true; }
 function Arnold_pow_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_pow_1_0_Define(in_ctxt) { return true; }
@@ -361,6 +390,8 @@ function Arnold_user_data_string_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_user_data_string_1_0_Define(in_ctxt) { return true; }
 function Arnold_utility_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_utility_1_0_Define(in_ctxt) { return true; }
+function Arnold_uv_projection_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_uv_projection_1_0_Define(in_ctxt) { return true; }
 function Arnold_uv_transform_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_uv_transform_1_0_Define(in_ctxt) { return true; }
 function Arnold_vector_displacement_1_0_DefineInfo(in_ctxt) { return true; } // extra, clone of vector_map with float output
@@ -377,44 +408,33 @@ function Arnold_volume_sample_rgb_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_volume_sample_rgb_1_0_Define(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_Define(in_ctxt) { return true; }
- 
+
+// operators
+function Arnold_collection_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_collection_1_0_Define(in_ctxt) { return true; }
+function Arnold_disable_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_disable_1_0_Define(in_ctxt) { return true; }
+function Arnold_include_graph_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_include_graph_1_0_Define(in_ctxt) { return true; }
+function Arnold_materialx_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_materialx_1_0_Define(in_ctxt) { return true; }
+function Arnold_merge_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_merge_1_0_Define(in_ctxt) { return true; }
+function Arnold_set_parameter_1_0_DefineInfo(in_ctxt) { return true; }
+//function Arnold_set_parameter_1_0_Define(in_ctxt) { return true; }
+function Arnold_set_transform_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_set_transform_1_0_Define(in_ctxt) { return true; }
+function Arnold_switch_operator_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_switch_operator_1_0_Define(in_ctxt) { return true; }
+
+
 ///////////////////////////////////////////////////
 /////////////// shaders that require a dedicated UI
 ///////////////////////////////////////////////////
 
-function Arnold_physical_sky_1_0_DefineInfo(in_ctxt) 
+function Arnold_physical_sky_1_0_Define(in_ctxt)
 {
-   return true;
-}
-
-function Arnold_physical_sky_1_0_Define(in_ctxt) 
-{
-   var h = SItoAShaderDefHelpers(); // helper object
-
    var shaderDef = in_ctxt.GetAttribute("Definition");
-   shaderDef.AddShaderFamily(siShaderFamilyTexture);
- 
-   // INPUT      
-   params = shaderDef.InputParamDefs;
-   h.AddScalar (params, "turbidity",     3.0, 1.0, 10.0, 1.0, 10.0, true, false, true);
-   h.AddColor3 (params, "ground_albedo", 0.1, 0.1, 0.1, true, false, true);
-   h.AddScalar (params, "elevation",     45.0, 0.0, 180.0, 0.0, 180.0, true, false, true);
-   h.AddScalar (params, "azimuth",       90.0, 0.0, 360.0, 0.0, 360.0, true, false, true);
-   h.AddBoolean(params, "enable_sun",    true, true, false, true);
-   h.AddScalar (params, "sun_size",      0.51, 0.0, 180.0, 0.0, 5.0, true, false, true);
-   h.AddScalar (params, "intensity",     1.0, 0.0, 10.0, 0.0, 10.0, true, false, true);
-   h.AddColor3 (params, "sky_tint",      1.0, 1.0, 1.0, true, false, true);
-   h.AddColor3 (params, "sun_tint",      1.0, 1.0, 1.0, true, false, true);
-   h.AddVector3(params, "X",             1.0, 0.0, 0.0, -1.0, 1.0, -1.0, 1.0);
-   h.AddVector3(params, "Y",             0.0, 1.0, 0.0, -1.0, 1.0, -1.0, 1.0);
-   h.AddVector3(params, "Z",             0.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0);
-
-   // OUTPUT
-   h.AddOutputColor4(shaderDef.OutputParamDefs);
-
-   // Renderer definition
-   h.AddArnoldRendererDef(shaderDef);
-   
    physical_sky_Layout(shaderDef.PPGLayout);
 
    return true;
@@ -422,29 +442,12 @@ function Arnold_physical_sky_1_0_Define(in_ctxt)
 
 function physical_sky_Layout(in_layout)
 {
-   in_layout.Clear();
-   in_layout.SetAttribute(siUIHelpFile, "https://support.solidangle.com/display/SItoAUG/Physical+Sky");    
+   in_layout.SetAttribute(siUIHelpFile, "https://support.solidangle.com/display/SItoAUG/Physical+Sky");
 
-   item = in_layout.AddItem("turbidity",     "Turbidity");
-   item = in_layout.AddItem("ground_albedo", "Ground Albedo");
-   item = in_layout.AddItem("elevation",     "Elevation");
-   item = in_layout.AddItem("azimuth",       "Azimuth");
-   item = in_layout.AddItem("intensity",     "Intensity");
-   item = in_layout.AddItem("sky_tint",      "Sky Tint");
-   item = in_layout.AddItem("enable_sun",    "Enable Sun");
-   item = in_layout.AddItem("sun_tint",      "Sun Tint");
-   item = in_layout.AddItem("sun_size",      "Sun Size");
-   in_layout.AddGroup("Orientation");
-      in_layout.AddGroup("");
-         item = in_layout.AddItem("X", "X");
-         item = in_layout.AddItem("Y", "Y");
-         item = in_layout.AddItem("Z", "Z");
-      in_layout.EndGroup();
-      in_layout.AddRow();
-         item = in_layout.AddButton("SetExpression",    "Set Expression");
-         item = in_layout.AddButton("RemoveExpression", "Remove Expression");
-      in_layout.EndRow();
-   in_layout.EndGroup();
+   in_layout.AddRow();
+      item = in_layout.AddButton("SetExpression",    "Set Expression");
+      item = in_layout.AddButton("RemoveExpression", "Remove Expression");
+   in_layout.EndRow();
 
    in_layout.SetAttribute(siUILogicPrefix, "physical_sky_");
 }
@@ -452,12 +455,20 @@ function physical_sky_Layout(in_layout)
 function physical_sky_OnInit()
 {
    physical_sky_enable_sun_OnChanged();
+   physical_sky_use_degrees_OnChanged();
+}
+
+function physical_sky_use_degrees_OnChanged()
+{
+   PPG.azimuth.Enable(PPG.use_degrees.Value);
+   PPG.elevation.Enable(PPG.use_degrees.Value);
+   PPG.sun_direction.Enable(!PPG.use_degrees.Value);
 }
 
 function physical_sky_enable_sun_OnChanged()
 {
-   PPG.sun_size.Enable(PPG.enable_sun.Value);   
-   PPG.sun_tint.Enable(PPG.enable_sun.Value);   
+   PPG.sun_size.Enable(PPG.enable_sun.Value);
+   PPG.sun_tint.Enable(PPG.enable_sun.Value);
 }
 
 // Xx = cy*cz;
@@ -515,4 +526,90 @@ function physical_sky_RemoveExpression_OnClicked()
    RemoveAnimation(pset + ".Z.x", null, null, null, null, null);
    RemoveAnimation(pset + ".Z.y", null, null, null, null, null);
    RemoveAnimation(pset + ".Z.z", null, null, null, null, null);
+}
+
+function Arnold_operator_1_0_DefineInfo(in_ctxt)
+{
+   in_ctxt.SetAttribute("DisplayName", "operator");
+   in_ctxt.SetAttribute("Category", "Arnold/Operators");
+   return true;
+}
+
+function Arnold_operator_1_0_Define(in_ctxt)
+{
+   var h = SItoAShaderDefHelpers(); // helper object
+
+   var shaderDef = in_ctxt.GetAttribute("Definition");
+   shaderDef.AddShaderFamily(siShaderFamilyTexture);
+ 
+   // INPUT      
+   params = shaderDef.InputParamDefs;
+   h.AddNode(params, "operator");
+
+   // OUTPUT
+   h.AddOutputColor4(shaderDef.OutputParamDefs);
+
+   // Renderer definition
+   h.AddArnoldRendererDef(shaderDef);
+
+   return true;
+}
+
+function Arnold_set_parameter_1_0_Define(in_ctxt)
+{
+   var h = SItoAShaderDefHelpers(); // helper object
+
+   var shaderDef = in_ctxt.GetAttribute("Definition");
+   shaderDef.AddShaderFamily(siShaderFamilyTexture);
+ 
+   // INPUT
+   params = shaderDef.InputParamDefs;
+
+   h.AddBoolean(params, "enable", true, true, false, true);
+
+   paramOptions = XSIFactory.CreateShaderParamDefOptions();
+   paramOptions.SetLongName("Inputs");
+   h.SetCapability(paramOptions, false, true, true);
+   params.AddArrayParamDef("inputs", siShaderDataTypeReference, paramOptions);
+
+   h.AddString(params, "selection", "");
+
+   paramOptions = XSIFactory.CreateShaderParamDefOptions();
+   paramOptions.SetLongName("Assignments");
+   var paramDef = params.AddArrayParamDef("assignments", siShaderDataTypeStructure, paramOptions);
+   var subParamDefs = paramDef.ItemDef.SubParamDefs;
+
+   paramOptions = XSIFactory.CreateShaderParamDefOptions();
+   h.SetCapability(paramOptions, true, false, true);
+   paramOptions.SetDefaultValue(true);
+   paramOptions.SetLongName("Enable");
+   subParamDefs.AddParamDef("enable_assignment", siShaderDataTypeBoolean, paramOptions);
+
+   paramOptions = XSIFactory.CreateShaderParamDefOptions();
+   h.SetCapability(paramOptions, false, false, true);
+   paramOptions.SetLongName("Assignment");
+   subParamDefs.AddParamDef("assignment", siShaderDataTypeString, paramOptions);
+
+   // OUTPUT
+   h.AddOutputNode(shaderDef.OutputParamDefs);
+
+   // Renderer definition
+   h.AddArnoldRendererDef(shaderDef);
+
+   set_parameter_Layout(shaderDef.PPGLayout);
+
+   return true;
+}
+
+function set_parameter_Layout(in_layout)
+{
+   in_layout.Clear();
+   in_layout.SetAttribute(siUIHelpFile, "https://docs.arnoldrenderer.com/display/A5NodeRef/set_parameter");
+
+   item = in_layout.AddItem("enable", "Enable");
+   item = in_layout.AddItem("inputs", "Inputs");
+   item = in_layout.AddItem("selection", "Selection");
+   item = in_layout.AddItem("assignments");
+
+   in_layout.SetAttribute(siUILogicPrefix, "set_parameter_");
 }

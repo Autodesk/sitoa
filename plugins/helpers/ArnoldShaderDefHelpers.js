@@ -202,6 +202,13 @@ function ShaderHelperObj()
       var paramDef = in_params.AddParamDef(in_name, siShaderDataTypeImage, paramOptions);      
    }
 
+   this.AddNode = function(in_params, in_name)
+   {
+      paramOptions = XSIFactory.CreateShaderParamDefOptions();
+      this.SetCapability(paramOptions, false, true, false);
+      var paramDef = in_params.AddParamDef(in_name, siShaderDataTypeReference, paramOptions);
+   }
+
    this.AddOutputColor3 = function(in_params)
    {
       paramOptions = XSIFactory.CreateShaderParamDefOptions();
@@ -236,6 +243,13 @@ function ShaderHelperObj()
       paramOptions.SetAttribute(siReferenceFilterAttribute, siShaderReferenceFilter);
       paramDef = in_params.AddParamDef("out", siShaderDataTypeReference, paramOptions);
       paramDef.MainPort = false;       
+   }
+
+   this.AddOutputNode = function(in_params)
+   {
+      paramOptions = XSIFactory.CreateShaderParamDefOptions();
+      paramDef = in_params.AddParamDef("out", siShaderDataTypeReference, paramOptions);
+      paramDef.MainPort = false;
    }
 
    this.AddArnoldRendererDef = function(in_shaderDef)

@@ -510,6 +510,7 @@ function AddParamsShape(in_prop)
    in_prop.AddParameter2("self_shadows",       siBool, 1, 0, 1, 0, 5, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("receive_shadows",    siBool, 1, 0, 1, 0, 5, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("export_pref",               siBool, false, null, null, null, null);
+   in_prop.AddParameter2("export_nref",               siBool, false, null, null, null, null);
    in_prop.AddParameter2("subdiv_smooth_derivs",      siBool, false, null, null, null, null);
    in_prop.AddParameter2("sss_setname", siString, "", null, null, null, null, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("toon_id",     siString, "", null, null, null, null, 0, siPersistable|siAnimatable);
@@ -541,7 +542,15 @@ function AddParamsSubdivision(in_prop, strands)
    in_prop.AddParameter2("disp_padding",           siFloat,  0.0,      -100000, 100000, 0.0,  10.0, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("subdiv_iterations",      siInt4,   0,        0,       255,    0,    10,   0, siPersistable|siAnimatable);
    in_prop.AddParameter2("subdiv_adaptive_error",  siFloat,  2.0,      0.0,     100.0,  0.0,  10.0, 0, siPersistable|siAnimatable);
-   in_prop.AddParameter2("disp_autobump",          siBool,   1,        0,       1,      0,    1,    0, siPersistable|siAnimatable);
+
+   in_prop.AddParameter2("disp_autobump",                  siBool, 1, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("autobump_camera",                siBool, 1, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("autobump_diffuse_reflection",    siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("autobump_specular_reflection",   siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("autobump_diffuse_transmission",  siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("autobump_specular_transmission", siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("autobump_volume_scattering",     siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+
    in_prop.AddParameter2("adaptive_subdivision",   siBool,   0,        0,       1,      0,    1,    0, siPersistable|siAnimatable);
    in_prop.AddParameter2("subdiv_adaptive_metric", siString, "auto",   null,    null,   null, null, 0, siPersistable|siAnimatable);   
    in_prop.AddParameter2("subdiv_adaptive_space",  siString, "raster", null,    null,   null, null, 0, siPersistable|siAnimatable);   
@@ -678,7 +687,8 @@ function arnold_parameters_DefineLayout(io_Context)
       xsiLayout.AddItem("invert_normals",       "Invert Normals");
       xsiLayout.AddItem("self_shadows",         "Self Shadows");
       xsiLayout.AddItem("receive_shadows",      "Receive Shadows");
-      xsiLayout.AddItem("export_pref",          "Export Bind Pose (Pref)");
+      xsiLayout.AddItem("export_pref",          "Export Bind Pose Positions (Pref)");
+      xsiLayout.AddItem("export_nref",          "Export Bind Pose Normals (Nref)");
       xsiLayout.AddItem("subdiv_smooth_derivs", "Smooth Subdiv Tangents");
    xsiLayout.EndGroup();
 
@@ -726,7 +736,15 @@ function arnold_parameters_DefineLayout(io_Context)
       item = xsiLayout.AddItem("disp_zero_value", "Zero Value");
       item.setAttribute(siUILabelMinPixels, 130);
       item.SetAttribute(siUILabelPercentage, 50);
-      item = xsiLayout.AddItem("disp_autobump", "AutoBump");
+      item = xsiLayout.AddItem("disp_autobump", "Autobump");
+      xsiLayout.AddGroup("Autobump Visibility", true);
+         item = xsiLayout.AddItem("autobump_camera", "Camera (primary)");
+         item = xsiLayout.AddItem("autobump_diffuse_reflection", "Diffuse Reflection");
+         item = xsiLayout.AddItem("autobump_specular_reflection", "Specular Reflection");
+         item = xsiLayout.AddItem("autobump_diffuse_transmission", "Diffuse Transmission");
+         item = xsiLayout.AddItem("autobump_specular_transmission", "Specular Transmission");
+         item = xsiLayout.AddItem("autobump_volume_scattering", "Volume Scattering");
+      xsiLayout.EndGroup();
    xsiLayout.EndGroup();
    xsiLayout.AddGroup("Subdivision", true);
       item = xsiLayout.AddItem("subdiv_iterations", "Additional Iterations");
@@ -1159,6 +1177,9 @@ function arnold_parameters_OnInit()
    var oCustomProperty = PPG.Inspected.Item(0);
    if (oCustomProperty.Parameters("override_motion_step") != null)
       arnold_parameters_override_motion_step_OnChanged();
+
+   if (oCustomProperty.Parameters("disp_autobump") != null)
+      arnold_parameters_disp_autobump_OnChanged();
    
    if (oCustomProperty.Parameters("adaptive_subdivision") != null)
       arnold_parameters_adaptive_subdivision_OnChanged();
@@ -1202,6 +1223,20 @@ function arnold_parameters_motion_deform_OnChanged()
    arnold_parameters_override_motion_step_OnChanged();
 }
 
+function arnold_parameters_disp_autobump_OnChanged()
+{
+   var oCustomProperty = PPG.Inspected.Item(0);
+   var autobump_on = PPG.disp_autobump.Value;
+   if (oCustomProperty.Parameters("autobump_camera") != null)
+   {
+      PPG.autobump_camera.Enable(autobump_on);
+      PPG.autobump_diffuse_reflection.Enable(autobump_on);
+      PPG.autobump_specular_reflection.Enable(autobump_on);
+      PPG.autobump_diffuse_transmission.Enable(autobump_on);
+      PPG.autobump_specular_transmission.Enable(autobump_on);
+      PPG.autobump_volume_scattering.Enable(autobump_on);
+   }
+}
 
 function arnold_parameters_adaptive_subdivision_OnChanged() 
 {

@@ -1,0 +1,57 @@
+=======================================================
+ Autodesk Softimage 13.2.163.0
+=======================================================
+
+License information: using [Processing]
+00:00:00   204MB         | log started Fri May  3 00:57:25 2019
+00:00:00   204MB         | Arnold 5.3.0.2 [f7602f75] windows icc-17.0.2 oiio-2.1.0 osl-1.11.0 vdb-4.0.0 clm-1.0.3.513 rlm-12.4.2 optix-6.0.0 2019/04/09 17:16:44
+00:00:00   204MB         | running on Jenus, pid=57608
+00:00:00   204MB         |  1 x Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz (4 cores, 8 logical) with 16333MB
+00:00:00   204MB         |  NVIDIA driver version 419.67
+00:00:00   204MB         |  GPU 0: GeForce GTX 1070 @ 1771MHz (compute 6.1) with 8192MB (6905MB available) (NVLink:0)
+00:00:00   204MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00   204MB         |  soft limit for open files raised from 512 to 2048
+00:00:00   204MB         |  
+00:00:00   204MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\..\plugins ...
+00:00:00   204MB         | loaded 4 plugins from 2 lib(s) in 0:00.00
+00:00:00   204MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
+00:00:00   204MB         | loaded 103 plugins from 1 lib(s) in 0:00.03
+
+
+
+
+00:00:00   211MB         |  
+00:00:00   211MB         | releasing resources
+00:00:00   211MB         | Arnold shutdown
+# INFO : [sitoa] SItoA 5.3.0 win loaded.
+# INFO : [sitoa] Arnold 5.3.0.2 detected.
+Application.RefreshCustomPreferences()
+COMMAND: -processing -script "execute_test.js" -main main
+# INFO : C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
+>Loading: C:\Users\lindg\GitHub\sitoa\build\windows_x86_64\msvc_opt\si_13000\testsuite\test_0269\test.scn...
+# INFO : 4034 - Loaded scene was created with build number: 13.2.163.0 - compatibility version: 1300
+Application.OpenScene("C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0269\\test.scn", "", "")
+Application.SetValue("Passes.RenderOptions.ImageLockAspectRatio", False, "")
+Application.SetValue("Passes.RenderOptions.ImageWidth", 160, "")
+Application.SetValue("Passes.RenderOptions.ImageHeight", 120, "")
+Application.SetValue("Passes.Default_Pass.Main.Filename", "C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0269\\testrender.####.tif", "")
+Application.SetValue("Passes.Default_Pass.Main.Format", "tif", "")
+Application.SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, "")
+Application.SetValue("Passes.Arnold_Render_Options.enable_log_file", True, "")
+Application.SetValue("Passes.Arnold_Render_Options.log_level", 1, "")
+Application.SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0269", "")
+Application.SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\Users\\lindg\\GitHub\\sitoa\\testsuite\\XSIProject\\Pictures", "")
+Application.SetValue("Passes.Arnold_Render_Options.save_texture_paths", False, "")
+# INFO : Rendering pass 'Default_Pass'...
+# INFO : Rendering frame 1 (0.0% done)
+# INFO : [sitoa] Frame 1 exported to Arnold in 0.092 sec.
+# INFO : Render completed (100% done)
+Application.RenderAllPasses("", "", "", "", "siRenderVerbosityDefault")
+Warning: return value of the executed script is not an integer
+# INFO : Characters has been unloaded.
+# INFO : polymatricksPlugin has been unloaded.
+# INFO : [sitoa] SItoA 5.3.0 win has been unloaded.
+# INFO : TransformUVsPlugin has been unloaded.
+# INFO : FBX-XSI import/export Plug-in has been unloaded.
+# INFO : Unfold3D Plugin has been unloaded.
+

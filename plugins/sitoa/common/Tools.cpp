@@ -510,6 +510,34 @@ bool CStringUtilities::EndsWith(CString in_string, CString in_subString)
 }
 
 
+// Converts a parameter name to prettier Title Case formated string
+//
+// @param in_string        The input string
+//
+// @return the string in Title Case format
+//
+CString CStringUtilities::PrettifyParameterName(CString in_string)
+{
+   CString label;
+   // replace "_" with " ". "_" is very common in the Arnold nodes
+   // Ex: "emission_color" -> "emission color: 
+   CString t_label = CStringUtilities().ReplaceString(L"_", L" ", in_string);
+   // capitalize the first char of the name, and each token after a space, as we do for the SItoA shaders
+   // Ex: "emission color" -> "Emission Color: 
+   for (ULONG i=0; i<t_label.Length(); i++)
+   {
+      if (i==0)
+         label+= (char)toupper(t_label[i]);
+      else if (t_label[i-1] == ' ')
+         label+= (char)toupper(t_label[i]);
+      else
+         label+= t_label[i];
+   }
+
+   return label;
+}
+
+
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////

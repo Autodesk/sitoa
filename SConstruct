@@ -20,7 +20,7 @@ import SCons
 def make_package(target, source, env):
    package_name = str(target[0]) + ".xsiaddon"
    zip_name = str(target[0])
-   base_pkg_dir = os.path.join('dist', 'package_temp' + get_softimage_version(env['XSISDK_ROOT']));
+   base_pkg_dir = os.path.join('dist', 'package_temp' + get_softimage_version(env['XSISDK_ROOT']))
    
    # First we make sure the temp directory doesn't exist
    #if os.path.exists(base_pkg_dir):
@@ -46,6 +46,10 @@ def make_package(target, source, env):
             for f in file_list:
                shutil.copy2(f, target_dir)
    
+   if env['PATCH_ADLM']:
+      wg_bin_path = os.path.join(base_pkg_dir, 'Addons', 'SItoA', bin_path)
+      patch_adlm(wg_bin_path, env)
+
    # Now we generate deploy scripts
    f = open(os.path.join(base_pkg_dir, 'deploy_sitoa.js'), 'w')
    f.write('''
@@ -114,6 +118,8 @@ vars.AddVariables(
       EnumVariable('SHOW_TEST_OUTPUT', 'Display the test log as it is being run', 'single', allowed_values=('always', 'never', 'single') ),
       BoolVariable('UPDATE_REFERENCE', 'Update the reference log/image for the specified targets', False),
       ('TEST_PATTERN' , 'Glob pattern of tests to be run', 'test_*'),
+
+      BoolVariable('PATCH_ADLM' , 'Patches AdLM so that SItoA doesn\'t crash. See GitHub #74 for background info.', False),
 
       PathVariable('XSISDK_ROOT', 'Where to find XSI libraries', get_default_path('XSISDK_ROOT', '.')),
       PathVariable('ARNOLD_HOME', 'Base Arnold dir', '.'),
@@ -403,6 +409,7 @@ PACKAGE_FILES = [
 [os.path.join('plugins', 'helpers', '*.py'),                               os.path.join(addon_path, plugins_path)],
 [os.path.join('plugins', 'helpers', 'Pictures', '*.bmp'),                  os.path.join(addon_path, pictures_path)],
 [os.path.join('shaders', 'metadata', '*.mtd'),                             os.path.join(addon_path, bin_path)],
+[os.path.join('plugins', 'metadata', '*.mtd'),                             os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'lmuti*'),                           os.path.join(addon_path, license_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'rl*'),                              os.path.join(addon_path, license_path)],
 [os.path.join(ARNOLD_HOME, 'license', 'solidangle.*'),                     os.path.join(addon_path, license_path)],
@@ -454,6 +461,72 @@ env['BUILDERS']['PackageDeploy']  = Builder(action = Action(deploy,  "Deploying 
 DEPLOY = env.PackageDeploy('deploy', package_name)
 
 ################################
+## PATCH ADLM
+################################
+
+def make_patch_adlm(target, source, env):
+   if env['PATCH_ADLM']:
+      wg_bin_path = os.path.normpath(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path))
+      patch_adlm(wg_bin_path, env)
+
+def patch_adlm(wg_bin_path, env):
+   new_adlmint_last_char = '2'  # ONLY ONE CHARACTER
+   if system.os() == 'windows':
+      adclmhub_name = 'AdClmHub_1.dll'
+      adlmint_name = 'adlmint.dll'
+      size = 383280
+      seek_pos = 266236
+   else:
+      adclmhub_name = 'libAdClmHub.so'
+      adlmint_name = 'libadlmint.so'
+      size = 1853576
+      seek_pos = 779034
+
+   new_adlmint_name = os.path.splitext(adlmint_name)[0][:-1] + new_adlmint_last_char + get_library_extension()
+
+   adclmhub_path = os.path.join(wg_bin_path, adclmhub_name)
+   adlmint_path = os.path.join(wg_bin_path, adlmint_name)
+   new_adlmint_path = os.path.join(wg_bin_path, new_adlmint_name)
+
+   need_to_patch = False
+
+   if os.path.isfile(adclmhub_path):
+      # check file size as a way to see if patching is needed
+      if os.path.getsize(adclmhub_path) == size:
+         need_to_patch = True
+      
+   if not os.path.isfile(adlmint_path):
+      need_to_patch = False
+
+   if need_to_patch:
+      # patch AdClmHub_1
+      with open(adclmhub_path, 'r+b') as f:
+         f.seek(seek_pos)
+         letter = f.read(1)
+         if letter == 't':
+            print 'Patching {} ...'.format(adclmhub_name)
+            f.seek(seek_pos)
+            f.write(new_adlmint_last_char)
+            print '{} patched!'.format(adclmhub_name)
+         else:
+            print '{} already patched. Skipping ...'.format(adclmhub_name)
+
+      # rename adlmint.dll
+      if os.path.isfile(new_adlmint_path):
+         print 'Removing old {} ...'.format(new_adlmint_name)
+         os.remove(new_adlmint_path)
+      print 'Renaming {} to {} ...'.format(adlmint_name, new_adlmint_name)
+      os.rename(adlmint_path, new_adlmint_path)
+
+      print 'done patching ADLM.'
+
+   else:
+      print 'No need to patch.'
+
+env['BUILDERS']['Patch']  = Builder(action = Action(make_patch_adlm, None))
+PATCH = env.Patch('patch', SITOA)
+
+################################
 ## INSTALL TO WORKGROUP
 ################################
 
@@ -461,7 +534,7 @@ env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [str(SITOA[0])
                                                                    str(SITOA_SHADERS[0])])
 
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join(ARNOLD_BINARIES, '*'))])
-env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..'), [glob.glob(ARNOLD_PLUGINS)])
+env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..', 'plugins'), [glob.glob(os.path.join(ARNOLD_PLUGINS, '*'))])
 
 # Copying Scripting Plugins 
 # (if you modify the files directly on workgroup they will be overwritted with trunk version)
@@ -475,6 +548,7 @@ env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], pictures_path), [glob.glo
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], license_path), [glob.glob(os.path.join(ARNOLD_HOME, 'license', '*'))])
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], pit_path), [glob.glob(os.path.join(ARNOLD_HOME, 'license', 'pit', '*'))])
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join('shaders', 'metadata', '*.mtd'))])
+env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join('plugins', 'metadata', '*.mtd'))])
 
 ################################
 ## TARGETS ALIASES AND DEPENDENCIES
@@ -501,6 +575,7 @@ env.Depends(PACKAGE, SITOA_SHADERS)
 env.Depends(DEPLOY, PACKAGE)
 env.Depends('install', SITOA)
 env.Depends('install', SITOA_SHADERS)
+env.Depends('install', PATCH)
 
 Default(['sitoa', 'shaders'])
 

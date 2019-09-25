@@ -89,7 +89,7 @@ namespace ATSTRING
    const AtString softmax("softmax");
    const AtString linkable("linkable");
    const AtString deprecated("deprecated");
-   // sitos-specific metadata
+   // sitoa-specific metadata
    const AtString soft_category("soft.category");
    const AtString soft_order("soft.order");
    const AtString soft_label("soft.label");
@@ -97,7 +97,7 @@ namespace ATSTRING
    const AtString soft_inspectable("soft.inspectable");
    const AtString soft_viewport_guid("soft.viewport_guid");
    const AtString soft_node_type("soft.node_type");
-   //
+   // sitoa custom ports/types
    const AtString closure("closure");
 };
 
@@ -350,6 +350,8 @@ public:
    bool StartsWith(CString in_string, CString in_subString);
    // Checks if string ends with substring
    bool EndsWith(CString in_string, CString in_subString);
+   // Converts a parameter name to prettier Title Case formated string
+   CString PrettifyParameterName(CString in_string);
 
 private:
    // Build the name for an Arnold node (overload for a CString input type)

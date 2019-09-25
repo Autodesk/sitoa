@@ -46,10 +46,16 @@ public:
    // system
    bool     m_autodetect_threads;
    int      m_threads;
+   CString  m_render_device;
+   CString  m_render_device_fallback;
+   int      m_gpu_max_texture_resolution;
    CString  m_gpu_default_names;
    int      m_gpu_default_min_memory_MB;
+   bool     m_enable_manual_devices;
+   CString  m_manual_device_selection;
    CString  m_bucket_scanning;
    int      m_bucket_size;
+   bool     m_larger_ipr_buckets;
    bool     m_progressive_minus3;
    bool     m_progressive_minus2;
    bool     m_progressive_minus1;
@@ -131,6 +137,7 @@ public:
    bool    m_enable_motion_deform;
    int     m_motion_step_deform;
    bool    m_exact_ice_mb;
+   bool    m_ignore_motion_blur;
    float   m_motion_shutter_length;
    float   m_motion_shutter_custom_start;
    float   m_motion_shutter_custom_end;
@@ -194,7 +201,7 @@ public:
    bool         m_ignore_displacement;
    bool         m_ignore_bump;
    bool         m_ignore_smoothing;
-   bool         m_ignore_motion_blur;
+   bool         m_ignore_motion;
    bool         m_ignore_dof;
    bool         m_ignore_sss;
    bool         m_ignore_hair;
@@ -202,6 +209,7 @@ public:
    bool         m_ignore_procedurals;
    bool         m_ignore_user_options;
    bool         m_ignore_matte;
+   bool         m_ignore_operators;
 
    // ass archive
    CString m_output_file_tagdir_ass;
@@ -218,6 +226,7 @@ public:
    bool m_output_cameras;
    bool m_output_lights;
    bool m_output_shaders;
+   bool m_output_operators;
 
    // denoiser
    bool m_use_optix_on_main;
@@ -234,10 +243,16 @@ public:
       // system
       m_autodetect_threads(true),
       m_threads(4),
+      m_render_device(L"CPU"),
+      m_render_device_fallback(L"error"),
+      m_gpu_max_texture_resolution(0),
       m_gpu_default_names(L"*"),
       m_gpu_default_min_memory_MB(512),
+      m_enable_manual_devices(false),
+      m_manual_device_selection(L""),
       m_bucket_scanning(L"spiral"),
       m_bucket_size(64),
+      m_larger_ipr_buckets(false),
       m_progressive_minus3(true),
       m_progressive_minus2(true),
       m_progressive_minus1(true),
@@ -316,6 +331,7 @@ public:
       m_motion_step_deform(2),
       m_exact_ice_mb(false),
       // new mb
+      m_ignore_motion_blur(false),
       m_motion_shutter_length(0.5f),
       m_motion_shutter_custom_start(-0.25f),
       m_motion_shutter_custom_end(0.25f),
@@ -378,7 +394,7 @@ public:
       m_ignore_displacement(false),
       m_ignore_bump(false),
       m_ignore_smoothing(false),
-      m_ignore_motion_blur(false),
+      m_ignore_motion(false),
       m_ignore_dof(false),
       m_ignore_sss(false),
       m_ignore_hair(false),
@@ -386,6 +402,7 @@ public:
       m_ignore_procedurals(false),
       m_ignore_user_options(false),
       m_ignore_matte(false),
+      m_ignore_operators(false),
 
       // ass archive
       m_output_file_tagdir_ass(L""), // this to be reviewed, see CommonRenderOptions_Define
@@ -402,6 +419,7 @@ public:
       m_output_cameras(false),
       m_output_lights(false),
       m_output_shaders(false),
+      m_output_operators(false),
 
       // denoiser
       m_use_optix_on_main(false),
@@ -434,6 +452,8 @@ void DepthOfFieldTabLogic(CustomProperty &in_cp);
 void SamplingTabLogic(CustomProperty &in_cp);
 // Logic for the system tab
 void SystemTabLogic(CustomProperty &in_cp);
+// Logic for Manual Device Selection in the system tab
+void DeviceSelectionLogic(CustomProperty &in_cp);
 // Logic for the output tab
 void OutputTabLogic(CustomProperty &in_cp);
 // Logic for the textures tab

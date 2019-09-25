@@ -23,5 +23,3 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
 void AbortFrameLoadScene();
 // postload a single object.
 CStatus PostLoadSingleObject(const CRef in_ref, double in_frame, CRefArray &in_selectedObjs, bool in_selectionOnly);
-//void BypassClosurePassthroughForAss();
-
