@@ -632,7 +632,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
    layout.AddGroup(L"Devices");
       CValueArray devices;
       devices.Add(L"CPU");        devices.Add(L"CPU");
-      devices.Add(L"GPU (BETA)"); devices.Add(L"GPU");
+      devices.Add(L"GPU"); devices.Add(L"GPU");
       item = layout.AddEnumControl(L"render_device", devices, L"Render Device", siControlCombo);
       item.PutAttribute(siUILabelMinPixels, 120);
       CValueArray device_fallbacks;
