@@ -4,8 +4,8 @@
 # the build variables
 
 TARGET_ARCH         = 'x86_64'
-MSVC_VERSION        = '11.0'
-VS_HOME             = r'C:/Program Files (x86)/Microsoft Visual Studio 11.0/VC'
+MSVC_VERSION        = '14.0'
+VS_HOME             = r'C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC'
 WINDOWS_KIT         = r'C:/Program Files (x86)/Windows Kits/8.0'
 
 XSISDK_ROOT         = r'C:/Program Files/Autodesk/Softimage 2015/XSISDK'

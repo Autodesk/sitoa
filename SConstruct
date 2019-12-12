@@ -137,7 +137,7 @@ vars.AddVariables(
 
         
 if system.os() == 'windows':
-   vars.Add(EnumVariable('MSVC_VERSION', 'Version of MS Visual Studio to use', '9.0', allowed_values=('8.0', '8.0Exp', '9.0', '9.0Exp', '10.0', '11.0')))
+   vars.Add(EnumVariable('MSVC_VERSION', 'Version of MS Visual Studio to use', '14.0', allowed_values=('8.0', '8.0Exp', '9.0', '9.0Exp', '10.0', '11.0', '14.0')))
 
 env = Environment(variables = vars)
 
