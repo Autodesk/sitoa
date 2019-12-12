@@ -150,6 +150,18 @@ desc STRING "Name of RGB type AOV to be written."
 soft.label STRING "AOV Name"
 
 ##############################################################################
+[node aov_write_vector]
+soft.label STRING "AOV Write Vector"
+soft.category STRING "AOV"
+
+[attr aov_input]
+soft.label STRING "AOV Input"
+
+[attr aov_name]
+desc STRING "Name of Vector type AOV to be written."
+soft.label STRING "AOV Name"
+
+##############################################################################
 [node atan]
 soft.category STRING "Math"
 

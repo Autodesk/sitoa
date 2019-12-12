@@ -32,6 +32,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("aov_write_int", 1, 0);
    in_reg.RegisterShader("aov_write_rgb", 1, 0);
    in_reg.RegisterShader("aov_write_rgba", 1, 0);
+   in_reg.RegisterShader("aov_write_vector", 1, 0);
    in_reg.RegisterShader("atan", 1, 0);
    in_reg.RegisterShader("atmosphere_volume", 1, 0);
    in_reg.RegisterShader("blackbody", 1, 0);
@@ -184,6 +185,8 @@ function Arnold_aov_write_rgb_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_aov_write_rgb_1_0_Define(in_ctxt) { return true; }
 function Arnold_aov_write_rgba_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_aov_write_rgba_1_0_Define(in_ctxt) { return true; }
+function Arnold_aov_write_vector_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_aov_write_vector_1_0_Define(in_ctxt) { return true; }
 function Arnold_atan_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_atan_1_0_Define(in_ctxt) { return true; }
 function Arnold_atmosphere_volume_1_0_DefineInfo(in_ctxt) { return true; }
