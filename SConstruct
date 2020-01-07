@@ -137,7 +137,7 @@ vars.AddVariables(
 
         
 if system.os() == 'windows':
-   vars.Add(EnumVariable('MSVC_VERSION', 'Version of MS Visual Studio to use', '9.0', allowed_values=('8.0', '8.0Exp', '9.0', '9.0Exp', '10.0', '11.0')))
+   vars.Add(EnumVariable('MSVC_VERSION', 'Version of MS Visual Studio to use', '14.0', allowed_values=('8.0', '8.0Exp', '9.0', '9.0Exp', '10.0', '11.0', '14.0')))
 
 env = Environment(variables = vars)
 
@@ -396,14 +396,17 @@ else:
 PACKAGE_FILES = [
 [os.path.join(plugin_binary_path, 'sitoa', DLLS),                          os.path.join(addon_path, bin_path)],
 [os.path.join(plugin_binary_path, 'shaders', DLLS),                        os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, 'ArnoldLicenseManager%s' % get_executable_extension()), os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'kick%s' % get_executable_extension()),     os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'maketx%s' % get_executable_extension()),   os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'noice%s' % get_executable_extension()),    os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, 'oiiotool%s' % get_executable_extension()), os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'oslc%s' % get_executable_extension()),     os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'oslinfo%s' % get_executable_extension()),  os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*%s' % get_library_extension()),           os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*%s.*' % get_library_extension()),         os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*.pit'),                                   os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, '*.png'),                                   os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_PLUGINS, '*'),                                        os.path.join(addon_path, bin_path, '..', 'plugins')],
 [os.path.join('plugins', 'helpers', '*.js'),                               os.path.join(addon_path, plugins_path)],
 [os.path.join('plugins', 'helpers', '*.py'),                               os.path.join(addon_path, plugins_path)],
@@ -464,6 +467,15 @@ DEPLOY = env.PackageDeploy('deploy', package_name)
 ## PATCH ADLM
 ################################
 
+def find_adclmhub(search_path, pattern):
+   adclmhub_name = [f for f in os.listdir(search_path) if f.startswith(pattern)]
+   if adclmhub_name:
+      adclmhub_name = adclmhub_name[0]
+   else:
+      adclmhub_name = ''
+      print 'No AdClmHub file was found!'
+   return adclmhub_name
+
 def make_patch_adlm(target, source, env):
    if env['PATCH_ADLM']:
       wg_bin_path = os.path.normpath(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path))
@@ -471,16 +483,30 @@ def make_patch_adlm(target, source, env):
 
 def patch_adlm(wg_bin_path, env):
    new_adlmint_last_char = '2'  # ONLY ONE CHARACTER
+
    if system.os() == 'windows':
-      adclmhub_name = 'AdClmHub_1.dll'
+      adclmhub_name = find_adclmhub(wg_bin_path, 'AdClmHub_')
+      if adclmhub_name == 'AdClmHub_1.1.1.dll':
+         size = 384872
+         seek_pos = 267436
+      elif adclmhub_name == 'AdClmHub_1.dll':
+         size = 383280
+         seek_pos = 266236
+      else:
+         print 'This version of AdClmHub is not supported: {}'.format(adclmhub_name)
       adlmint_name = 'adlmint.dll'
-      size = 383280
-      seek_pos = 266236
+      
    else:
-      adclmhub_name = 'libAdClmHub.so'
+      adclmhub_name = find_adclmhub(wg_bin_path, 'libAdClmHub')
+      if adclmhub_name == 'libAdClmHub.so.1':
+         size = 1377518
+         seek_pos = 500890
+      elif adclmhub_name == 'libAdClmHub.so':
+         size = 1853576
+         seek_pos = 779034
+      else:
+         print 'This version of libAdClmHub is not supported: {}'.format(adclmhub_name)
       adlmint_name = 'libadlmint.so'
-      size = 1853576
-      seek_pos = 779034
 
    new_adlmint_name = os.path.splitext(adlmint_name)[0][:-1] + new_adlmint_last_char + get_library_extension()
 
@@ -494,12 +520,14 @@ def patch_adlm(wg_bin_path, env):
       # check file size as a way to see if patching is needed
       if os.path.getsize(adclmhub_path) == size:
          need_to_patch = True
+      else:
+         print 'Size of {} is not correct. Skipping patching.'.format(adclmhub_name)
       
    if not os.path.isfile(adlmint_path):
       need_to_patch = False
 
    if need_to_patch:
-      # patch AdClmHub_1
+      # patch AdClmHub
       with open(adclmhub_path, 'r+b') as f:
          f.seek(seek_pos)
          letter = f.read(1)
@@ -518,7 +546,7 @@ def patch_adlm(wg_bin_path, env):
       print 'Renaming {} to {} ...'.format(adlmint_name, new_adlmint_name)
       os.rename(adlmint_path, new_adlmint_path)
 
-      print 'done patching ADLM.'
+      print 'Done patching ADLM.'
 
    else:
       print 'No need to patch.'
