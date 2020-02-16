@@ -532,7 +532,24 @@ void LoadCameraOptions(const Camera &in_xsiCamera, AtNode* in_node, const Proper
 
    CNodeSetter::SetFloat(in_node, "exposure", (float)ParAcc_GetValue(in_property, L"exposure", in_frame));
 
-   if (cameraType == L"fisheye_camera")
+   if (cameraType == L"persp_camera")
+   {
+      CNodeSetter::SetFloat(in_node, "radial_distortion", (float)ParAcc_GetValue(in_property, L"persp_radial_distortion", in_frame));
+      CString s = ((CString)ParAcc_GetValue(in_property, L"persp_radial_distortion_type", in_frame));
+      CNodeSetter::SetString(in_node, "radial_distortion_type", s.GetAsciiString());
+
+      AtArray* lens_tilt_angles = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_VECTOR2);
+      for (LONG ikey=0; ikey<nbTransfKeys; ikey++)
+      {
+         double frame = transfKeys[ikey];
+         float lens_tilt_angle_x = (float)ParAcc_GetValue(in_property, L"persp_lens_tilt_angle_x", frame);
+         float lens_tilt_angle_y = (float)ParAcc_GetValue(in_property, L"persp_lens_tilt_angle_y", frame);
+         AtVector2 lens_tilt_angle = AtVector2(lens_tilt_angle_x, lens_tilt_angle_y);
+         AiArraySetVec2(lens_tilt_angles, ikey, AtVector2(lens_tilt_angle_x, lens_tilt_angle_y));
+      }
+      AiNodeSetArray(in_node, "lens_tilt_angle", lens_tilt_angles);
+   }
+   else if (cameraType == L"fisheye_camera")
       CNodeSetter::SetBoolean(in_node, "autocrop", (bool)ParAcc_GetValue(in_property, L"fisheye_autocrop", in_frame));
    else if (cameraType == L"cyl_camera")
    {
