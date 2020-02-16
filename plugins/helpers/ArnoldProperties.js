@@ -1321,9 +1321,11 @@ function arnold_procedural_DefineLayout(io_Context)
 
    xsiLayout.AddRow()
       xsiItem = xsiLayout.AddItem("overrideFrame", "Override Frame");
-      xsiItem.WidthPercentage = 40;
+      xsiItem.WidthPercentage = 50;
       xsiItem = xsiLayout.AddItem("frame", "Frame");
-      xsiItem.WidthPercentage = 60;
+      xsiItem.WidthPercentage = 50;
+      xsiItem.SetAttribute(siUILabelMinPixels, 50);
+      xsiItem.SetAttribute(siUILabelPercentage, 10);
    xsiLayout.EndRow()
 
    xsiItem = xsiLayout.AddItem("override_nodes", "Override Nodes");
