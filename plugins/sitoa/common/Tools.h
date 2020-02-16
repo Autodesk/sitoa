@@ -51,6 +51,7 @@ namespace ATSTRING
    const AtString ginstance("ginstance");
    const AtString image("image");
    const AtString mesh_light("mesh_light");
+   const AtString persp_camera("persp_camera");
    const AtString photometric_light("photometric_light");
    const AtString physical_sky("physical_sky");
    const AtString points("points");
