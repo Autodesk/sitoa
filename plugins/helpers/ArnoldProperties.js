@@ -1280,6 +1280,10 @@ function arnold_procedural_Define(io_Context)
    p = customProperty.AddParameter2("frame", siInt4, 1, -1000000, 1000000, 1, 100, siClassifAppearance, siPersistable|siAnimatable);
    p.enable(false);
 
+   p = customProperty.AddParameter2("override_nodes", siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   p = customProperty.AddParameter2("auto_instancing", siBool, 1, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   p = customProperty.AddParameter2("namespace", siString, "", "", "", "", "", 0, siPersistable|siAnimatable);
+
    // new (2.2) viewer parameters at object's level
    p = customProperty.AddParameter2("mode", siInt4, 0, 0, 2, 0, 2, siClassifAppearance, siPersistable|siAnimatable);
    p = customProperty.AddParameter2("randomColors", siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);	
@@ -1321,6 +1325,10 @@ function arnold_procedural_DefineLayout(io_Context)
       xsiItem = xsiLayout.AddItem("frame", "Frame");
       xsiItem.WidthPercentage = 60;
    xsiLayout.EndRow()
+
+   xsiItem = xsiLayout.AddItem("override_nodes", "Override Nodes");
+   xsiItem = xsiLayout.AddItem("auto_instancing", "Auto Instancing");
+   xsiItem = xsiLayout.AddItem("namespace", "Namespace");
 
    UserDataLayout(xsiLayout, true);
 
