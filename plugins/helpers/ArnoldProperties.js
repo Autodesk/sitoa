@@ -1078,6 +1078,11 @@ function arnold_camera_options_camera_type_OnChanged()
 {
    var cameraType = PPG.camera_type.Value;
 
+   PPG.persp_radial_distortion.Enable(cameraType == "persp_camera");
+   PPG.persp_radial_distortion_type.Enable(cameraType == "persp_camera");
+   PPG.persp_lens_tilt_angle_x.Enable(cameraType == "persp_camera");
+   PPG.persp_lens_tilt_angle_y.Enable(cameraType == "persp_camera");
+
    PPG.cyl_horizontal_fov.Enable(cameraType == "cyl_camera");
    PPG.cyl_vertical_fov.Enable(cameraType == "cyl_camera");
    PPG.cyl_projective.Enable(cameraType == "cyl_camera");
