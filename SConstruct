@@ -407,7 +407,7 @@ PACKAGE_FILES = [
 [os.path.join(ARNOLD_BINARIES, '*%s.*' % get_library_extension()),         os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*.pit'),                                   os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*.png'),                                   os.path.join(addon_path, bin_path)],
-[os.path.join(ARNOLD_PLUGINS, '*'),                                        os.path.join(addon_path, bin_path, '..', 'plugins')],
+[os.path.join(ARNOLD_PLUGINS),                                             os.path.join(addon_path, bin_path, '..', 'plugins')],
 [os.path.join('plugins', 'helpers', '*.js'),                               os.path.join(addon_path, plugins_path)],
 [os.path.join('plugins', 'helpers', '*.py'),                               os.path.join(addon_path, plugins_path)],
 [os.path.join('plugins', 'helpers', 'Pictures', '*.bmp'),                  os.path.join(addon_path, pictures_path)],

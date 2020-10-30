@@ -831,6 +831,12 @@ function arnold_camera_options_Define(io_Context)
 
    prop.AddParameter2("exposure", siFloat, 0, -10000, 10000, -5, 5, 0, siPersistable|siAnimatable);
 
+   // perspective
+   prop.AddParameter2("persp_radial_distortion", siFloat, 0, -10000, 10000, -0.2, 2.0, 0, siPersistable|siAnimatable);
+   prop.AddParameter2("persp_radial_distortion_type", siString, "cubic", siPersistable|siAnimatable);
+   prop.AddParameter2("persp_lens_tilt_angle_x", siFloat, 0, -10000, 10000, -45, 45, 0, siPersistable|siAnimatable);
+   prop.AddParameter2("persp_lens_tilt_angle_y", siFloat, 0, -10000, 10000, -45, 45, 0, siPersistable|siAnimatable);
+
    // cylindrical
    prop.AddParameter2("cyl_horizontal_fov", siFloat, 60, 0.001, 360, 0.001, 360, 0, siPersistable|siAnimatable);
    prop.AddParameter2("cyl_vertical_fov", siFloat, 90, 0.001, 180, 0.001, 180, 0, siPersistable|siAnimatable);
@@ -902,6 +908,24 @@ function arnold_camera_options_DefineLayout(io_Context)
    layout.AddGroup("Exposure");
       item = layout.AddItem("exposure", "")
       item.SetAttribute(siUINoLabel, true);
+   layout.EndGroup();
+
+   layout.AddGroup("Perspective");
+      item = layout.AddItem("persp_radial_distortion", "Radial Distortion");
+      item.SetAttribute(siUILabelMinPixels, 130);
+      item.SetAttribute(siUILabelPercentage, 50);
+      item = layout.AddEnumControl("persp_radial_distortion_type", Array("Cubic",         "cubic",
+                                                                         "Cubic Inverse", "cubic_inverse"), "Radial Distortion Type", siControlCombo);
+      item.SetAttribute(siUILabelMinPixels, 130);
+      item.SetAttribute(siUILabelPercentage, 50);
+      layout.AddGroup("Lens Tilt Angle")
+         layout.AddRow();
+            item = layout.AddItem("persp_lens_tilt_angle_x", "X");
+            item.SetAttribute(siUINoLabel, true);
+            item = layout.AddItem("persp_lens_tilt_angle_y", "Y");
+            item.SetAttribute(siUINoLabel, true);
+         layout.EndRow();
+      layout.EndGroup();
    layout.EndGroup();
 
    layout.AddGroup("Cylindrical");
@@ -1053,6 +1077,11 @@ function arnold_camera_options_OnInit()
 function arnold_camera_options_camera_type_OnChanged()
 {
    var cameraType = PPG.camera_type.Value;
+
+   PPG.persp_radial_distortion.Enable(cameraType == "persp_camera");
+   PPG.persp_radial_distortion_type.Enable(cameraType == "persp_camera");
+   PPG.persp_lens_tilt_angle_x.Enable(cameraType == "persp_camera");
+   PPG.persp_lens_tilt_angle_y.Enable(cameraType == "persp_camera");
 
    PPG.cyl_horizontal_fov.Enable(cameraType == "cyl_camera");
    PPG.cyl_vertical_fov.Enable(cameraType == "cyl_camera");
@@ -1280,6 +1309,10 @@ function arnold_procedural_Define(io_Context)
    p = customProperty.AddParameter2("frame", siInt4, 1, -1000000, 1000000, 1, 100, siClassifAppearance, siPersistable|siAnimatable);
    p.enable(false);
 
+   p = customProperty.AddParameter2("override_nodes", siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   p = customProperty.AddParameter2("auto_instancing", siBool, 1, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   p = customProperty.AddParameter2("namespace", siString, "", "", "", "", "", 0, siPersistable|siAnimatable);
+
    // new (2.2) viewer parameters at object's level
    p = customProperty.AddParameter2("mode", siInt4, 0, 0, 2, 0, 2, siClassifAppearance, siPersistable|siAnimatable);
    p = customProperty.AddParameter2("randomColors", siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);	
@@ -1317,10 +1350,16 @@ function arnold_procedural_DefineLayout(io_Context)
 
    xsiLayout.AddRow()
       xsiItem = xsiLayout.AddItem("overrideFrame", "Override Frame");
-      xsiItem.WidthPercentage = 40;
+      xsiItem.WidthPercentage = 50;
       xsiItem = xsiLayout.AddItem("frame", "Frame");
-      xsiItem.WidthPercentage = 60;
+      xsiItem.WidthPercentage = 50;
+      xsiItem.SetAttribute(siUILabelMinPixels, 50);
+      xsiItem.SetAttribute(siUILabelPercentage, 10);
    xsiLayout.EndRow()
+
+   xsiItem = xsiLayout.AddItem("override_nodes", "Override Nodes");
+   xsiItem = xsiLayout.AddItem("auto_instancing", "Auto Instancing");
+   xsiItem = xsiLayout.AddItem("namespace", "Namespace");
 
    UserDataLayout(xsiLayout, true);
 

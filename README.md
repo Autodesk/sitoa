@@ -18,7 +18,7 @@ under an Apache 2.0 open source license.
 #### Requirements
 
 * Softimage 2015 SP1
-* Arnold 6.0.1.0 or newer
+* Arnold 6.0.2.0 or newer
 * Python 2.6 or newer
 * Visual Studio 2015 (Windows)
 * GCC 4.2.4 (Linux)
@@ -65,7 +65,7 @@ VS_HOME             = r'C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC'
 WINDOWS_KIT         = r'C:/Program Files (x86)/Windows Kits/8.0'
 
 XSISDK_ROOT         = r'C:/Program Files/Autodesk/Softimage 2015/XSISDK'
-ARNOLD_HOME         = r'C:/SolidAngle/Arnold-6.0.1.0/win64'
+ARNOLD_HOME         = r'C:/SolidAngle/Arnold-6.0.2.0/win64'
 
 TARGET_WORKGROUP_PATH  = r'./Softimage_2015/Addons/SItoA'
 

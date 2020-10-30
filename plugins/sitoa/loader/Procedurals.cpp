@@ -235,6 +235,10 @@ CStatus LoadSingleProcedural(const X3DObject &in_xsiObj, double in_frame, CRefAr
    CNodeUtilities().SetName(procNode, name);
    CNodeSetter::SetString(procNode, "filename", filename.GetAsciiString());
 
+   CNodeSetter::SetBoolean(procNode, "override_nodes", (bool)ParAcc_GetValue(proceduralInfo, L"override_nodes", in_frame));
+   CNodeSetter::SetBoolean(procNode, "auto_instancing", (bool)ParAcc_GetValue(proceduralInfo, L"auto_instancing", in_frame));
+   CNodeSetter::SetString(procNode, "namespace", ((CString)ParAcc_GetValue(proceduralInfo, L"namespace", in_frame)).GetAsciiString());
+
    // Getting Motion Blur Data
    CDoubleArray keyFramesTransform;
    CDoubleArray keyFramesDeform;

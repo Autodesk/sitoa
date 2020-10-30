@@ -49,6 +49,7 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
    AtArray* matrices = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_MATRIX);
    AtArray* screenWindowMins = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_VECTOR2);
    AtArray* screenWindowMaxs = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_VECTOR2);
+   AtArray* lensShifts = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_VECTOR2);
    
    for (LONG ikey=0; ikey<nbTransfKeys; ikey++)
    {
@@ -108,8 +109,12 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
       // This was broken in SItoA 4.1, but fixed on Github: https://github.com/Autodesk/sitoa/issues/42
       // It moved in to the for-loop because these values are of array type even though they doesn't support motion blur (yet?)
       // IF it supports motion blur in the future, we can simply change in_frame to frame in all the (float)ParAcc_GetValue() below
+      // UPDATED in SItoA 6.0.1 (Arnold 6.0.2.0)
+      // New parameter lens_shift that supports motion blur in persp_camera.
+      // So the Optical Shift in Softimage now controls lens_shift instead of screen_window.
       AtVector2 screenWindowMin;
       AtVector2 screenWindowMax;
+      AtVector2 lensShift(0.0f, 0.0f);
       float orthoSubpixelMultiplier = 1.0f;
       if (ParAcc_GetValue(in_xsiCamera, L"proj", in_frame) == 0)
       {
@@ -130,13 +135,13 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
          
          if ((bool)ParAcc_GetValue(in_xsiCamera, L"projplane", in_frame))
          {
-            float offsetX = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffx", in_frame);
-            float offsetY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffy", in_frame);
+            float offsetX = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffx", frame);
+            float offsetY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneoffy", frame);
             
             if (offsetX!=0.0f || offsetY!=0.0f)
             {
-               float apertureX = (float)ParAcc_GetValue(in_xsiCamera, L"projplanewidth", in_frame);
-               float apertureY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneheight", in_frame);
+               float apertureX = (float)ParAcc_GetValue(in_xsiCamera, L"projplanewidth", frame);
+               float apertureY = (float)ParAcc_GetValue(in_xsiCamera, L"projplaneheight", frame);
    
                factorX = (offsetX / apertureX) * 2;
                factorY = (offsetY / apertureY) * 2;
@@ -144,10 +149,12 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
          }
 
          // Perspective camera - so let's just set defaults
-         screenWindowMin.x = -1.0f + factorX;
-         screenWindowMin.y = -1.0f + factorY;
-         screenWindowMax.x =  1.0f + factorX;
-         screenWindowMax.y =  1.0f + factorY;
+         screenWindowMin.x = -1.0f;
+         screenWindowMin.y = -1.0f;
+         screenWindowMax.x =  1.0f;
+         screenWindowMax.y =  1.0f;
+         lensShift.x = 0.0f - factorX;
+         lensShift.y = 0.0f - factorY;
       }
 
       // The subpixelzoom mode should only affects a render region mode
@@ -166,6 +173,7 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
 
       AiArraySetVec2(screenWindowMins, ikey, screenWindowMin);
       AiArraySetVec2(screenWindowMaxs, ikey, screenWindowMax);
+      AiArraySetVec2(lensShifts, ikey, lensShift);
    }
 
    if (hasFOV)
@@ -173,6 +181,10 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
 
    // Setting the camera matrix - this is a default arnold camera parameter
    AiNodeSetArray(in_cameraNode, "matrix", matrices);
+
+   // Set the lens shift
+   if (AiNodeIs(in_cameraNode, ATSTRING::persp_camera))
+      AiNodeSetArray(in_cameraNode, "lens_shift", lensShifts);
 
    // Set the screen_windows
    AiNodeSetArray(in_cameraNode, "screen_window_min", screenWindowMins);

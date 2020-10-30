@@ -154,6 +154,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("operator", 1, 0);
    in_reg.RegisterShader("set_parameter", 1, 0);
    in_reg.RegisterShader("set_transform", 1, 0);
+   in_reg.RegisterShader("string_replace", 1, 0);
    in_reg.RegisterShader("switch_operator", 1, 0);
 
    // in_reg.Help = "https://support.solidangle.com/display/A5SItoAUG/Shaders";
@@ -427,6 +428,8 @@ function Arnold_set_parameter_1_0_DefineInfo(in_ctxt) { return true; }
 //function Arnold_set_parameter_1_0_Define(in_ctxt) { return true; }
 function Arnold_set_transform_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_set_transform_1_0_Define(in_ctxt) { return true; }
+function Arnold_string_replace_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_string_replace_1_0_Define(in_ctxt) { return true; }
 function Arnold_switch_operator_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_switch_operator_1_0_Define(in_ctxt) { return true; }
 
