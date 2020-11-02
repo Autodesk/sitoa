@@ -2056,7 +2056,7 @@ softmax FLOAT 1
 ##############################################################################
 [node mix_shader]
 soft.category STRING "Math"
-soft.order STRING "shader1 shader2 mode mix"
+soft.order STRING "shader1 shader2 mode mix add_transparency"
 
 [attr mode]
 desc STRING "The mixing mode."
@@ -2074,6 +2074,8 @@ soft.label STRING "Shader 1"
 [attr shader2]
 desc STRING "Second material to be mixed."
 soft.label STRING "Shader 2"
+
+[attr add_transparency]
 
 ##############################################################################
 [node modulo]
