@@ -3692,7 +3692,7 @@ soft.order STRING "BeginGroup Edge enable edge_color edge_tonemap edge_opacity e
 "BeginGroup Transmission transmission transmission_color transmission_roughness transmission_anisotropy transmission_rotation IOR EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
 "BeginGroup Geometry normal tangent bump_mode EndGroup "
-"BeginGroup AOVs aov_highlight aov_rim_light EndGroup "
+"BeginGroup AOVs aov_highlight aov_rim_light aov_prefix EndGroup "
 "BeginGroup Advanced indirect_diffuse indirect_specular energy_conserving EndGroup "
 "BeginGroup Sheen sheen sheen_color sheen_roughness EndGroup"
 
@@ -3945,6 +3945,10 @@ soft.label STRING "Highlight"
 [attr aov_rim_light]
 desc STRING "Rim light AOV."
 soft.label STRING "Rim Light"
+
+[attr aov_prefix]
+desc STRING "An optional aov_prefix that will be prepended to the toon AOVs names."
+soft.label STRING "AOV Prefix"
 
 # Advanced
 
