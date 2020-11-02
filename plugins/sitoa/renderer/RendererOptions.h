@@ -118,18 +118,23 @@ public:
    int     m_AA_samples_max;
    float   m_AA_adaptive_threshold;
 
-   float   m_indirect_specular_blur;
-   bool    m_lock_sampling_noise;
-   bool    m_sss_use_autobump;
-
+   // clamping
    bool    m_use_sample_clamp;
    bool    m_use_sample_clamp_AOVs;
    float   m_AA_sample_clamp;
    float   m_indirect_sample_clamp;
+
+   // filtering
    CString m_output_filter;
    float   m_output_filter_width;
    bool    m_filter_color_AOVs;
    bool    m_filter_numeric_AOVs;
+
+   // advanced
+   bool    m_lock_sampling_noise;
+   bool    m_sss_use_autobump;
+   float   m_indirect_specular_blur;
+
 
    // motion blur
    bool    m_enable_motion_blur;
@@ -311,18 +316,22 @@ public:
       m_AA_samples_max(8),
       m_AA_adaptive_threshold(0.05f),
 
-      m_indirect_specular_blur(1.0f),
-
-      m_lock_sampling_noise(false),
-      m_sss_use_autobump(false),
+      // clamping
       m_use_sample_clamp(false),
       m_use_sample_clamp_AOVs(false),
       m_AA_sample_clamp(10.0f),
       m_indirect_sample_clamp(10.0f),
+
+      // filtering
       m_output_filter(L"gaussian"),
       m_output_filter_width(2.0),
       m_filter_color_AOVs(true),
       m_filter_numeric_AOVs(true), // not the default
+
+      // advanced
+      m_lock_sampling_noise(false),
+      m_sss_use_autobump(false),
+      m_indirect_specular_blur(1.0f),
 
       // motion blur
       m_enable_motion_blur(false),
