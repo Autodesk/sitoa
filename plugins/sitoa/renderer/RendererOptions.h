@@ -133,6 +133,7 @@ public:
    // advanced
    bool    m_lock_sampling_noise;
    bool    m_sss_use_autobump;
+   bool    m_dielectric_priorities;
    float   m_indirect_specular_blur;
 
 
@@ -331,6 +332,7 @@ public:
       // advanced
       m_lock_sampling_noise(false),
       m_sss_use_autobump(false),
+      m_dielectric_priorities(true),
       m_indirect_specular_blur(1.0f),
 
       // motion blur
