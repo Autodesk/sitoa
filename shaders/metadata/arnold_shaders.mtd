@@ -3688,7 +3688,7 @@ soft.order STRING "BeginGroup Edge enable edge_color edge_tonemap edge_opacity e
 "BeginGroup Base base base_color base_tonemap EndGroup "
 "BeginGroup Specular specular specular_color specular_roughness specular_anisotropy specular_rotation specular_tonemap EndGroup "
 "BeginGroup Stylized_Highlight lights highlight_color highlight_size EndGroup "
-"BeginGroup Rim_Lighting rim_light rim_light_color rim_light_width EndGroup "
+"BeginGroup Rim_Lighting rim_light rim_light_color rim_light_width rim_light_tint EndGroup "
 "BeginGroup Transmission transmission transmission_color transmission_roughness transmission_anisotropy transmission_rotation IOR EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
 "BeginGroup Geometry normal tangent bump_mode EndGroup "
@@ -3863,6 +3863,12 @@ soft.label STRING "Color"
 [attr rim_light_width]
 desc STRING "The size of the stylized highlight."
 soft.label STRING "Width"
+min FLOAT 0
+max FLOAT 1
+
+[attr rim_light_tint]
+desc STRING "Tints the color of the rim light using the base color of the surface."
+soft.label STRING "Tint"
 min FLOAT 0
 max FLOAT 1
 
