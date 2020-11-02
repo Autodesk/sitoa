@@ -372,7 +372,7 @@ public:
       m_enable_autotile(false),
       m_texture_autotile(64),
       m_use_existing_tx_files(false),
-      m_texture_max_memory_MB(2048),
+      m_texture_max_memory_MB(4096),
       m_texture_max_open_files(100),
 
       // color managers
