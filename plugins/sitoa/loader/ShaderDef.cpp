@@ -221,6 +221,18 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
    else if (m_has_max)
       defOptions.SetHardLimit((CValue)-1000000, (CValue)m_max);
 
+   // copy min and max to softmin and softmax if one of them don't exist.
+   if (m_has_softmin && !m_has_softmax && m_has_max)
+   {
+      m_has_softmax = true;
+      m_softmax = m_max;
+   }
+   if (m_has_softmax && !m_has_softmin && m_has_min)
+   {
+      m_has_softmin = true;
+      m_softmin = m_min;
+   }
+
    if (m_has_softmin && m_has_softmax)
       defOptions.SetSoftLimit((CValue)m_softmin, (CValue)m_softmax);
    // metadata check, fire a message if we have only one of the soft limit
