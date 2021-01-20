@@ -22,6 +22,7 @@ See the License for the specific language governing permissions and limitations 
 #include "renderer/IprCamera.h"
 #include "renderer/IprCommon.h"
 #include "renderer/IprCreateDestroy.h"
+#include "renderer/IprImagers.h"
 #include "renderer/IprLight.h"
 #include "renderer/IprOperators.h"
 #include "renderer/IprShader.h"
@@ -1525,6 +1526,8 @@ CStatus CRenderInstance::ProcessRegion()
       }
 
       UpdateCamera(m_frame);
+
+      UpdateImagers(m_frame);
 
       // In flythrough mode, update only when the dirty list is void, ie on a frame change.
       // If not void, the update is already managed by the dirty list loop above

@@ -1,0 +1,253 @@
+#####################################################################################################################################
+# Copyright 2017 Autodesk, Inc. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. 
+# You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, 
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+# See the License for the specific language governing permissions and limitations under the License.
+#####################################################################################################################################
+
+###########################################################################
+[node imager_color_correct]
+soft.order STRING "enable layer_selection "
+"BeginGroup Main main_saturation main_constrast main_gamma main_gain main_offset EndGroup "
+"BeginGroup Shadows shadows_saturation shadows_contrast shadows_gamma shadows_gain shadows_offset EndGroup "
+"BeginGroup Midtones midtones_saturation midtones_contrast midtones_gamma midtones_gain midtones_offset EndGroup "
+"BeginGroup Highlights highlights_saturation highlights_contrast highlights_gamma highlights_gain highlights_offset EndGroup "
+
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr main_saturation]
+soft.label STRING "Saturation"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr main_contrast]
+soft.label STRING "Contrast"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr main_gamma]
+soft.label STRING "Gamma"
+min FLOAT 0
+softmax FLOAT 5
+linkable BOOL false
+
+[attr main_gain]
+soft.label STRING "Gain"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr main_offset]
+soft.label STRING "Offset"
+softmin FLOAT -1
+softmax FLOAT 1
+linkable BOOL false
+
+[attr shadows_saturation]
+soft.label STRING "Saturation"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr shadows_contrast]
+soft.label STRING "Contrast"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr shadows_gamma]
+soft.label STRING "Gamma"
+min FLOAT 0
+softmax FLOAT 5
+linkable BOOL false
+
+[attr shadows_gain]
+soft.label STRING "Gain"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr shadows_offset]
+soft.label STRING "Offset"
+softmin FLOAT -1
+softmax FLOAT 1
+linkable BOOL false
+
+[attr midtones_saturation]
+soft.label STRING "Saturation"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr midtones_contrast]
+soft.label STRING "Contrast"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr midtones_gamma]
+soft.label STRING "Gamma"
+min FLOAT 0
+softmax FLOAT 5
+linkable BOOL false
+
+[attr midtones_gain]
+soft.label STRING "Gain"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr midtones_offset]
+soft.label STRING "Offset"
+softmin FLOAT -1
+softmax FLOAT 1
+linkable BOOL false
+
+[attr highlights_saturation]
+soft.label STRING "Saturation"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr highlights_contrast]
+soft.label STRING "Contrast"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr highlights_gamma]
+soft.label STRING "Gamma"
+min FLOAT 0
+softmax FLOAT 5
+linkable BOOL false
+
+[attr highlights_gain]
+soft.label STRING "Gain"
+min FLOAT 0
+softmax FLOAT 2
+linkable BOOL false
+
+[attr highlights_offset]
+soft.label STRING "Offset"
+softmin FLOAT -1
+softmax FLOAT 1
+linkable BOOL false
+
+###########################################################################
+[node imager_exposure]
+
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr exposure]
+softmin FLOAT -10
+softmax FLOAT 10
+linkable BOOL false
+
+###########################################################################
+[node imager_lens_effects]
+
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr vignetting]
+softmin FLOAT 0
+softmax FLOAT 100
+linkable BOOL false
+
+###########################################################################
+[node imager_tonemap]
+soft.order STRING "enable layer_selection mode "
+"BeginGroup Filmic filmic_toe_strength filmic_toe_length filmic_shoulder_strength filmic_shoulder_length filmic_shoulder_angle EndGroup "
+"BeginGroup Reinhard reinhard_highlights reinhard_shadows EndGroup "
+"preserve_saturation gamma"
+
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr filmic_toe_strength]
+soft.label STRING "Toe Strength"
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr filmic_toe_length]
+soft.label STRING "Toe Length"
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr filmic_shoulder_strength]
+soft.label STRING "Shoulder Strength"
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr filmic_shoulder_length]
+soft.label STRING "Shoulder Length"
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr filmic_shoulder_angle]
+soft.label STRING "Shoulder Angle"
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr reinhard_highlights]
+soft.label STRING "Highlights"
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr reinhard_shadows]
+soft.label STRING "Shadows"
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr preserve_saturation]
+linkable BOOL false
+
+[attr gamma]
+min FLOAT 0
+softmax FLOAT 5
+linkable BOOL false
+
+###########################################################################
+[node imager_white_balance]
+soft.order STRING "enable layer_selection mode illuminant temperature custom"
+
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr temperature]
+softmin FLOAT 0
+softmax FLOAT 15000
+linkable BOOL false
+
+[attr custom]
+linkable BOOL false
