@@ -11,7 +11,7 @@ WINDOWS_KIT         = r'C:/Program Files (x86)/Windows Kits/8.0'
 XSISDK_ROOT         = r'C:/Program Files/Autodesk/Softimage 2015/XSISDK'
 ARNOLD_HOME         = r'C:/SolidAngle/Arnold-6.1.0.1/win64'
 
-TARGET_WORKGROUP_PATH  = r'./Softimage_2015/Addons/SItoA'
+TARGET_WORKGROUP_PATH  = r'./dist/Softimage_2015/Addons/SItoA'
 
 WARN_LEVEL = 'strict'
 MODE       = 'opt'
