@@ -372,7 +372,6 @@ CStatus LoadArraySwitcherParameter(AtNode *in_node, const Parameter &in_param, d
 
          CString arrayLink = L"values[" + (CValue(in_arrayElement).GetAsText()) + L"]";
          AiNodeLink(shaderLinked, arrayLink.GetAsciiString(), in_node);
-         continue;
       }
 
       CValue::DataType dataType = p.GetValueType();

@@ -12,6 +12,7 @@ See the License for the specific language governing permissions and limitations 
 #include "common/Tools.h"
 #include "loader/Cameras.h"
 #include "loader/Hairs.h"
+#include "loader/Imagers.h"
 #include "loader/Instances.h"
 #include "loader/Loader.h"
 #include "loader/Options.h"
@@ -279,6 +280,20 @@ CStatus LoadScene(const Property &in_arnoldOptions, const CString& in_renderType
       {
          AiMsgDebug("[sitoa] Loading Cameras");
          status = LoadCameras(iframe);
+
+         if (progressBar.IsCancelPressed() || status == CStatus::Abort)
+         {
+            AbortFrameLoadScene();
+            break;
+         }
+      }
+
+      //////////// Imagers ////////////
+      if (!in_createStandIn)
+      {
+         AiMsgDebug("[sitoa] Loading Imagers");
+         
+         status = LoadImagers(iframe);
 
          if (progressBar.IsCancelPressed() || status == CStatus::Abort)
          {

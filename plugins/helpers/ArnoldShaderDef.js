@@ -145,6 +145,13 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("volume_sample_float", 1, 0);
    in_reg.RegisterShader("volume_sample_rgb", 1, 0);
    in_reg.RegisterShader("wireframe", 1, 0);
+   // imagers
+   in_reg.RegisterShader("imager", 1, 0);
+   in_reg.RegisterShader("imager_color_correct", 1, 0);
+   in_reg.RegisterShader("imager_exposure", 1, 0);
+   in_reg.RegisterShader("imager_lens_effects", 1, 0);
+   in_reg.RegisterShader("imager_tonemap", 1, 0);
+   in_reg.RegisterShader("imager_white_balance", 1, 0);
    // operators
    in_reg.RegisterShader("disable", 1, 0);
    in_reg.RegisterShader("collection", 1, 0);
@@ -413,6 +420,18 @@ function Arnold_volume_sample_rgb_1_0_Define(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_wireframe_1_0_Define(in_ctxt) { return true; }
 
+// imagers
+function Arnold_imager_color_correct_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_imager_color_correct_1_0_Define(in_ctxt) { return true; }
+function Arnold_imager_exposure_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_imager_exposure_1_0_Define(in_ctxt) { return true; }
+function Arnold_imager_lens_effects_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_imager_lens_effects_1_0_Define(in_ctxt) { return true; }
+function Arnold_imager_tonemap_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_imager_tonemap_1_0_Define(in_ctxt) { return true; }
+function Arnold_imager_white_balance_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_imager_white_balance_1_0_Define(in_ctxt) { return true; }
+
 // operators
 function Arnold_collection_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_collection_1_0_Define(in_ctxt) { return true; }
@@ -532,6 +551,33 @@ function physical_sky_RemoveExpression_OnClicked()
    RemoveAnimation(pset + ".Z.x", null, null, null, null, null);
    RemoveAnimation(pset + ".Z.y", null, null, null, null, null);
    RemoveAnimation(pset + ".Z.z", null, null, null, null, null);
+}
+
+function Arnold_imager_1_0_DefineInfo(in_ctxt)
+{
+   in_ctxt.SetAttribute("DisplayName", "imager");
+   in_ctxt.SetAttribute("Category", "Arnold/Imagers");
+   return true;
+}
+
+function Arnold_imager_1_0_Define(in_ctxt)
+{
+   var h = SItoAShaderDefHelpers(); // helper object
+
+   var shaderDef = in_ctxt.GetAttribute("Definition");
+   shaderDef.AddShaderFamily(siShaderFamilyLens);
+
+   // INPUT
+   params = shaderDef.InputParamDefs;
+   h.AddNode(params, "imager");
+
+   // OUTPUT
+   h.AddOutputColor4(shaderDef.OutputParamDefs);
+
+   // Renderer definition
+   h.AddArnoldRendererDef(shaderDef);
+
+   return true;
 }
 
 function Arnold_operator_1_0_DefineInfo(in_ctxt)

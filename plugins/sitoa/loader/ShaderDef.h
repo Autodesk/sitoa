@@ -121,6 +121,7 @@ public:
    bool    m_is_camera_node;                   // is this a custom camera node?
    bool    m_is_passthrough_closure;           // is this the SItoA shader called "closure" ?
    bool    m_is_operator_node;                 // is this an operator node?
+   bool    m_is_imager_node;                   // is this an imager node?
    bool    m_has_skip;
    bool    m_skip;
 
@@ -146,6 +147,7 @@ public:
       m_is_camera_node(in_arg.m_is_camera_node), 
       m_is_passthrough_closure(in_arg.m_is_passthrough_closure),
       m_is_operator_node(in_arg.m_is_operator_node),
+      m_is_imager_node(in_arg.m_is_imager_node),
       m_has_skip(in_arg.m_has_skip), m_skip(in_arg.m_skip)
    {
    }

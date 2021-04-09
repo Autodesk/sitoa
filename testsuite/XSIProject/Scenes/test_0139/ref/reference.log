@@ -1,58 +1,194 @@
 =======================================================
- Autodesk Softimage 11.1.57.0
+ Autodesk Softimage 13.2.163.0
 =======================================================
 
 License information: using [Processing]
-00:00:00   160MB         | log started Wed Jun  7 12:01:07 2017
-00:00:00   160MB         | Arnold 5.0.0.3 [baf78363] windows icc-17.0.2 oiio-1.7.12 osl-1.8.2 vdb-4.0.0 rlm-12.2.2 2017/05/31 10:45:24
-00:00:00   160MB         | running on cavallo, pid=2400
-00:00:00   160MB         |  1 x Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz (4 cores, 8 logical) with 16334MB
-00:00:00   160MB         |  Windows 8 Professional (version 6.2, build 9200)
-00:00:00   160MB         |  soft limit for open files raised from 512 to 2048
-00:00:00   160MB         |  
-00:00:00   160MB         | loading plugins from C:\dev\Mia\Arnold\Extra_Shaders ...
-00:00:00   160MB         | loaded 1 plugins from 1 lib(s) and 1 OSL shaders in 0:00.00
-00:00:00   160MB         | loading plugins from C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
-00:00:00   160MB         | loaded 103 plugins from 1 lib(s) in 0:00.00
+00:00:00   236MB         | log started Fri Nov 13 21:58:15 2020
+00:00:00   236MB         | Arnold 6.1.0.0 [250260fb] windows clang-10.0.1 oiio-2.2.1 osl-1.11.6 vdb-4.0.0 clm-1.1.1.118 rlm-12.4.2 optix-6.6.0 2020/10/27 10:53:09
+00:00:00   236MB         | running on Jenus, pid=24640
+00:00:00   236MB         |  1 x Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz (4 cores, 8 logical) with 16333MB
+00:00:00   236MB         |  NVIDIA driver version 456.71 (Optix 60700)
+00:00:00   236MB         |  GPU 0: GeForce GTX 1070 @ 1771MHz (compute 6.1) with 8192MB (6472MB available) (NVLink:0)
+00:00:00   236MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00   236MB         |  soft limit for open files raised from 512 to 2048
+00:00:00   236MB         |  
+00:00:00   236MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\..\plugins ...
+00:00:00   237MB         |  alembic_proc.dll: alembic uses Arnold 6.1.0.0
+00:00:00   237MB         |  cryptomatte.dll: cryptomatte uses Arnold 6.1.0.0
+00:00:00   237MB         |  cryptomatte.dll: cryptomatte_filter uses Arnold 6.1.0.0
+00:00:00   237MB         |  cryptomatte.dll: cryptomatte_manifest_driver uses Arnold 6.1.0.0
+00:00:00   248MB         |  usd_proc.dll: usd uses Arnold 6.1.0.0
+00:00:00   248MB         | loaded 5 plugins from 3 lib(s) in 0:00.14
+00:00:00   248MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64 ...
+00:00:00   249MB         |  sitoa_shaders.dll: mib_texture_remap uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: txt2d_image_explicit uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: txt2d_scalarimage_explicit uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: txt2d_gradient_v2 uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: txt3d_cellular_v3 uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: txt3d_checkerboard uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: txt3d_marble uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_texture_marble uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_texture_snow uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: txt3d_snow uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_texture2d_grid uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: txt2d_grid uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_attribute_boolean uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_attribute_color uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_attribute_integer uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_attribute_scalar uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_attribute_vector uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_attribute_transform uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_zbump uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_channel_picker uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_combine uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_hlsa_combine uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_hsva_combine uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_correction uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_balance uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_hls_adjust uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: mib_color_intensity uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_invert uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: rgba_keyer uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_invert uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_2mix uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_8mix uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_gradient uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_to_scalar uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_to_vector uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_to_boolean uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_rgb_to_hsv uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_hsv_to_rgb uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_integer_to_scalar uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_to_color uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_to_integer uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalars_to_vector uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_vector_to_scalar uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_space_conversion uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: Vector3ToVector2 uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: Vector2ToVector3 uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_math_basic uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_math_exponent uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_math_logic uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_math_unary uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_smoothrange uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: mib_color_average uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_interp_linear uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_inrange uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_math_basic uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_math_exponent uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_inrange uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_math_logic uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_math_unary uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_smoothrange uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_boolean_math_logic uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_boolean_negate uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_vector_math_scalar uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_vector_math_vector uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_atten_linear uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_math_curve uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_math_curve uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: Math_int_fmod uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_passthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_passthrought uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_passthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_integer_passthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_boolean_passthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_vector_passthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: BooleanPassthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: Color4Passthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: IntegerPassthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: MatrixPassthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: ScalarPassthrough uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: BooleanSwitch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: Color4Switch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: IntegerSwitch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: ScalarSwitch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: Vector3Switch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_switch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_switch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_vector_switch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_color_multi_switch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_scalar_multi_switch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_vector_multi_switch uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: mib_texture_lookup uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: map_lookup_color uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: map_lookup_scalar uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: map_lookup_integer uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: map_lookup_boolean uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: map_lookup_vector uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_vertex_color_alpha uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_texproj_lookup uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_image_clip uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_matte uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: sib_texturelayer uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: passthrough_filter uses Arnold 6.1.0.0
+00:00:00   249MB         |  sitoa_shaders.dll: closure uses Arnold 6.1.0.0
+00:00:00   249MB         | loaded 103 plugins from 1 lib(s) in 0:00.06
+00:00:00   249MB         | [metadata] loading metadata file: C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\arnold_shaders.mtd
 
 
 
 
-00:00:00   165MB         |  
-00:00:00   165MB         | releasing resources
-00:00:00   165MB         | Arnold shutdown
-// INFO : [sitoa] SItoA 4.0.0 win loaded.
-// INFO : [sitoa] Arnold 5.0.0.3 detected.
-InstallCustomPreferences("ArnoldRenderPreferences", "Arnold Render");
+00:00:00   250MB         | [metadata] loading metadata file: C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\arnold_operators.mtd
+00:00:00   257MB         |  
+00:00:00   257MB         | releasing resources
+00:00:00   256MB         |  unloading 4 plugins
+00:00:00   256MB         |   closing alembic_proc.dll ...
+00:00:00   256MB         |   closing cryptomatte.dll ...
+00:00:00   256MB         |   closing usd_proc.dll ...
+00:00:00   253MB         |   closing sitoa_shaders.dll ...
+00:00:00   253MB         |  unloading plugins done
+00:00:00   253MB         | Arnold shutdown
+// INFO : [sitoa] SItoA 6.1.0a win loaded.
+// INFO : [sitoa] Arnold 6.1.0.0 detected.
+RefreshCustomPreferences();
 COMMAND: -processing -script "execute_test.js" -main main
-// INFO : C:\Users\Stefano\Autodesk\Softimage_2013_SP1\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
->Loading: C:\dev\Mia\Arnold\sitoa\build\windows_x86_64\msvc_opt\si_11000\testsuite\test_0139\test.scn...
+// INFO : C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\
+>Loading: C:\Users\lindg\GitHub\sitoa\build\windows_x86_64\msvc_opt\si_13000\testsuite\test_0139\test.scn...
 // INFO : 4034 - Loaded scene was created with build number: 11.1.57.0 - compatibility version: 1100
-OpenScene("C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0139\\test.scn", null, null);
+// INFO : [sitoa] Loaded scene was created with SItoA 4.0.0
+OpenScene("C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0139\\test.scn", null, null);
 SetValue("Passes.RenderOptions.ImageLockAspectRatio", false, null);
 SetValue("Passes.RenderOptions.ImageWidth", 160, null);
 SetValue("Passes.RenderOptions.ImageHeight", 120, null);
-SetValue("Passes.Default_Pass.Main.Filename", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0139\\testrender.####.tif", null);
+SetValue("Passes.Default_Pass.Main.Filename", "C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0139\\testrender.####.tif", null);
 SetValue("Passes.Default_Pass.Main.Format", "tif", null);
 SetValue("Passes.Arnold_Render_Options.output_tiff_tiled", 0, null);
 SetValue("Passes.Arnold_Render_Options.enable_log_file", true, null);
 SetValue("Passes.Arnold_Render_Options.log_level", 1, null);
-SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\testsuite\\test_0139", null);
-// ERROR : 2000 - Argument 0 (Target) is invalid
-// ERROR : 2001-EDIT-SetValue - Argument 0 is invalid
-SetValue("Passes.Arnold_Render_Options.shaders_path", "C:\\dev\\Mia\\Arnold\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_11000\\shaders", null);
-Command failed, returned -2147024809
-SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\dev\\Mia\\Arnold\\sitoa\\testsuite\\XSIProject\\Pictures", null);
+SetValue("Passes.Arnold_Render_Options.output_file_tagdir_log", "C:\\Users\\lindg\\GitHub\\sitoa\\build\\windows_x86_64\\msvc_opt\\si_13000\\testsuite\\test_0139", null);
+SetValue("Passes.Arnold_Render_Options.textures_path", "C:\\Users\\lindg\\GitHub\\sitoa\\testsuite\\XSIProject\\Pictures", null);
 SetValue("Passes.Arnold_Render_Options.save_texture_paths", false, null);
 // INFO : Rendering pass 'Default_Pass'...
 // INFO : Rendering frame 1 (0.0% done)
-// INFO : [sitoa] Frame 1 exported to Arnold in 0.03 sec.
+00:00:00   317MB         | log started Fri Nov 13 21:58:27 2020
+00:00:00   317MB         | Arnold 6.1.0.0 [250260fb] windows clang-10.0.1 oiio-2.2.1 osl-1.11.6 vdb-4.0.0 clm-1.1.1.118 rlm-12.4.2 optix-6.6.0 2020/10/27 10:53:09
+00:00:00   317MB         | running on Jenus, pid=24640
+00:00:00   317MB         |  1 x Intel(R) Core(TM) i7-2600K CPU @ 3.40GHz (4 cores, 8 logical) with 16333MB
+00:00:00   320MB         |  NVIDIA driver version 456.71 (Optix 60700)
+00:00:00   320MB         |  GPU 0: GeForce GTX 1070 @ 1771MHz (compute 6.1) with 8192MB (6472MB available) (NVLink:0)
+00:00:00   320MB         |  Windows 8 Professional (version 6.2, build 9200)
+00:00:00   320MB         |  soft limit for open files is set at 2048
+00:00:00   320MB         |  
+00:00:00   323MB         | loading plugins from C:\Users\lindg\GitHub\sitoa\dist\Softimage_2015_SP2\Addons\SItoA\Application\Plugins\bin\nt-x86-64\..\plugins ...
+00:00:00   323MB         |  alembic_proc.dll: alembic uses Arnold 6.1.0.0
+00:00:00   323MB         |  cryptomatte.dll: cryptomatte uses Arnold 6.1.0.0
+00:00:00   323MB         |  cryptomatte.dll: cryptomatte_filter uses Arnold 6.1.0.0
+00:00:00   323MB         |  cryptomatte.dll: cryptomatte_manifest_driver uses Arnold 6.1.0.0
+00:00:00   327MB         |  usd_proc.dll: usd uses Arnold 6.1.0.0
+00:00:00   327MB         | loaded 5 plugins from 3 lib(s) in 0:00.07
+// WARNING : [arnold] options.render_device: enumerated value -1 is out of range
+// WARNING : [arnold] options: could not set INT parameter "render_device"
+// WARNING : [arnold] options.render_device_fallback: enumerated value -1 is out of range
+// WARNING : [arnold] options: could not set INT parameter "render_device_fallback"
+// INFO : [sitoa] Frame 1 exported to Arnold in 0.156 sec.
+// INFO : Render completed (100% done)
 RenderAllPasses(null, null, null, null, siRenderVerbosityDefault);
 Warning: return value of the executed script is not an integer
-// INFO : Render completed (100% done)
 // INFO : Characters has been unloaded.
-// INFO : TransformUVsPlugin has been unloaded.
-// INFO : [sitoa] SItoA 4.0.0 win has been unloaded.
 // INFO : polymatricksPlugin has been unloaded.
+// INFO : [sitoa] SItoA 6.1.0a win has been unloaded.
+// INFO : TransformUVsPlugin has been unloaded.
 // INFO : FBX-XSI import/export Plug-in has been unloaded.
 // INFO : Unfold3D Plugin has been unloaded.
+

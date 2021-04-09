@@ -454,10 +454,15 @@ CStatus LoadLights(double in_frame, CRefArray &in_selectedObjs, bool in_selectio
          continue;
       
       Light xsiLight(lightsArray[i]);
-      status = LoadSingleLight(xsiLight, in_frame);
-      if (status == CStatus::Abort)
-         return status;
-      // #1307 : do not break in case of CStatus::Fail, just go to the next light
+
+      // Github #86 - Only load light if it's visible in rendering
+      if (ParAcc_GetValue(Property(xsiLight.GetProperties().GetItem(L"Visibility")), L"rendvis", in_frame))
+      {
+         status = LoadSingleLight(xsiLight, in_frame);
+         if (status == CStatus::Abort)
+            return status;
+         // #1307 : do not break in case of CStatus::Fail, just go to the next light
+      }
    }
 
    // GetRenderInstance()->LightMap().Log();

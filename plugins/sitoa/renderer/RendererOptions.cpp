@@ -127,12 +127,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_AA_samples_max           = (int)ParAcc_GetValue(in_cp,   L"AA_samples_max",           DBL_MAX);
    m_AA_adaptive_threshold    = (float)ParAcc_GetValue(in_cp, L"AA_adaptive_threshold",    DBL_MAX);
 
-   m_indirect_specular_blur  = (float)ParAcc_GetValue(in_cp, L"indirect_specular_blur", DBL_MAX);
-
-   m_lock_sampling_noise = (bool)ParAcc_GetValue(in_cp, L"lock_sampling_noise", DBL_MAX);
-
-   m_sss_use_autobump = (bool)ParAcc_GetValue(in_cp, L"sss_use_autobump", DBL_MAX);
-
+   // clamping
    m_use_sample_clamp        = (bool) ParAcc_GetValue(in_cp, L"use_sample_clamp",        DBL_MAX);
    m_use_sample_clamp_AOVs   = (bool) ParAcc_GetValue(in_cp, L"use_sample_clamp_AOVs",   DBL_MAX);
    m_AA_sample_clamp         = (float)ParAcc_GetValue(in_cp, L"AA_sample_clamp",         DBL_MAX);
@@ -140,10 +135,17 @@ void CRenderOptions::Read(const Property &in_cp)
    if (ParAcc_Valid(in_cp, "indirect_sample_clamp"))
       m_indirect_sample_clamp = (float)ParAcc_GetValue(in_cp, L"indirect_sample_clamp",   DBL_MAX);
 
+   // filtering
    m_output_filter           = ParAcc_GetValue(in_cp, L"output_filter", DBL_MAX).GetAsText();
    m_output_filter_width     = (float)ParAcc_GetValue(in_cp, L"output_filter_width", DBL_MAX);
    m_filter_color_AOVs = (bool)ParAcc_GetValue(in_cp,  L"filter_color_AOVs", DBL_MAX);
    m_filter_numeric_AOVs = (bool)ParAcc_GetValue(in_cp, L"filter_numeric_AOVs", DBL_MAX);
+
+   // advanced
+   m_lock_sampling_noise     = (bool)ParAcc_GetValue(in_cp, L"lock_sampling_noise", DBL_MAX);
+   m_sss_use_autobump        = (bool)ParAcc_GetValue(in_cp, L"sss_use_autobump", DBL_MAX);
+   m_dielectric_priorities   = (bool)ParAcc_GetValue(in_cp, L"dielectric_priorities", DBL_MAX);
+   m_indirect_specular_blur  = (float)ParAcc_GetValue(in_cp, L"indirect_specular_blur", DBL_MAX);
 
    // motion blur
    m_enable_motion_blur     = (bool)ParAcc_GetValue(in_cp, L"enable_motion_blur",    DBL_MAX);
@@ -428,19 +430,23 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 20, -3, 1000, 0, 50, p);
    cpset.AddParameter(L"AA_adaptive_threshold",    CValue::siDouble, siPersistable, L"", L"", 0.015f, 0.0f, 1.0f, 0.0f, 0.1f, p);
 
-   cpset.AddParameter(L"indirect_specular_blur",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 1.0f, 0.0f, 2.0f, 0.0f, 100.0f, p);
-   
-
-   cpset.AddParameter(L"lock_sampling_noise",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"sss_use_autobump",        CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   // clamping
    cpset.AddParameter(L"use_sample_clamp",        CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"use_sample_clamp_AOVs",   CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"AA_sample_clamp",         CValue::siDouble, siPersistable, L"", L"", 10, 0.001, 100, 0.001, 100, p);
    cpset.AddParameter(L"indirect_sample_clamp",   CValue::siDouble, siPersistable, L"", L"", 10, 0.0, 100, 0.0, 100, p);
+
+   // filtering
    cpset.AddParameter(L"output_filter",           CValue::siString, siPersistable, L"", L"", L"gaussian", 0, 10, 0, 10, p);
    cpset.AddParameter(L"output_filter_width",     CValue::siDouble, siPersistable, L"", L"", 2, 0, 100, 1, 6, p);
    cpset.AddParameter(L"filter_color_AOVs",       CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"filter_numeric_AOVs",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+
+   // advanced
+   cpset.AddParameter(L"lock_sampling_noise",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"sss_use_autobump",        CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"dielectric_priorities",   CValue::siBool,   siPersistable, L"", L"", true,  CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"indirect_specular_blur",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 1.0f, 0.0f, 2.0f, 0.0f, 100.0f, p);
 
    // motion blur
    cpset.AddParameter(L"enable_motion_blur",     CValue::siBool,   siPersistable,                L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
@@ -477,7 +483,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"enable_autotile",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"texture_autotile",        CValue::siInt4,   siPersistable, L"", L"", 64, 16, 1024, 16, 512, p);
    cpset.AddParameter(L"use_existing_tx_files",   CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"texture_max_memory_MB",   CValue::siInt4,   siPersistable, L"", L"", 2048, 128, CValue(), 128, 4096, p);
+   cpset.AddParameter(L"texture_max_memory_MB",   CValue::siInt4,   siPersistable, L"", L"", 4096, 128, CValue(), 2048, 8192, p);
    cpset.AddParameter(L"texture_max_open_files",  CValue::siInt4,   siPersistable, L"", L"", 0, 0, 10000, 0, 2000, p);
 
    // color managers
@@ -889,11 +895,6 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUILabelPercentage, 100);
    layout.EndGroup();
 
-   item = layout.AddItem(L"indirect_specular_blur",  L"Indirect Specular Blur");
-   item.PutAttribute(siUILabelPercentage, 70);
-   
-   layout.AddItem(L"lock_sampling_noise",  L"Lock Sampling Pattern");
-   layout.AddItem(L"sss_use_autobump",  L"Use Autobump in SSS");
    layout.AddGroup(L"Clamping", true, 0);
       layout.AddRow();
          layout.AddItem(L"use_sample_clamp",     L"Clamp Sample Values");
@@ -922,6 +923,14 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
          layout.AddItem(L"filter_color_AOVs",  L"Filter Color AOVs");
          layout.AddItem(L"filter_numeric_AOVs",  L"Filter Numeric AOVs");
       layout.EndRow();
+   layout.EndGroup();
+
+   layout.AddGroup(L"Advanced");
+      layout.AddItem(L"lock_sampling_noise",  L"Lock Sampling Pattern");
+      layout.AddItem(L"sss_use_autobump",  L"Use Autobump in SSS");
+      layout.AddItem(L"dielectric_priorities",  L"Nested Dielectrics");
+      item = layout.AddItem(L"indirect_specular_blur",  L"Indirect Specular Blur");
+      item.PutAttribute(siUILabelPercentage, 70);
    layout.EndGroup();
 
    layout.AddTab(L"Motion Blur");

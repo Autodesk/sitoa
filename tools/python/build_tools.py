@@ -50,6 +50,8 @@ def copy_dir_recursive(src, dest):
             #shutil.copystat(src_path, dest_path)
             copy_dir_recursive(src_path, dest_path)
       else:
+         if not os.path.isdir(dest):
+            os.makedirs(dest)
          shutil.copy2(src_path, dest_path)
 
 ## handy function to remove files only if they exist

@@ -114,10 +114,8 @@ CStatus LoadLightParameters(AtNode* in_lightNode, const Light &in_xsiLight, cons
          AiUniverseCacheFlush(AI_CACHE_BACKGROUND);
    }
 
-   // If light is render invisible we will put the intensity to 0. 
-   // On interactive mode we will change the visibility without creating dinamically the light node.
-   if (!ParAcc_GetValue(Property(lightProperties.GetItem(L"Visibility")), L"rendvis", in_frame))
-      CNodeSetter::SetFloat(in_lightNode, "intensity", 0); 
+   // Github #86 - If light is render invisible in interactive mode we will disable the light instead of dynamically destroying the light node.
+   AiNodeSetDisabled(in_lightNode, !ParAcc_GetValue(Property(lightProperties.GetItem(L"Visibility")), L"rendvis", in_frame));
  
    return CStatus::OK;
 }

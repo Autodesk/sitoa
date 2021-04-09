@@ -12,6 +12,7 @@ See the License for the specific language governing permissions and limitations 
 #include "common/ParamsLight.h"
 #include "common/ParamsShader.h"
 #include "loader/Lights.h"
+#include "renderer/IprCreateDestroy.h"
 #include "renderer/IprLight.h"
 #include "renderer/Renderer.h"
 
@@ -25,8 +26,13 @@ void UpdateLight(const Light &in_xsiLight, double in_frame)
       frame = GetRenderInstance()->GetFlythroughFrame();
 
    AtNode* lightNode = GetRenderInstance()->NodeMap().GetExportedNode(in_xsiLight, frame);
+   // Github #86 - Dynamically create light if it's missing (probably because it was hidden when IPR rendering started)
    if (!lightNode)
-      return;
+   {
+      CRefArray lights(1);
+      lights[0] = in_xsiLight.GetRef();
+      CIprCreateDestroy().CreateLights(lights, in_frame);
+   }
 
    Shader xsiShader = GetConnectedShader(ParAcc_GetParameter(in_xsiLight, L"LightShader"));
    
