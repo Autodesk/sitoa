@@ -428,7 +428,9 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          if (driverNode)
          {
             CNodeUtilities().SetName(driverNode, thisFb.m_fullName);
-            CNodeSetter::SetString(driverNode, "color_space", GetRenderOptions()->m_output_driver_color_space.GetAsciiString());
+            // add color_space to all drivers except deep
+            if (thisFb.m_driverName != L"driver_deepexr")
+               CNodeSetter::SetString(driverNode, "color_space", GetRenderOptions()->m_output_driver_color_space.GetAsciiString());
 
             if (thisFb.m_driverName == L"driver_tiff")
             {
