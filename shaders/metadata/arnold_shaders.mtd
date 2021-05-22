@@ -262,7 +262,6 @@ desc STRING "The input used to compute the normal perturbation, provided as a fl
 
 [attr bump_height]
 desc STRING "Scales the height of the bump map output."
-min     FLOAT   0
 softmin FLOAT   0
 softmax FLOAT   1
 
@@ -280,7 +279,6 @@ desc STRING "The input used to compute the normal perturbation, provided as a fl
 
 [attr bump_height]
 desc STRING "Allows you to scale the height of the bump map output."
-min     FLOAT   0
 softmin FLOAT   0
 softmax FLOAT   1
 
