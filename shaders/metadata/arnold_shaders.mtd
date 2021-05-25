@@ -262,7 +262,6 @@ desc STRING "The input used to compute the normal perturbation, provided as a fl
 
 [attr bump_height]
 desc STRING "Scales the height of the bump map output."
-min     FLOAT   0
 softmin FLOAT   0
 softmax FLOAT   1
 
@@ -280,7 +279,6 @@ desc STRING "The input used to compute the normal perturbation, provided as a fl
 
 [attr bump_height]
 desc STRING "Allows you to scale the height of the bump map output."
-min     FLOAT   0
 softmin FLOAT   0
 softmax FLOAT   1
 
@@ -2056,7 +2054,7 @@ softmax FLOAT 1
 ##############################################################################
 [node mix_shader]
 soft.category STRING "Math"
-soft.order STRING "shader1 shader2 mode mix"
+soft.order STRING "shader1 shader2 mode mix add_transparency"
 
 [attr mode]
 desc STRING "The mixing mode."
@@ -2074,6 +2072,8 @@ soft.label STRING "Shader 1"
 [attr shader2]
 desc STRING "Second material to be mixed."
 soft.label STRING "Shader 2"
+
+[attr add_transparency]
 
 ##############################################################################
 [node modulo]
@@ -2997,7 +2997,7 @@ soft.label STRING "ID 8"
 soft.category STRING "Surface"
 soft.order STRING "BeginGroup Base base base_color diffuse_roughness metalness EndGroup "
 "BeginGroup Specular specular specular_color specular_roughness specular_IOR specular_anisotropy specular_rotation EndGroup "
-"BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness transmit_aovs EndGroup "
+"BeginGroup Transmission transmission transmission_color transmission_depth transmission_scatter transmission_scatter_anisotropy transmission_dispersion transmission_extra_roughness transmit_aovs dielectric_priority EndGroup "
 "BeginGroup Subsurface subsurface subsurface_color subsurface_radius subsurface_scale subsurface_type subsurface_anisotropy EndGroup "
 "BeginGroup Coat coat coat_color coat_roughness coat_IOR coat_normal coat_anisotropy coat_rotation coat_affect_color coat_affect_roughness EndGroup "
 "BeginGroup Sheen sheen sheen_color sheen_roughness EndGroup "
@@ -3124,6 +3124,11 @@ max FLOAT 1
 
 [attr transmit_aovs]
 soft.label STRING "Transmit AOVs"
+
+[attr dielectric_priority]
+desc STRING "Specifies how to resolve overlapping dielectrics into a well-defined medium, so that higher priority (higher number) dielectrics override lower priority ones which are effectively removed. This is used to correctly set up cases with adjacent dielectric media such as a glass of water with ice."
+softmin INT -3
+softmax INT 3
 
 [attr subsurface]
 desc STRING "The amount of sub-surface scattering. Multiplies SSS Color."
@@ -3688,11 +3693,11 @@ soft.order STRING "BeginGroup Edge enable edge_color edge_tonemap edge_opacity e
 "BeginGroup Base base base_color base_tonemap EndGroup "
 "BeginGroup Specular specular specular_color specular_roughness specular_anisotropy specular_rotation specular_tonemap EndGroup "
 "BeginGroup Stylized_Highlight lights highlight_color highlight_size EndGroup "
-"BeginGroup Rim_Lighting rim_light rim_light_color rim_light_width EndGroup "
+"BeginGroup Rim_Lighting rim_light rim_light_color rim_light_width rim_light_tint EndGroup "
 "BeginGroup Transmission transmission transmission_color transmission_roughness transmission_anisotropy transmission_rotation IOR EndGroup "
 "BeginGroup Emission emission emission_color EndGroup "
 "BeginGroup Geometry normal tangent bump_mode EndGroup "
-"BeginGroup AOVs aov_highlight aov_rim_light EndGroup "
+"BeginGroup AOVs aov_highlight aov_rim_light aov_prefix EndGroup "
 "BeginGroup Advanced indirect_diffuse indirect_specular energy_conserving EndGroup "
 "BeginGroup Sheen sheen sheen_color sheen_roughness EndGroup"
 
@@ -3866,6 +3871,12 @@ soft.label STRING "Width"
 min FLOAT 0
 max FLOAT 1
 
+[attr rim_light_tint]
+desc STRING "Tints the color of the rim light using the base color of the surface."
+soft.label STRING "Tint"
+min FLOAT 0
+max FLOAT 1
+
 # Transmission
 
 [attr transmission]
@@ -3939,6 +3950,10 @@ soft.label STRING "Highlight"
 [attr aov_rim_light]
 desc STRING "Rim light AOV."
 soft.label STRING "Rim Light"
+
+[attr aov_prefix]
+desc STRING "An optional aov_prefix that will be prepended to the toon AOVs names."
+soft.label STRING "AOV Prefix"
 
 # Advanced
 

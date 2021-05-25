@@ -230,6 +230,9 @@ bool GetFirstLensShader(const Camera &in_xsiCamera, Shader &out_shader)
 
 bool IsLensShader(const Shader &in_shader)
 {
+   if (GetShaderNameFromProgId(in_shader.GetProgID()) == L"imager")
+      return false;
+
    ShaderDef shaderDef = in_shader.GetShaderDef();
    CStringArray families = shaderDef.GetShaderFamilies();
    for (LONG i=0; i<families.GetCount(); i++)

@@ -428,7 +428,9 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          if (driverNode)
          {
             CNodeUtilities().SetName(driverNode, thisFb.m_fullName);
-            CNodeSetter::SetString(driverNode, "color_space", GetRenderOptions()->m_output_driver_color_space.GetAsciiString());
+            // add color_space to all drivers except deep
+            if (thisFb.m_driverName != L"driver_deepexr")
+               CNodeSetter::SetString(driverNode, "color_space", GetRenderOptions()->m_output_driver_color_space.GetAsciiString());
 
             if (thisFb.m_driverName == L"driver_tiff")
             {
@@ -697,8 +699,6 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetInt(in_optionsNode, "AA_samples_max",               GetRenderOptions()->m_AA_samples_max);
    CNodeSetter::SetFloat(in_optionsNode, "AA_adaptive_threshold",      GetRenderOptions()->m_AA_adaptive_threshold);
 
-   CNodeSetter::SetFloat(in_optionsNode, "indirect_specular_blur", GetRenderOptions()->m_indirect_specular_blur);
-
    // Use sample clamp?
    if (GetRenderOptions()->m_use_sample_clamp)
    {
@@ -708,10 +708,13 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
 
    CNodeSetter::SetFloat(in_optionsNode, "indirect_sample_clamp", GetRenderOptions()->m_indirect_sample_clamp);
 
+   // Advanced
    if (!GetRenderOptions()->m_lock_sampling_noise)
       CNodeSetter::SetInt(in_optionsNode, "AA_seed", (int)in_frame);
 
    CNodeSetter::SetBoolean(in_optionsNode, "sss_use_autobump", GetRenderOptions()->m_sss_use_autobump);
+   CNodeSetter::SetBoolean(in_optionsNode, "dielectric_priorities", GetRenderOptions()->m_dielectric_priorities);
+   CNodeSetter::SetFloat(in_optionsNode, "indirect_specular_blur", GetRenderOptions()->m_indirect_specular_blur);
 
    // Subdivision
    CNodeSetter::SetByte(in_optionsNode, "max_subdivisions", (uint8_t)GetRenderOptions()->m_max_subdivisions);

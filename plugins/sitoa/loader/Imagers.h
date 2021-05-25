@@ -9,44 +9,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and limitations under the License.
 ************************************************************************************************************************************/
 
-#include <version.h>
+#pragma once
 
-#include <xsi_utils.h>
+#include <ai_nodes.h>
 
-#define SITOA_MAJOR_VERSION_NUM    6
-#define SITOA_MINOR_VERSION_NUM    1
-#define SITOA_FIX_VERSION          L"0"
+#include <xsi_camera.h>
+#include <xsi_pass.h>
+#include <xsi_shader.h>
+#include <xsi_status.h>
 
+using namespace XSI;
 
-CString GetSItoAVersion(bool in_addPlatform)
-{
-   CString version(CValue(SITOA_MAJOR_VERSION_NUM).GetAsText() + L"." + 
-                   CValue(SITOA_MINOR_VERSION_NUM).GetAsText() + L"." + 
-                   CValue(SITOA_FIX_VERSION).GetAsText());
-
-   if (in_addPlatform)
-   {
-      CString platform = ((CUtils::IsWindowsOS() ? L"win" : L"linux"));
-      version+= L" " + platform;
-   }
-
-   return version;
-}
-
-
-unsigned int GetMajorVersion()
-{
-   return SITOA_MAJOR_VERSION_NUM;
-}
-
-
-unsigned int GetMinorVersion()
-{
-   return SITOA_MINOR_VERSION_NUM;
-}
-
-
-CString GetFixVersion()
-{
-   return CString(SITOA_FIX_VERSION);
-}
+// Load imagers into Arnold
+CStatus LoadImagers(double in_frame);
+Shader LoadCameraImagers(AtNode* in_cameraNode, const Camera &in_xsiCamera, double in_frame);
+Shader LoadPassImagers(const Pass &in_pass, double in_frame);
+Shader LoadImager(const Shader &in_imagerDummyShader, double in_frame);
+AtNode* ConcatenateImagers(const Shader &in_cameraImagerShader, const Shader &in_passImagerShader, double in_frame);
+Shader GetFirstImagerShaderInBranch(const Shader &in_xsiShader);
+bool SetImagerNode(AtNode* in_rootImagerNode);

@@ -214,12 +214,28 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
          break;
    }
 
+   // special case for imagers where we want to set a custom dafult value for layer_selection
+   if (CStringUtilities().StartsWith(in_shader_name, L"imager_") && m_name == L"layer_selection")
+      defOptions.SetDefaultValue(L"RGBA or RGBA_denoise");
+
    if (m_has_min && m_has_max)
       defOptions.SetHardLimit((CValue)m_min, (CValue)m_max);
    else if (m_has_min)
       defOptions.SetHardLimit((CValue)m_min, (CValue)1000000);
    else if (m_has_max)
       defOptions.SetHardLimit((CValue)-1000000, (CValue)m_max);
+
+   // copy min and max to softmin and softmax if one of them don't exist.
+   if (m_has_softmin && !m_has_softmax && m_has_max)
+   {
+      m_has_softmax = true;
+      m_softmax = m_max;
+   }
+   if (m_has_softmax && !m_has_softmin && m_has_min)
+   {
+      m_has_softmin = true;
+      m_softmin = m_min;
+   }
 
    if (m_has_softmin && m_has_softmax)
       defOptions.SetSoftLimit((CValue)m_softmin, (CValue)m_softmax);
@@ -452,6 +468,7 @@ CShaderDefShader::CShaderDefShader(AtNodeEntry* in_node_entry, const bool in_clo
    int entry_type = AiNodeEntryGetType(m_node_entry);
    m_is_camera_node = entry_type == AI_NODE_CAMERA;
    m_is_operator_node = entry_type == AI_NODE_OPERATOR;
+   m_is_imager_node = CStringUtilities().StartsWith(m_name, L"imager_");
 
    if (in_clone_vector_map)
       m_type = AI_TYPE_FLOAT;
@@ -559,6 +576,13 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
          category = category + L"/" + m_category;
    }
 
+   if (m_is_imager_node)
+   {
+      category = L"Arnold/Imagers";
+      if (m_has_category)
+         category = category + L"/" + m_category;
+   }
+
    m_sd.PutCategory(category);
 
    if (m_has_deprecated && m_deprecated)
@@ -582,6 +606,8 @@ CString CShaderDefShader::Define(const bool in_clone_vector_map)
    if (m_is_passthrough_closure) // hack the closure output for the closure connector to color
       outParamDef.AddParamDef("out", siShaderDataTypeColor4, outOpts);
    else if (m_is_operator_node)
+      outParamDef.AddParamDef("out", siShaderDataTypeReference, outOpts);
+   else if (m_is_imager_node)
       outParamDef.AddParamDef("out", siShaderDataTypeReference, outOpts);
    else
    {
@@ -783,6 +809,11 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
    metadata_exists = AiMetaDataLoadFile(metadata_path.GetAsciiString());
    if (!metadata_exists)
       GetMessageQueue()->LogMsg(L"[sitoa] Missing operator metadata file " + metadata_path, siWarningMsg);
+   // load the imager metadata file
+   metadata_path = CUtils::BuildPath(in_plugin_origin_path, L"arnold_imagers.mtd");
+   metadata_exists = AiMetaDataLoadFile(metadata_path.GetAsciiString());
+   if (!metadata_exists)
+      GetMessageQueue()->LogMsg(L"[sitoa] Missing imager metadata file " + metadata_path, siWarningMsg);
 
    // iterate the nodes
    AtNodeEntryIterator* node_entry_it = AiUniverseGetNodeEntryIterator(AI_NODE_SHADER | AI_NODE_CAMERA | AI_NODE_OPERATOR);
@@ -835,6 +866,25 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
       }
    }
 
+   AiNodeEntryIteratorDestroy(node_entry_it);
+
+   // imagers are of type AI_NODE_DRIVER so we need to check the name of the driver to see if its an imager
+   node_entry_it = AiUniverseGetNodeEntryIterator(AI_NODE_DRIVER);
+   while (!AiNodeEntryIteratorFinished(node_entry_it))
+   {
+      AtNodeEntry* node_entry = AiNodeEntryIteratorGetNext(node_entry_it);
+      AtString node_entry_name(AiNodeEntryGetName(node_entry));
+      CString node_name(node_entry_name.c_str());
+
+      if (!CStringUtilities().StartsWith(node_name, L"imager_"))
+         continue;
+
+      CShaderDefShader shader_def(node_entry); // collect everything
+      progId = shader_def.Define(); // build parameters and the UI
+
+      if (!progId.IsEmpty()) // enter in the list only the shaders whose definition was actually created
+         m_prog_ids.insert(shader_def.m_so_name + L" " + progId);
+   }
    AiNodeEntryIteratorDestroy(node_entry_it);
 
    node_entry_it = AiUniverseGetNodeEntryIterator(AI_NODE_LIGHT);
