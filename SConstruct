@@ -486,7 +486,10 @@ def patch_adlm(wg_bin_path, env):
 
    if system.os() == 'windows':
       adclmhub_name = find_adclmhub(wg_bin_path, 'AdClmHub_')
-      if adclmhub_name == 'AdClmHub_1.1.1.dll':
+      if adclmhub_name == 'AdClmHub_2.0.0.dll':
+         size = 524128
+         seek_pos = 367692
+      elif adclmhub_name == 'AdClmHub_1.1.1.dll':
          size = 384872
          seek_pos = 267436
       elif adclmhub_name == 'AdClmHub_1.dll':
