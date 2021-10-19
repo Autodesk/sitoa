@@ -602,9 +602,9 @@ bool CGSUserData::Initialize()
 {
    // Until we don't have multiple universes, we have to destroy the current one (if any) and create a new one.
    // So the ipr scene will be destroyed after you open the GS
-   if (AiUniverseIsActive())
+   if (AiArnoldIsActive())
       GetRenderInstance()->DestroyScene(false);
-   if (AiUniverseIsActive())
+   if (AiArnoldIsActive())
       return false;
 
    Property prop;
@@ -910,7 +910,7 @@ XSIPLUGINCALLBACK	void SITOA_Viewer_Term(CRef in_sequencerContext, LPVOID *in_us
 SITOA_CALLBACK SITOA_Viewer_Term(CRef in_sequencerContext, LPVOID *in_userData)
 #endif
 {
-   if (AiUniverseIsActive())
+   if (AiArnoldIsActive())
       GetRenderInstance()->DestroyScene(false);
 
 #ifdef _WINDOWS
