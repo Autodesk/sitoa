@@ -187,7 +187,7 @@ driver_process_bucket
    int           i, j, pixel_type;
    AtRGB         rgb;
    AtRGBA        rgba;
-   const char*   aov_name;
+   AtString      aov_name;
 
    CDisplayDriverData *ddData = (CDisplayDriverData*)AiNodeGetLocalData(node);
       
