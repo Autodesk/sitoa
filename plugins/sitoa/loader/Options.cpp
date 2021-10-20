@@ -381,9 +381,10 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
    // vars to hold if and how to create AOVs for noice
    // it's a string because it can be added in two ways.
    // recognised values are "add", "add_rename" and "exist"
-   CString noiceDA = L"add";
-   CString noiceN  = L"add";
-   CString noiceZ  = L"add";
+   CString noiceDA  = L"add";
+   CString noiceDAN = L"add";
+   CString noiceN   = L"add";
+   CString noiceZ   = L"add";
 
    unsigned int activeBuffer = 0;
    for (LONG i = 0; i<nbBuffers; i++)
@@ -523,6 +524,9 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          if (thisFb.m_layerName == L"denoise_albedo")
             noiceDA = L"exist";
 
+         if (thisFb.m_layerName == L"denoise_albedo_noisy")
+            noiceDAN = L"exist";
+
          if (thisFb.m_layerName == L"N")
          {
             if (numericFilter == colorFilter)
@@ -550,8 +554,10 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       if (mainFb.m_driverName.IsEqualNoCase(L"driver_exr"))
       {
          // pre-calc number of additional framebuffers to add and resize output array
-         int nbNoiceBuffers = 4;
+         int nbNoiceBuffers = 5;
          if (noiceDA == L"exist")
+            nbNoiceBuffers -= 1;
+         if (noiceDAN == L"exist")
             nbNoiceBuffers -= 1;
          if (noiceN == L"exist")
             nbNoiceBuffers -= 1;
@@ -578,6 +584,11 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          if (noiceDA != L"exist")
          {
             AiArraySetStr(outputs, activeBuffers+i, CString(L"denoise_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
+            i++;
+         }
+         if (noiceDAN != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"denoise_albedo_noisy RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
             i++;
          }
          if (noiceN != L"exist")
