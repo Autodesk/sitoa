@@ -227,6 +227,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_ignore_user_options    = (bool)ParAcc_GetValue(in_cp, L"ignore_user_options", DBL_MAX);
    m_ignore_matte           = (bool)ParAcc_GetValue(in_cp, L"ignore_matte", DBL_MAX);
    m_ignore_operators       = (bool)ParAcc_GetValue(in_cp, L"ignore_operators", DBL_MAX);
+   m_ignore_imagers         = (bool)ParAcc_GetValue(in_cp, L"ignore_imagers", DBL_MAX);
 
    // ass archive
    m_output_file_tagdir_ass = ParAcc_GetValue(in_cp,       L"output_file_tagdir_ass", DBL_MAX).GetAsText();
@@ -525,6 +526,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"ignore_user_options",    CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_matte",           CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"ignore_operators",       CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"ignore_imagers",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"show_samples",           CValue::siString, siPersistable, L"", L"", L"off", 0, 10, 0, 10, p);
 
    // ass archive
@@ -1125,6 +1127,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.AddItem(L"ignore_user_options", L"User Options");
       layout.AddItem(L"ignore_matte",        L"Matte Properties");
       layout.AddItem(L"ignore_operators",    L"Operators");
+      layout.AddItem(L"ignore_imagers",      L"Imagers");
    layout.EndGroup();
 
    layout.AddTab(L"ASS Archives");
