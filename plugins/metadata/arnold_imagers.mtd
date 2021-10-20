@@ -144,6 +144,66 @@ softmax FLOAT 1
 linkable BOOL false
 
 ###########################################################################
+[node imager_denoiser_noice]
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr patch_radius]
+linkable BOOL false
+
+[attr search_radius]
+linkable BOOL false
+
+[attr tile_size]
+linkable BOOL false
+soft.inspectable BOOL false
+
+[attr variance]
+softmin FLOAT 0
+softmax FLOAT 1
+linkable BOOL false
+
+###########################################################################
+[node imager_denoiser_oidn]
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+###########################################################################
+[node imager_denoiser_optix]
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr blend]
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr clamp]
+linkable BOOL false
+
+[attr clamp_min]
+softmin FLOAT 0
+softmax FLOAT 1
+linkable BOOL false
+
+[attr clamp_max]
+softmin FLOAT 0
+softmax FLOAT 1
+linkable BOOL false
+
+[attr use_feature_aovs]
+linkable BOOL false
+
+###########################################################################
 [node imager_exposure]
 
 [attr input]
