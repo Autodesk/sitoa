@@ -159,6 +159,9 @@ linkable BOOL false
 
 ###########################################################################
 [node imager_lens_effects]
+soft.order STRING "enable layer_selection "
+"BeginGroup Vignetting vignetting EndGroup "
+"BeginGroup Bloom bloom_strength bloom_radius bloom_tint bloom_threshold EndGroup "
 
 [attr input]
 soft.inspectable BOOL false
@@ -169,6 +172,29 @@ linkable BOOL false
 [attr vignetting]
 softmin FLOAT 0
 softmax FLOAT 100
+linkable BOOL false
+
+[attr bloom_threshold]
+soft.label STRING "Threshold"
+softmin FLOAT 0
+softmax FLOAT 10
+linkable BOOL false
+
+[attr bloom_tint]
+soft.label STRING "Tint"
+linkable BOOL false
+
+[attr bloom_radius]
+soft.label STRING "Radius"
+min FLOAT 1
+softmin FLOAT 1
+softmax FLOAT 12
+linkable BOOL false
+
+[attr bloom_strength]
+soft.label STRING "Strength"
+softmin FLOAT 0
+softmax FLOAT 10
 linkable BOOL false
 
 ###########################################################################
