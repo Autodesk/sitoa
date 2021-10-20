@@ -216,7 +216,7 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
 
    // special case for imagers where we want to set a custom dafult value for layer_selection
    if (CStringUtilities().StartsWith(in_shader_name, L"imager_") && m_name == L"layer_selection")
-      defOptions.SetDefaultValue(L"RGBA or RGBA_denoise");
+      defOptions.SetDefaultValue(L"RGBA");
 
    if (m_has_min && m_has_max)
       defOptions.SetHardLimit((CValue)m_min, (CValue)m_max);
