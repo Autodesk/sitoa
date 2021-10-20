@@ -235,8 +235,6 @@ public:
    bool m_output_operators;
 
    // denoiser
-   bool m_use_optix_on_main;
-   bool m_only_show_denoise;
    bool m_output_denoising_aovs;
 
    //////////////////////////////////////
@@ -433,8 +431,6 @@ public:
       m_output_operators(false),
 
       // denoiser
-      m_use_optix_on_main(false),
-      m_only_show_denoise(true),
       m_output_denoising_aovs(false)
 
    {
@@ -477,8 +473,6 @@ void SubdivisionTabLogic(CustomProperty &in_cp);
 void DiagnosticsTabLogic(CustomProperty &in_cp);
 // Logic for the ass archives tab
 void AssOutputTabLogic(CustomProperty &in_cp);
-// Logic for the denoiser tab
-void DenoiserTabLogic(CustomProperty &in_cp);
 
 // Reset the default values of all the parameters
 void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt);

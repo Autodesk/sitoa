@@ -60,8 +60,7 @@ public:
    // Update the render context in order to reuse the same Arnold driver
    // with another render session
    void UpdateDisplayDriver(RendererContext& in_rendererContext, unsigned int in_displayArea,
-                            const bool in_filterColorAov, const bool in_filterNumericAov,
-                            const bool in_useOptixOnMain, const bool in_onlyShowDenoise);
+                            const bool in_filterColorAov, const bool in_filterNumericAov);
    // Sets the dithering
    void SetDisplayDithering(bool in_dither);
 
@@ -70,9 +69,6 @@ public:
    int   m_renderHeight;
    int   m_displayArea;
    int   m_paintedDisplayArea;
-   bool  m_useOptixOnMain;
-   bool  m_onlyShowDenoise;
-   bool  m_gpu; // TODO FIXIT: Temporary workaround for GPU to work with Optix Denoiser
 };
 
 

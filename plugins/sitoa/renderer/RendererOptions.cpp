@@ -245,8 +245,6 @@ void CRenderOptions::Read(const Property &in_cp)
    m_output_operators = (bool)ParAcc_GetValue(in_cp, L"output_operators", DBL_MAX);
 
    // denoiser
-   m_use_optix_on_main = (bool)ParAcc_GetValue(in_cp, L"use_optix_on_main", DBL_MAX);
-   m_only_show_denoise = (bool)ParAcc_GetValue(in_cp, L"only_show_denoise", DBL_MAX);
    m_output_denoising_aovs = (bool)ParAcc_GetValue(in_cp, L"output_denoising_aovs", DBL_MAX);
 }
 
@@ -547,8 +545,6 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"output_operators",       CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
 
    // denoiser
-   cpset.AddParameter(L"use_optix_on_main",      CValue::siBool,   siPersistable, L"", L"", false,          CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"only_show_denoise",      CValue::siBool,   siPersistable, L"", L"", true,           CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_denoising_aovs",  CValue::siBool,   siPersistable, L"", L"", false,          CValue(), CValue(), CValue(), CValue(), p);
 
    // the hidden version string saved with the scene
@@ -1165,10 +1161,6 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       layout.EndRow();
 
    layout.AddTab(L"Denoiser");
-      layout.AddGroup(L"OptiX Denoiser");
-         layout.AddItem(L"use_optix_on_main", L"Apply on Main");
-         layout.AddItem(L"only_show_denoise", L"Only show denoise (in progressive)");
-      layout.EndGroup();
       layout.AddGroup(L"Arnold Denoiser (noice)");
          layout.AddItem(L"output_denoising_aovs", L"Output Denoising AOVs");
          layout.AddButton(L"OpenDenoiserProperties", L"Open Arnold Denoiser Properties");
@@ -1219,7 +1211,6 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       SubdivisionTabLogic(cpset);
       DiagnosticsTabLogic(cpset);
       AssOutputTabLogic(cpset);
-      DenoiserTabLogic(cpset);
 
       Pass pass(Application().GetActiveProject().GetActiveScene().GetActivePass());
 
@@ -1420,9 +1411,6 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       else if (paramName == L"output_file_tagdir_ass" || 
                paramName == L"compress_output_ass")
          AssOutputTabLogic(cpset);
-
-      else if (paramName == L"use_optix_on_main")
-         DenoiserTabLogic(cpset);
 
       else if (paramName == L"skip_license_check")
       {
@@ -1649,7 +1637,7 @@ void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
          colorSpaces[0] = L""; colorSpaces[1] = L"";  // init first items
 
          // we need to have an arnold universe with the ocio node so that we can get all the color spaces
-         bool defaultUniverseExist = AiUniverseIsActive();
+         bool defaultUniverseExist = AiArnoldIsActive();
          AtUniverse* ocioUniverse;
          AtNode* ocioNode;
 
@@ -1788,17 +1776,6 @@ void AssOutputTabLogic(CustomProperty &in_cp)
 }
 
 
-// Logic for the denoiser tab
-//
-// @param in_cp       The arnold rendering options property
-//
-void DenoiserTabLogic(CustomProperty &in_cp)
-{
-  bool useOptixOnMain = (bool)ParAcc_GetValue(in_cp, L"use_optix_on_main", DBL_MAX);
-  ParAcc_GetParameter(in_cp, L"only_show_denoise").PutCapabilityFlag(siReadOnly, !useOptixOnMain);
-}
-
-
 // Reset the default values of all the parameters
 //
 // @param in_cp       The arnold rendering options property
@@ -1823,5 +1800,4 @@ void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt)
    SubdivisionTabLogic(in_cp);
    DiagnosticsTabLogic(in_cp);
    AssOutputTabLogic(in_cp);
-   DenoiserTabLogic(in_cp);
 }

@@ -203,8 +203,6 @@ bool LoadFilters()
       CNodeSetter::SetString(varianceFilterNode, "filter_weights", filterType.GetAsciiString());  // type of output_filter
    }
 
-   // optix denoise filters are added in the LoadDrivers() function because they have to be unique for each AOV
-
    return true;
 }
 
@@ -513,22 +511,8 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
             deepExrLayersDrivers.push_back(CDeepExrLayersDrivers(masterFb.m_fullName, thisFb.m_layerName, thisFb.m_driverBitDepth));
       }
 
-      // if layerName ends with "_denoise", we add a denoise filter named after the layer and then add the output
-      if (CStringUtilities().EndsWith(thisFb.m_layerName, L"_denoise"))
-      {
-         // OptiX denoise needs a separete filter for each AOV, so we create them here instad of in LoadFilters()
-         CString optixFilterName = L"sitoa_" + thisFb.m_layerName + L"_optix_filter";
-         AtNode* optixFilterNode = AiNode("denoise_optix_filter");
-         if (!optixFilterNode)
-         {
-            GetMessageQueue()->LogMsg(L"[sitoa] Couldn't create denoise_optix_filter for layer " + thisFb.m_layerName, siErrorMsg);
-            continue;
-         }
-         CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
-         AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + optixFilterName + L" " + masterFb.m_fullName).GetAsciiString());
-      }
       // Adding to outputs. masterFb differs from thisFb if they are both exr and share the same filename
-      else if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
+      if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + colorFilter + " " + masterFb.m_fullName).GetAsciiString());
       else
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + numericFilter + " " + masterFb.m_fullName).GetAsciiString());
@@ -808,7 +792,6 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetString(in_optionsNode, "render_device", GetRenderOptions()->m_render_device.GetAsciiString());
    CNodeSetter::SetString(in_optionsNode, "render_device_fallback", GetRenderOptions()->m_render_device_fallback.GetAsciiString());
    bool gpuRender = (GetRenderOptions()->m_render_device == L"GPU");
-   bool optixDenoiser = GetRenderOptions()->m_use_optix_on_main;
 
    if (gpuRender)
       CNodeSetter::SetInt(in_optionsNode, "gpu_max_texture_resolution", GetRenderOptions()->m_gpu_max_texture_resolution);

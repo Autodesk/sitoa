@@ -201,20 +201,13 @@ driver_process_bucket
    if (!AiOutputIteratorGetNext(iterator, &aov_name, &pixel_type, &bucket_data))
       return;
 
-   // don't update progressbar if Main (RGBA) is being denoised
-   if (!displayDriver->m_useOptixOnMain ||
-       displayDriver->m_gpu || // TODO FIXIT: Temporary workaround for GPU to work with Optix Denoiser
-         (displayDriver->m_useOptixOnMain &&
-          !strcmp(aov_name, "RGBA_denoise") == 0))
-   {
-      // Progress bar
-      displayDriver->m_paintedDisplayArea += (bucket_size_x * bucket_size_y);
-      int percent = (int)((displayDriver->m_paintedDisplayArea / (float)displayDriver->m_displayArea) * 100.0f);
-      // if in progressive render mode we need to divide percent by number of progressive passes
-      if (ddData->m_progressivePasses > 1)
-         percent = percent / ddData->m_progressivePasses;
-      displayDriver->m_renderContext.ProgressUpdate(CValue(percent).GetAsText() + L"%   Rendered", L"Rendering", percent);
-   }
+   // Progress bar
+   displayDriver->m_paintedDisplayArea += (bucket_size_x * bucket_size_y);
+   int percent = (int)((displayDriver->m_paintedDisplayArea / (float)displayDriver->m_displayArea) * 100.0f);
+   // if in progressive render mode we need to divide percent by number of progressive passes
+   if (ddData->m_progressivePasses > 1)
+      percent = percent / ddData->m_progressivePasses;
+   displayDriver->m_renderContext.ProgressUpdate(CValue(percent).GetAsText() + L"%   Rendered", L"Rendering", percent);
 
    // if the Arnold bucket is completely in the overscan frame, don't
    // send it to the Softimage render view
@@ -307,17 +300,6 @@ driver_process_bucket
 
    if (!renderInstance->InterruptRenderSignal())
    {
-      // only_show_denoise
-      // display driver doesn't work properly if we just skip writing to the framebuffer.
-      // as a workaround we just output 1x1 pixel of RGBA
-      if (!strcmp(aov_name, "RGBA_denoise") == 0 &&
-          displayDriver->m_useOptixOnMain &&
-          displayDriver->m_onlyShowDenoise &&
-          ddData->m_progressivePasses > 1)
-      {
-         view_bucket_size_x = 1U;
-         view_bucket_size_y = 1U;
-      }
       RenderTile fragment(view_bucket_xo, displayDriver->m_renderHeight - view_bucket_yo - view_bucket_size_y , 
                           view_bucket_size_x, view_bucket_size_y, buffer, displayDriver->m_dither);
        
@@ -359,14 +341,11 @@ void DisplayDriver::CreateDisplayDriver()
 
 
 void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, unsigned int in_displayArea, 
-                                        const bool in_filterColorAov, const bool in_filterNumericAov,
-                                        const bool in_useOptixOnMain, const bool in_onlyShowDenoise)
+                                        const bool in_filterColorAov, const bool in_filterNumericAov)
 {
    m_renderContext = in_rendererContext;
    m_displayArea = in_displayArea;     
    m_renderHeight = (int)m_renderContext.GetAttribute(L"ImageHeight");
-   m_useOptixOnMain = in_useOptixOnMain;
-   m_onlyShowDenoise = in_onlyShowDenoise;
 
    AtNode* options = AiUniverseGetOptions();   
    AtArray *outputs, *new_outputs;
@@ -381,17 +360,6 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
    RenderChannel renderchannel = frameBuffer.GetRenderChannel();
    CString layerName = GetLayerName(renderchannel.GetName());
    CString layerdataType;
-
-   // TODO FIXIT
-   // Temporary workaround for GPU to work with Optix Denoiser
-   // GPU can only work with one filter at the time, so we can only send the denoised output.
-   m_gpu = strcmp(AiNodeGetStr(options, "render_device"), "GPU") == 0;
-   if (layerName == L"RGBA" && m_useOptixOnMain && m_gpu)
-    {
-      layerName = L"RGBA_denoise";
-      m_onlyShowDenoise = true;
-    }
-   // END TODO FIXIT
 
    if (m_renderContext.GetAttribute(L"FileOutput"))
    {          
@@ -429,21 +397,7 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
       if (layerdataType.IsEqualNoCase(L""))
          layerdataType = GetDriverLayerChannelType((LONG)renderchannel.GetChannelType());
 
-      // if layerName ends with "_denoise", we connect the driver to the optix filter for that layer
-      if (CStringUtilities().EndsWith(layerName, L"_denoise"))
-      {
-         // we need to check if the optix filter exist. If it doesn't exist, we create one.
-         CString optixFilterName = L"sitoa_" + layerName + L"_optix_filter_display";
-         AtNode* optixFilterNode = AiNodeLookUpByName(optixFilterName.GetAsciiString());
-         if (!optixFilterNode)
-         {
-            optixFilterNode = AiNode("denoise_optix_filter");
-            if (optixFilterNode)
-               CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
-         }
-         displayDriver = layerName + L" " + layerdataType + L" " + optixFilterName + " xsi_driver";
-      }
-      else if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
+      if (layerdataType.IsEqualNoCase(L"RGB") || layerdataType.IsEqualNoCase(L"RGBA"))
       {
          if (in_filterColorAov)
             displayDriver = layerName + L" " + layerdataType + L" sitoa_output_filter xsi_driver";
@@ -459,26 +413,6 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
       }
       
       new_outputs = AiArray(1, 1, AI_TYPE_STRING, CStringUtilities().Strdup(displayDriver.GetAsciiString()));
-   }
-
-    // if layerName is RGBA (Main) and use_optix_on_main is ON,
-    // we will add the denoised main to the new_outputs
-   if (layerName == L"RGBA" && m_useOptixOnMain)
-   {
-      // we need to check if the optix filter exist. If it doesn't exist, we create one.
-      CString optixFilterName = L"sitoa_RGBA_denoise_optix_filter_display";
-      AtNode* optixFilterNode = AiNodeLookUpByName(optixFilterName.GetAsciiString());
-      if (!optixFilterNode)
-      {
-         optixFilterNode = AiNode("denoise_optix_filter");
-         if (optixFilterNode)
-            CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
-      }
-      displayDriver = L"RGBA_denoise " + layerdataType + L" " + optixFilterName + " xsi_driver";
-      
-      // resize new_outputs so we can add optix output to display driver outputs
-      AiArrayResize(new_outputs, AiArrayGetNumElements(new_outputs) + 1, 1);
-      AiArraySetStr(new_outputs, AiArrayGetNumElements(new_outputs) - 1, CStringUtilities().Strdup(displayDriver.GetAsciiString()));
    }
 
    AiNodeSetArray(options, "outputs", new_outputs);
