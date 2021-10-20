@@ -390,7 +390,7 @@ void CShaderDefParameter::Layout(PPGLayout &in_layout)
       label = CStringUtilities().PrettifyParameterName(m_name);
 
    // if a string parameter is called "filename", it's reasonable to provide a file browser widget
-   if (m_type == AI_TYPE_STRING && m_name == ATSTRING::filename)
+   if (m_type == AI_TYPE_STRING && (m_name == ATSTRING::filename || m_name == ATSTRING::lut_filename))
    {
       item = in_layout.AddItem(m_name, label, siControlFilePath);
       item.PutAttribute(siUIOpenFile, true);

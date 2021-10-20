@@ -62,6 +62,7 @@ namespace ATSTRING
    const AtString vector_map("vector_map");
    // node params
    const AtString filename("filename");
+   const AtString lut_filename("lut_filename");
    const AtString name("name");
    // camera param names
    const AtString position("position");

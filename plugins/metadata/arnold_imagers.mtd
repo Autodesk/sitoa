@@ -173,10 +173,11 @@ linkable BOOL false
 
 ###########################################################################
 [node imager_tonemap]
-soft.order STRING "enable layer_selection mode "
+soft.order STRING "enable layer_selection "
+"BeginGroup Main mode preserve_saturation gamma mix EndGroup "
 "BeginGroup Filmic filmic_toe_strength filmic_toe_length filmic_shoulder_strength filmic_shoulder_length filmic_shoulder_angle EndGroup "
 "BeginGroup Reinhard reinhard_highlights reinhard_shadows EndGroup "
-"preserve_saturation gamma"
+"BeginGroup LUT lut_filename lut_working_color_space EndGroup "
 
 [attr input]
 soft.inspectable BOOL false
@@ -205,7 +206,7 @@ linkable BOOL false
 [attr filmic_shoulder_length]
 soft.label STRING "Shoulder Length"
 min FLOAT 0
-max FLOAT 1
+softmax FLOAT 3
 linkable BOOL false
 
 [attr filmic_shoulder_angle]
@@ -226,12 +227,23 @@ min FLOAT 0
 max FLOAT 1
 linkable BOOL false
 
+[attr lut_filename]
+soft.label STRING "LUT Filename"
+
+[attr lut_working_color_space]
+soft.label STRING "Process Color Space"
+
 [attr preserve_saturation]
 linkable BOOL false
 
 [attr gamma]
 min FLOAT 0
 softmax FLOAT 5
+linkable BOOL false
+
+[attr mix]
+min FLOAT 0
+max FLOAT 1
 linkable BOOL false
 
 ###########################################################################
