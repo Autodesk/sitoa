@@ -464,9 +464,10 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
                CNodeSetter::SetBoolean(driverNode, "tiled",               tiled);
                CNodeSetter::SetString (driverNode, "compression",         GetRenderOptions()->m_output_exr_compression.GetAsciiString());
                CNodeSetter::SetBoolean(driverNode, "preserve_layer_name", GetRenderOptions()->m_output_exr_preserve_layer_name);
+               CNodeSetter::SetBoolean(driverNode, "multipart",           GetRenderOptions()->m_output_exr_multipart);
                if (!tiled) // autocrop allowed only for scanline
                   CNodeSetter::SetBoolean(driverNode, "autocrop", GetRenderOptions()->m_output_exr_autocrop);
-               else //append mode only for tile mode
+               else if (!GetRenderOptions()->m_output_exr_multipart)//append mode only for tile mode without multipart
                   CNodeSetter::SetBoolean(driverNode, "append", GetRenderOptions()->m_output_exr_append);
 
                ExportExrMetadata(driverNode);

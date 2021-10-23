@@ -85,6 +85,7 @@ void CRenderOptions::Read(const Property &in_cp)
    m_output_exr_tiled               = (bool)ParAcc_GetValue(in_cp, L"output_exr_tiled",               DBL_MAX); // was a string, #1634
    m_output_exr_compression         =  ParAcc_GetValue(in_cp,      L"output_exr_compression",         DBL_MAX).GetAsText();
    m_output_exr_preserve_layer_name = (bool)ParAcc_GetValue(in_cp, L"output_exr_preserve_layer_name", DBL_MAX);
+   m_output_exr_multipart           = (bool)ParAcc_GetValue(in_cp, L"output_exr_multipart",           DBL_MAX);
    m_output_exr_autocrop            = (bool)ParAcc_GetValue(in_cp, L"output_exr_autocrop",            DBL_MAX);
    m_output_exr_append              = (bool)ParAcc_GetValue(in_cp, L"output_exr_append",              DBL_MAX);
 
@@ -374,6 +375,7 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"output_exr_tiled",               CValue::siBool,   siPersistable, L"", L"", true,   CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_exr_compression",         CValue::siString, siPersistable, L"", L"", L"zip", CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_exr_preserve_layer_name", CValue::siBool,   siPersistable, L"", L"", false,  CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"output_exr_multipart",           CValue::siBool,   siPersistable, L"", L"", false,  CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_exr_autocrop",            CValue::siBool,   siPersistable, L"", L"", false,  CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"output_exr_append",              CValue::siBool,   siPersistable, L"", L"", false,  CValue(), CValue(), CValue(), CValue(), p);
 
@@ -790,6 +792,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUILabelMinPixels, 150);
       item.PutAttribute(siUILabelPercentage, 60);
       layout.AddItem(L"output_exr_preserve_layer_name", L"Preserve Layer Name");
+      layout.AddItem(L"output_exr_multipart", L"Multipart");
       layout.AddItem(L"output_exr_autocrop", L"Autocrop");
       layout.AddItem(L"output_exr_append",   L"Append");
 
@@ -1389,6 +1392,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
       else if (paramName == L"overscan" || 
                paramName == L"output_tiff_tiled" ||
                paramName == L"output_exr_tiled"  ||
+               paramName == L"output_exr_multipart" ||
                paramName == L"deep_exr_enable")
          OutputTabLogic(cpset);
 
@@ -1554,11 +1558,12 @@ void OutputTabLogic(CustomProperty &in_cp)
    bool exrTiled  = (bool)ParAcc_GetValue(in_cp, L"output_exr_tiled", DBL_MAX);
    bool tiffTiled = (bool)ParAcc_GetValue(in_cp, L"output_tiff_tiled", DBL_MAX);
    bool deepExr = deepExr = (bool)ParAcc_GetValue(in_cp, L"deep_exr_enable", DBL_MAX);
+   bool multipart = (bool)ParAcc_GetValue(in_cp, L"output_exr_multipart", DBL_MAX);
 
    ParAcc_GetParameter(in_cp, L"output_tiff_append").PutCapabilityFlag(siReadOnly, !tiffTiled);
 
    ParAcc_GetParameter(in_cp, L"output_exr_autocrop").PutCapabilityFlag(siReadOnly, exrTiled || deepExr);
-   ParAcc_GetParameter(in_cp, L"output_exr_append").PutCapabilityFlag(siReadOnly, !exrTiled);
+   ParAcc_GetParameter(in_cp, L"output_exr_append").PutCapabilityFlag(siReadOnly, (!exrTiled) || multipart);
 
    ParAcc_GetParameter(in_cp, L"output_exr_compression").PutCapabilityFlag(siReadOnly, deepExr);
    ParAcc_GetParameter(in_cp, L"output_exr_preserve_layer_name").PutCapabilityFlag(siReadOnly, deepExr);

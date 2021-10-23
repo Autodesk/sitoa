@@ -87,6 +87,7 @@ public:
    bool    m_output_exr_tiled;
    CString m_output_exr_compression;
    bool    m_output_exr_preserve_layer_name;
+   bool    m_output_exr_multipart;
    bool    m_output_exr_autocrop;
    bool    m_output_exr_append;
 
@@ -291,6 +292,7 @@ public:
       m_output_exr_tiled(true),
       m_output_exr_compression(L"zip"),
       m_output_exr_preserve_layer_name(false),
+      m_output_exr_multipart(false),
       m_output_exr_autocrop(false),
       m_output_exr_append(false),
       
