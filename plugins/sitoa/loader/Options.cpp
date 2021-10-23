@@ -461,9 +461,9 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
             {
                bool tiled = GetRenderOptions()->m_output_exr_tiled;
                CNodeSetter::SetBoolean(driverNode, "half_precision",      thisFb.IsHalfFloat());
-               CNodeSetter::SetBoolean(driverNode, "tiled",               tiled);            
+               CNodeSetter::SetBoolean(driverNode, "tiled",               tiled);
                CNodeSetter::SetString (driverNode, "compression",         GetRenderOptions()->m_output_exr_compression.GetAsciiString());
-               CNodeSetter::SetBoolean(driverNode, "preserve_layer_name", GetRenderOptions()->m_output_exr_preserve_layer_name);            
+               CNodeSetter::SetBoolean(driverNode, "preserve_layer_name", GetRenderOptions()->m_output_exr_preserve_layer_name);
                if (!tiled) // autocrop allowed only for scanline
                   CNodeSetter::SetBoolean(driverNode, "autocrop", GetRenderOptions()->m_output_exr_autocrop);
                else //append mode only for tile mode
