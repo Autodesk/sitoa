@@ -1557,7 +1557,7 @@ void OutputTabLogic(CustomProperty &in_cp)
 
    bool exrTiled  = (bool)ParAcc_GetValue(in_cp, L"output_exr_tiled", DBL_MAX);
    bool tiffTiled = (bool)ParAcc_GetValue(in_cp, L"output_tiff_tiled", DBL_MAX);
-   bool deepExr = deepExr = (bool)ParAcc_GetValue(in_cp, L"deep_exr_enable", DBL_MAX);
+   bool deepExr = (bool)ParAcc_GetValue(in_cp, L"deep_exr_enable", DBL_MAX);
    bool multipart = (bool)ParAcc_GetValue(in_cp, L"output_exr_multipart", DBL_MAX);
 
    ParAcc_GetParameter(in_cp, L"output_tiff_append").PutCapabilityFlag(siReadOnly, !tiffTiled);
