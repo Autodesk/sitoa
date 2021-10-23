@@ -258,13 +258,11 @@ CPathString GetClipSourceFileName(ImageClip2 &in_xsiImageClip, double in_frame)
    if (!timeSource)
       sourceFileName = in_xsiImageClip.GetFileName();
 
-   bool substituteTx = GetRenderOptions()->m_use_existing_tx_files;
-
    // Get FileName from ImageClip (if the image is a sequence XSI will give us the correct filename)
    if (GetRenderOptions()->m_save_texture_paths) // using absolute paths
    {
       // Translate path
-      CPathString result(CPathTranslator::TranslatePath(sourceFileName.GetAsciiString(), substituteTx));
+      CPathString result(CPathTranslator::TranslatePath(sourceFileName.GetAsciiString(), false));
       return result;
    }
 
@@ -274,7 +272,7 @@ CPathString GetClipSourceFileName(ImageClip2 &in_xsiImageClip, double in_frame)
    if (GetRenderInstance()->GetTexturesSearchPath().GetPaths(texturesSearchPaths))
    {
       // translate the full texture path, also substituting .tx, in case
-      const char *translatedPath = CPathTranslator::TranslatePath(sourceFileName.GetAsciiString(), substituteTx);
+      const char *translatedPath = CPathTranslator::TranslatePath(sourceFileName.GetAsciiString(), false);
       bool isPathTranslatorInitialized = CPathTranslator::IsInitialized(); // using linktab?
       unsigned int pathTranslatorMode = CPathTranslator::GetTranslationMode(); // w2l (default) or l2w?
 
