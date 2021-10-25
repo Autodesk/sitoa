@@ -218,20 +218,29 @@ bool LoadFilters()
 bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
 {
    CString colorManager = GetRenderOptions()->m_color_manager;
+   AtNode* ocioNode;
    if (colorManager == L"color_manager_ocio")
    {
-      AtNode* ocioNode = AiNode("color_manager_ocio");
+      ocioNode = AiNode("color_manager_ocio");
       if (!ocioNode)
          return false;
       CNodeUtilities().SetName(ocioNode, "sitoa_color_manager_ocio");
 
-      CNodeSetter::SetString(ocioNode, "config",             GetRenderOptions()->m_ocio_config.GetAsciiString());
-      CNodeSetter::SetString(ocioNode, "color_space_narrow", GetRenderOptions()->m_ocio_color_space_narrow.GetAsciiString());
-      CNodeSetter::SetString(ocioNode, "color_space_linear", GetRenderOptions()->m_ocio_color_space_linear.GetAsciiString());
+      CNodeSetter::SetString(ocioNode, "config", GetRenderOptions()->m_ocio_config.GetAsciiString());
+   }
+   else {
+      ocioNode = AiNodeLookUpByName("ai_default_color_manager_ocio");
+      if (!ocioNode)
+         return false;
+   }
 
-      // only export chromaticities if color_space_linear ise set
-      if (GetRenderOptions()->m_ocio_color_space_linear != L"") {
-         CString ocioChromaticitiesString = GetRenderOptions()->m_ocio_linear_chromaticities;
+   CNodeSetter::SetString(ocioNode, "color_space_narrow", GetRenderOptions()->m_ocio_color_space_narrow.GetAsciiString());
+   CNodeSetter::SetString(ocioNode, "color_space_linear", GetRenderOptions()->m_ocio_color_space_linear.GetAsciiString());
+
+   // only export chromaticities if color_space_linear is set
+   if (GetRenderOptions()->m_ocio_color_space_linear != L"") {
+      CString ocioChromaticitiesString = GetRenderOptions()->m_ocio_linear_chromaticities;
+      if (ocioChromaticitiesString != L"") {
          CStringArray ocioChromaticitiesStrings = ocioChromaticitiesString.Split(L" ");
          if (ocioChromaticitiesStrings.GetCount() == 8) {
             AtArray* ocioChromaticities = AiArrayAllocate(8, 1, AI_TYPE_FLOAT);
@@ -250,8 +259,9 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
             GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticities could not be parsed. It needs to be 8 values separated by spaces. Unparsable: '" + CString(ocioChromaticitiesString) + L"'", siWarningMsg);
          }
       }
-      CNodeSetter::SetPointer(in_optionsNode, "color_manager", ocioNode);
    }
+   CNodeSetter::SetPointer(in_optionsNode, "color_manager", ocioNode);
+
    return true;
 }
 

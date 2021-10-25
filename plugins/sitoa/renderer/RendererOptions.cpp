@@ -1040,7 +1040,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
    layout.AddTab(L"Color Management");
    layout.AddGroup(L"Color Manager");
       CValueArray color_managers;
-      color_managers.Add(L"Built-in"); color_managers.Add(L"");
+      color_managers.Add(L"Built-in OCIO"); color_managers.Add(L"");
       color_managers.Add(L"OCIO"); color_managers.Add(L"color_manager_ocio");
       item = layout.AddEnumControl(L"color_manager", color_managers, L"Color Manager", siControlCombo);
       item.PutAttribute(siUINoLabel, true);
@@ -1611,100 +1611,94 @@ void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
    bool useOcioDefaultRenderingSpace = (bool)(ParAcc_GetValue(in_cp, L"ocio_color_space_linear", DBL_MAX) == L"");
    bool hasOcioEnv = (bool)(getenv("OCIO") != NULL);
    CString ocioConfig = ParAcc_GetValue(in_cp, L"ocio_config", DBL_MAX);
-   bool ocioLoaded = false;
 
    ParAcc_GetParameter(in_cp, L"ocio_config").PutCapabilityFlag(siReadOnly, !ocioManager);
    ParAcc_GetParameter(in_cp, L"ocio_config_message").PutCapabilityFlag(siReadOnly, !ocioManager);
-   ParAcc_GetParameter(in_cp, L"ocio_color_space_narrow").PutCapabilityFlag(siReadOnly, !ocioManager);
-   ParAcc_GetParameter(in_cp, L"ocio_color_space_linear").PutCapabilityFlag(siReadOnly, !ocioManager);
-   ParAcc_GetParameter(in_cp, L"ocio_linear_chromaticities").PutCapabilityFlag(siReadOnly, (!ocioManager || useOcioDefaultRenderingSpace));
+   ParAcc_GetParameter(in_cp, L"ocio_linear_chromaticities").PutCapabilityFlag(siReadOnly, useOcioDefaultRenderingSpace);
 
 
    // don't do the heavy UI update if just the rendering color space has changed
    if (paramName != L"ocio_color_space_linear") {
       if (ocioManager) {
-         if (hasOcioEnv && ocioConfig == L"") {
+         if (hasOcioEnv && ocioConfig == L"")
             in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using OCIO config from environment.\n"));
-            ocioLoaded = true;
-         }
-         else if (ocioConfig != L"") {
+         else if (ocioConfig != L"")
             in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using the specified OCIO config.\n"));
-            ocioLoaded = true;
-         }
          else
             in_cp.PutParameterValue(L"ocio_config_message", CString(L"No OCIO in environment.\nLoad a config manually to use OCIO."));
       }
       else
-         in_cp.PutParameterValue(L"ocio_config_message", CString(L"\n"));
+         in_cp.PutParameterValue(L"ocio_config_message", CString(L"Using built-in OCIO config."));
 
-      if (ocioLoaded) {
-         // init strings to get default colorspaces
-         AtString defaultsRGB;
-         AtString defaultLinear;
-         CValueArray colorSpaces(2);
-         colorSpaces[0] = L""; colorSpaces[1] = L"";  // init first items
+      // init strings to get default colorspaces
+      AtString defaultsRGB;
+      AtString defaultLinear;
+      CValueArray colorSpaces(2);
+      colorSpaces[0] = L""; colorSpaces[1] = L"";  // init first items
 
-         // we need to have an arnold universe with the ocio node so that we can get all the color spaces
-         bool defaultUniverseExist = AiArnoldIsActive();
-         AtUniverse* ocioUniverse;
-         AtNode* ocioNode;
+      // we need to have an arnold universe with the ocio node so that we can get all the color spaces
+      bool defaultUniverseExist = AiArnoldIsActive();
+      AtUniverse* ocioUniverse;
+      AtNode* ocioNode = NULL;
 
-         if (defaultUniverseExist) {
-            ocioUniverse = AiUniverse();
+      if (defaultUniverseExist) {
+         ocioUniverse = AiUniverse();
+         if (ocioManager)
             ocioNode = AiNode(ocioUniverse, "color_manager_ocio");
-         }
-         else {
-            AiBegin();
+      }
+      else {
+         AiBegin();
+         if (ocioManager)
             ocioNode = AiNode("color_manager_ocio");
-         }
+      }
 
+      if (ocioManager)
          CNodeSetter::SetString(ocioNode, "config", GetRenderOptions()->m_ocio_config.GetAsciiString());
 
-         int numColorSpaces = AiColorManagerGetNumColorSpaces(ocioNode);
-         if (numColorSpaces > 0) {
-            // get all colorspaces in the current OCIO config
-            colorSpaces.Resize((numColorSpaces+1)*2);
-            CString colorSpace;
+      int numColorSpaces = AiColorManagerGetNumColorSpaces(ocioNode);
+      if (numColorSpaces > 0) {
+         // get all colorspaces in the current OCIO config
+         colorSpaces.Resize((numColorSpaces+1)*2);
+         CString colorSpace;
 
-            for (LONG i=0; i<numColorSpaces; i++) {
-               colorSpace = CString(AiColorManagerGetColorSpaceNameByIndex(ocioNode, i));
-               colorSpaces[i*2+2] = colorSpace;
-               colorSpaces[i*2+3] = colorSpace;
-            }
-
-            // get the default color spaces
-            AiColorManagerGetDefaults(ocioNode, defaultsRGB, defaultLinear);
-
-         }
-         else {
-            in_cp.PutParameterValue(L"ocio_config_message", CString(L"Error: No color spaces found!\n"));
+         for (LONG i=0; i<numColorSpaces; i++) {
+            colorSpace = CString(AiColorManagerGetColorSpaceNameByIndex(ocioNode, i));
+            colorSpaces[i*2+2] = colorSpace;
+            colorSpaces[i*2+3] = colorSpace;
          }
 
-         // destroy the universe
-         if (defaultUniverseExist)
-            AiUniverseDestroy(ocioUniverse);
-         else
-            AiEnd();
+         // get the default color spaces
+         AiColorManagerGetDefaults(ocioNode, defaultsRGB, defaultLinear);
 
-         // update the PPGs
-         PPGLayout layout = in_cp.GetPPGLayout();
-         PPGItem item;
-
-         // add the default sRGB color space
-         if (defaultsRGB)
-            colorSpaces[0] = L"Auto (" + CString(defaultsRGB) + ")";
-         item = layout.GetItem(L"ocio_color_space_narrow");
-         item.PutUIItems(colorSpaces);
-
-         // add the default linear color space
-         if (defaultLinear)
-            colorSpaces[0] = L"Auto (" + CString(defaultLinear) + ")";
-         item = layout.GetItem(L"ocio_color_space_linear");
-         item.PutUIItems(colorSpaces);
-
-         // redraw the PPG so the new Enum items are showing
-         in_ctxt.PutAttribute(L"Refresh", true);
       }
+      else {
+         in_cp.PutParameterValue(L"ocio_config_message", CString(L"Error: No color spaces found!\n"));
+      }
+
+      // destroy the universe
+      if (defaultUniverseExist)
+         AiUniverseDestroy(ocioUniverse);
+      else
+         AiEnd();
+
+      // update the PPGs
+      PPGLayout layout = in_cp.GetPPGLayout();
+      PPGItem item;
+
+      // add the default sRGB color space
+      if (defaultsRGB)
+         colorSpaces[0] = L"Auto (" + CString(defaultsRGB) + ")";
+      item = layout.GetItem(L"ocio_color_space_narrow");
+      item.PutUIItems(colorSpaces);
+
+      // add the default linear color space
+      if (defaultLinear)
+         colorSpaces[0] = L"Auto (" + CString(defaultLinear) + ")";
+      item = layout.GetItem(L"ocio_color_space_linear");
+      item.PutUIItems(colorSpaces);
+
+      // redraw the PPG so the new Enum items are showing
+      in_ctxt.PutAttribute(L"Refresh", true);
    }
 }
 
