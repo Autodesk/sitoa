@@ -123,7 +123,7 @@ vars.AddVariables(
 
       PathVariable('XSISDK_ROOT', 'Where to find XSI libraries', get_default_path('XSISDK_ROOT', '.')),
       PathVariable('ARNOLD_HOME', 'Base Arnold dir', '.'),
-      PathVariable('VS_HOME', 'Visual Studio 11 home', '.'),
+      PathVariable('VS_HOME', 'Visual Studio home', '.'),
       PathVariable('WINDOWS_KIT', 'Windows Kit home', '.'),
 
       PathVariable('TARGET_WORKGROUP_PATH', 'Path used for installation of plugins', '.', PathVariable.PathIsDirCreate),
@@ -157,7 +157,7 @@ VS_HOME = env['VS_HOME']
 WINDOWS_KIT  = env['WINDOWS_KIT']
 
 # Find XSISDK_VERSION by parsing xsi_version.h in the SDK
-XSISDK_VERSION = get_softimage_version(env['XSISDK_ROOT']);
+XSISDK_VERSION = get_softimage_version(env['XSISDK_ROOT'])
 
 PACKAGE_SUFFIX = env.subst(env['PACKAGE_SUFFIX'])
 
