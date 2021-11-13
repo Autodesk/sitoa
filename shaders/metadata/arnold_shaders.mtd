@@ -1347,13 +1347,9 @@ softmax INT  5
 [attr multiply]
 desc STRING "Multiplies the image by a constant. Useful for quickly adding a small amount of brightness."
 linkable BOOL false
-softmin FLOAT 0
-softmax FLOAT 2
 
 [attr offset]
 desc STRING "Adds a constant to the image. Useful for quickly lifting the black level."
-softmin FLOAT 0
-softmax FLOAT 2
 
 [attr single_channel]
 desc STRING "Use only a single channel of the texture. The values on the channels other than the first is undefined."
