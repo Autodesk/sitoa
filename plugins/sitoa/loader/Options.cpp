@@ -843,7 +843,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
          AtArray* selectedDevices = AiArrayAllocate(1, (uint8_t)numManualDevicesSelected, AI_TYPE_UINT);
          for (LONG i=0; i<numManualDevicesSelected; i++)
          {
-            AiArraySetUInt(selectedDevices, i, atoi(manualDevices[i].GetAsciiString()));
+            AiArraySetUInt(selectedDevices, i, strtoul(manualDevices[i].GetAsciiString(), NULL, 10));
             if (i+1 == numManualDevicesSelected)
                autoDeviceSelect = false;
          }
