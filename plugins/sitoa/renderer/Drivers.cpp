@@ -43,13 +43,15 @@ CString GetLayerName(const CString &in_datatype)
    if (in_datatype.IsEqualNoCase(L"Main"))
       return L"RGBA";
 
-   // If someone where to create a denoise of "Main" lets handle that as well
-   if (in_datatype.IsEqualNoCase(L"Main_denoise"))
-      return L"RGBA_denoise";
-
    // is this one of the AOVs created by CreateRenderChannels in ArnoldScenePreferences.js ?
    if (in_datatype.FindString(L"Arnold_") == 0) // trim the "Arnold_" prefix, so to get back the Arnold factory name
       return CStringUtilities().ReplaceString(L"Arnold_", L"", in_datatype);
+
+   // Support for wildcards (used when you want all lightgroups)
+   // You can't have asterix in a Softimage Render Channel, it will be reformated to an underscore,
+   // so lets look for double underscores and convert the last underscore back to a wildcard.
+   if (CStringUtilities().EndsWith(in_datatype, L"__"))
+      return (in_datatype.GetSubString(0, in_datatype.Length()-1) + L"*");
 
    return in_datatype;
 }

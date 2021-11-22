@@ -148,6 +148,9 @@ function XSILoadPlugin( in_reg )
    // imagers
    in_reg.RegisterShader("imager", 1, 0);
    in_reg.RegisterShader("imager_color_correct", 1, 0);
+   in_reg.RegisterShader("imager_denoiser_noice", 1, 0);
+   in_reg.RegisterShader("imager_denoiser_oidn", 1, 0);
+   in_reg.RegisterShader("imager_denoiser_optix", 1, 0);
    in_reg.RegisterShader("imager_exposure", 1, 0);
    in_reg.RegisterShader("imager_lens_effects", 1, 0);
    in_reg.RegisterShader("imager_tonemap", 1, 0);
@@ -423,6 +426,12 @@ function Arnold_wireframe_1_0_Define(in_ctxt) { return true; }
 // imagers
 function Arnold_imager_color_correct_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_imager_color_correct_1_0_Define(in_ctxt) { return true; }
+function Arnold_imager_denoiser_noice_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_imager_denoiser_noice_1_0_Define(in_ctxt) { return true; }
+function Arnold_imager_denoiser_oidn_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_imager_denoiser_oidn_1_0_Define(in_ctxt) { return true; }
+function Arnold_imager_denoiser_optix_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_imager_denoiser_optix_1_0_Define(in_ctxt) { return true; }
 function Arnold_imager_exposure_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_imager_exposure_1_0_Define(in_ctxt) { return true; }
 function Arnold_imager_lens_effects_1_0_DefineInfo(in_ctxt) { return true; }

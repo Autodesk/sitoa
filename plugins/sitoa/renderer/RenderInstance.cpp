@@ -723,7 +723,7 @@ CStatus CRenderInstance::UpdateScene(const CRef &in_ref, eUpdateType in_updateTy
 void CRenderInstance::DestroyScene(bool in_flushTextures)
 {   
    AiCritSecEnter(&m_destroySceneBarrier);
-   if (AiUniverseIsActive())
+   if (AiArnoldIsActive())
    {
       AiMsgDebug("[sitoa] Destroying Scene");
 
@@ -770,7 +770,7 @@ void CRenderInstance::DestroyScene(bool in_flushTextures)
 void CRenderInstance::InterruptRender()
 {   
    AiCritSecEnter(&m_destroySceneBarrier);
-   if (AiUniverseIsActive())
+   if (AiArnoldIsActive())
    {
       AiMsgDebug("[sitoa] Interrupting Render");
 
@@ -802,7 +802,7 @@ CStatus CRenderInstance::OnValueChange(CRef& in_ctxt)
    CRef cRef((CRef)ctxt.GetAttribute(L"Object"));
    
    // Be careful, we could be in a Region renderer but the m_renderType still be a shaderball or a Preview
-   if (!AiUniverseIsActive())
+   if (!AiArnoldIsActive())
       return CStatus::False;
 
    SIObject xsiObj(cRef);
@@ -863,7 +863,7 @@ CStatus CRenderInstance::OnValueChange(CRef& in_ctxt)
 //
 CStatus CRenderInstance::OnObjectRemoved(CRef& in_ctxt)
 {
-   if (!AiUniverseIsActive() || m_renderType != L"Region")
+   if (!AiArnoldIsActive() || m_renderType != L"Region")
       return CStatus::False;
 
    Context ctxt(in_ctxt);
@@ -962,7 +962,7 @@ CStatus CRenderInstance::OnObjectRemoved(CRef& in_ctxt)
 
 CStatus CRenderInstance::OnObjectAdded(CRef& in_ctxt)
 {
-   if (!AiUniverseIsActive())
+   if (!AiArnoldIsActive())
       return CStatus::False;
    if (m_renderType != L"Region")
       return CStatus::False;
@@ -1291,8 +1291,7 @@ CStatus CRenderInstance::ProcessPass()
 
    if (enableDisplayDriver)
       m_displayDriver.UpdateDisplayDriver(m_renderContext, m_renderWidth*m_renderHeight, 
-                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs,
-                                          GetRenderOptions()->m_use_optix_on_main, GetRenderOptions()->m_only_show_denoise);
+                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs);
  
    // Check if the render has not been aborted just before render
    if (InterruptRenderSignal())
@@ -1364,7 +1363,7 @@ CStatus CRenderInstance::ProcessRegion()
  
    bool emptyDirtyList(false);
 
-   if (!AiUniverseIsActive())
+   if (!AiArnoldIsActive())
    {
       CRefArray visibleObjects = m_renderContext.GetAttribute(L"ObjectList");
       bool selOnly = visibleObjects.GetCount() > 0;
@@ -1548,8 +1547,7 @@ CStatus CRenderInstance::ProcessRegion()
       // for these new render options (1.12), let's check their existance. Else, filterColorAov defaults to false,
       // and all the previously saved scenes render aliased
       m_displayDriver.UpdateDisplayDriver(m_renderContext, displayArea, 
-                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs,
-                                          GetRenderOptions()->m_use_optix_on_main, GetRenderOptions()->m_only_show_denoise);
+                                          GetRenderOptions()->m_filter_color_AOVs, GetRenderOptions()->m_filter_numeric_AOVs);
 
       SetLogSettings(L"Region", m_frame);
    }

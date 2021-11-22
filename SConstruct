@@ -123,7 +123,7 @@ vars.AddVariables(
 
       PathVariable('XSISDK_ROOT', 'Where to find XSI libraries', get_default_path('XSISDK_ROOT', '.')),
       PathVariable('ARNOLD_HOME', 'Base Arnold dir', '.'),
-      PathVariable('VS_HOME', 'Visual Studio 11 home', '.'),
+      PathVariable('VS_HOME', 'Visual Studio home', '.'),
       PathVariable('WINDOWS_KIT', 'Windows Kit home', '.'),
 
       PathVariable('TARGET_WORKGROUP_PATH', 'Path used for installation of plugins', '.', PathVariable.PathIsDirCreate),
@@ -146,6 +146,7 @@ system.set_target_arch(env['TARGET_ARCH'])
 ARNOLD_HOME = env['ARNOLD_HOME']
 ARNOLD_API_INCLUDES = os.path.join(ARNOLD_HOME, 'include')
 ARNOLD_BINARIES = os.path.join(ARNOLD_HOME, 'bin')
+ARNOLD_OCIO = os.path.join(ARNOLD_HOME, 'ocio')
 ARNOLD_PLUGINS = os.path.join(ARNOLD_HOME, 'plugins')
 if system.os() == 'windows':
   ARNOLD_API_LIB = os.path.join(ARNOLD_HOME, 'lib')
@@ -156,7 +157,7 @@ VS_HOME = env['VS_HOME']
 WINDOWS_KIT  = env['WINDOWS_KIT']
 
 # Find XSISDK_VERSION by parsing xsi_version.h in the SDK
-XSISDK_VERSION = get_softimage_version(env['XSISDK_ROOT']);
+XSISDK_VERSION = get_softimage_version(env['XSISDK_ROOT'])
 
 PACKAGE_SUFFIX = env.subst(env['PACKAGE_SUFFIX'])
 
@@ -407,7 +408,8 @@ PACKAGE_FILES = [
 [os.path.join(ARNOLD_BINARIES, '*%s.*' % get_library_extension()),         os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*.pit'),                                   os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*.png'),                                   os.path.join(addon_path, bin_path)],
-[os.path.join(ARNOLD_PLUGINS),                                             os.path.join(addon_path, bin_path, '..', 'plugins')],
+[ARNOLD_OCIO,                                                              os.path.join(addon_path, bin_path, '..', 'ocio')],
+[ARNOLD_PLUGINS,                                                           os.path.join(addon_path, bin_path, '..', 'plugins')],
 [os.path.join('plugins', 'helpers', '*.js'),                               os.path.join(addon_path, plugins_path)],
 [os.path.join('plugins', 'helpers', '*.py'),                               os.path.join(addon_path, plugins_path)],
 [os.path.join('plugins', 'helpers', 'Pictures', '*.bmp'),                  os.path.join(addon_path, pictures_path)],
@@ -486,7 +488,10 @@ def patch_adlm(wg_bin_path, env):
 
    if system.os() == 'windows':
       adclmhub_name = find_adclmhub(wg_bin_path, 'AdClmHub_')
-      if adclmhub_name == 'AdClmHub_1.1.1.dll':
+      if adclmhub_name == 'AdClmHub_2.0.0.dll':
+         size = 524128
+         seek_pos = 367692
+      elif adclmhub_name == 'AdClmHub_1.1.1.dll':
          size = 384872
          seek_pos = 267436
       elif adclmhub_name == 'AdClmHub_1.dll':
@@ -562,6 +567,7 @@ env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [str(SITOA[0])
                                                                    str(SITOA_SHADERS[0])])
 
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join(ARNOLD_BINARIES, '*'))])
+env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..', 'ocio'), [glob.glob(os.path.join(ARNOLD_OCIO, '*'))])
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..', 'plugins'), [glob.glob(os.path.join(ARNOLD_PLUGINS, '*'))])
 
 # Copying Scripting Plugins 

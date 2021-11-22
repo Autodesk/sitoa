@@ -165,7 +165,7 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
 {
    ShaderParamDefOptions defOptions = ShaderParamDefOptions(Application().GetFactory().CreateShaderParamDefOptions());
 
-   bool texturable = ! (m_type == AI_TYPE_STRING || m_type == AI_TYPE_ENUM);
+   bool texturable = true;
    bool animatable = ! (m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE || m_type == AI_TYPE_MATRIX || 
                         m_type == AI_TYPE_ENUM || m_type == AI_TYPE_CLOSURE);
    bool inspectable = m_has_inspectable ? m_inspectable : true;
@@ -216,7 +216,7 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
 
    // special case for imagers where we want to set a custom dafult value for layer_selection
    if (CStringUtilities().StartsWith(in_shader_name, L"imager_") && m_name == L"layer_selection")
-      defOptions.SetDefaultValue(L"RGBA or RGBA_denoise");
+      defOptions.SetDefaultValue(L"RGBA");
 
    if (m_has_min && m_has_max)
       defOptions.SetHardLimit((CValue)m_min, (CValue)m_max);
@@ -390,7 +390,7 @@ void CShaderDefParameter::Layout(PPGLayout &in_layout)
       label = CStringUtilities().PrettifyParameterName(m_name);
 
    // if a string parameter is called "filename", it's reasonable to provide a file browser widget
-   if (m_type == AI_TYPE_STRING && m_name == ATSTRING::filename)
+   if (m_type == AI_TYPE_STRING && (m_name == ATSTRING::filename || m_name == ATSTRING::lut_filename))
    {
       item = in_layout.AddItem(m_name, label, siControlFilePath);
       item.PutAttribute(siUIOpenFile, true);

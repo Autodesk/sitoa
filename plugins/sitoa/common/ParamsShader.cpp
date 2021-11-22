@@ -298,14 +298,6 @@ CStatus LoadShaderParameter(AtNode* in_node, const CString &in_entryName, Parame
             paramName = in_arrayParamName;
 
          LoadParameterValue(in_node, in_entryName, paramName, paramSource, in_frame, in_arrayElement, in_ref);
-
-         // #1906: image shader ? If requested, substitute the filename with its tx version, if found
-         if (GetRenderOptions()->m_use_existing_tx_files && in_entryName == L"image" && paramName == L"filename")
-         {
-            const char *filename = AiNodeGetStr(in_node, "filename");
-            filename = CPathTranslator::TranslatePath(filename, true);
-            AiNodeSetStr(in_node, "filename", filename);
-         }
       }
    }
    else if (sourceID == siFCurveID)

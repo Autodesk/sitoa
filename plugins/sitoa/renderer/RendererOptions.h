@@ -87,6 +87,7 @@ public:
    bool    m_output_exr_tiled;
    CString m_output_exr_compression;
    bool    m_output_exr_preserve_layer_name;
+   bool    m_output_exr_multipart;
    bool    m_output_exr_autocrop;
    bool    m_output_exr_append;
 
@@ -216,6 +217,7 @@ public:
    bool         m_ignore_user_options;
    bool         m_ignore_matte;
    bool         m_ignore_operators;
+   bool         m_ignore_imagers;
 
    // ass archive
    CString m_output_file_tagdir_ass;
@@ -235,8 +237,6 @@ public:
    bool m_output_operators;
 
    // denoiser
-   bool m_use_optix_on_main;
-   bool m_only_show_denoise;
    bool m_output_denoising_aovs;
 
    //////////////////////////////////////
@@ -292,6 +292,7 @@ public:
       m_output_exr_tiled(true),
       m_output_exr_compression(L"zip"),
       m_output_exr_preserve_layer_name(false),
+      m_output_exr_multipart(false),
       m_output_exr_autocrop(false),
       m_output_exr_append(false),
       
@@ -371,7 +372,7 @@ public:
       m_texture_accept_untiled(true),
       m_enable_autotile(false),
       m_texture_autotile(64),
-      m_use_existing_tx_files(false),
+      m_use_existing_tx_files(true),
       m_texture_max_memory_MB(4096),
       m_texture_max_open_files(100),
 
@@ -414,6 +415,7 @@ public:
       m_ignore_user_options(false),
       m_ignore_matte(false),
       m_ignore_operators(false),
+      m_ignore_imagers(false),
 
       // ass archive
       m_output_file_tagdir_ass(L""), // this to be reviewed, see CommonRenderOptions_Define
@@ -433,8 +435,6 @@ public:
       m_output_operators(false),
 
       // denoiser
-      m_use_optix_on_main(false),
-      m_only_show_denoise(true),
       m_output_denoising_aovs(false)
 
    {
@@ -477,8 +477,6 @@ void SubdivisionTabLogic(CustomProperty &in_cp);
 void DiagnosticsTabLogic(CustomProperty &in_cp);
 // Logic for the ass archives tab
 void AssOutputTabLogic(CustomProperty &in_cp);
-// Logic for the denoiser tab
-void DenoiserTabLogic(CustomProperty &in_cp);
 
 // Reset the default values of all the parameters
 void ResetToDefault(CustomProperty &in_cp, PPGEventContext &in_ctxt);

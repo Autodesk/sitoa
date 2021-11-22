@@ -203,8 +203,6 @@ bool LoadFilters()
       CNodeSetter::SetString(varianceFilterNode, "filter_weights", filterType.GetAsciiString());  // type of output_filter
    }
 
-   // optix denoise filters are added in the LoadDrivers() function because they have to be unique for each AOV
-
    return true;
 }
 
@@ -220,20 +218,29 @@ bool LoadFilters()
 bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
 {
    CString colorManager = GetRenderOptions()->m_color_manager;
+   AtNode* ocioNode;
    if (colorManager == L"color_manager_ocio")
    {
-      AtNode* ocioNode = AiNode("color_manager_ocio");
+      ocioNode = AiNode("color_manager_ocio");
       if (!ocioNode)
          return false;
       CNodeUtilities().SetName(ocioNode, "sitoa_color_manager_ocio");
 
-      CNodeSetter::SetString(ocioNode, "config",             GetRenderOptions()->m_ocio_config.GetAsciiString());
-      CNodeSetter::SetString(ocioNode, "color_space_narrow", GetRenderOptions()->m_ocio_color_space_narrow.GetAsciiString());
-      CNodeSetter::SetString(ocioNode, "color_space_linear", GetRenderOptions()->m_ocio_color_space_linear.GetAsciiString());
+      CNodeSetter::SetString(ocioNode, "config", GetRenderOptions()->m_ocio_config.GetAsciiString());
+   }
+   else {
+      ocioNode = AiNodeLookUpByName("ai_default_color_manager_ocio");
+      if (!ocioNode)
+         return false;
+   }
 
-      // only export chromaticities if color_space_linear ise set
-      if (GetRenderOptions()->m_ocio_color_space_linear != L"") {
-         CString ocioChromaticitiesString = GetRenderOptions()->m_ocio_linear_chromaticities;
+   CNodeSetter::SetString(ocioNode, "color_space_narrow", GetRenderOptions()->m_ocio_color_space_narrow.GetAsciiString());
+   CNodeSetter::SetString(ocioNode, "color_space_linear", GetRenderOptions()->m_ocio_color_space_linear.GetAsciiString());
+
+   // only export chromaticities if color_space_linear is set
+   if (GetRenderOptions()->m_ocio_color_space_linear != L"") {
+      CString ocioChromaticitiesString = GetRenderOptions()->m_ocio_linear_chromaticities;
+      if (ocioChromaticitiesString != L"") {
          CStringArray ocioChromaticitiesStrings = ocioChromaticitiesString.Split(L" ");
          if (ocioChromaticitiesStrings.GetCount() == 8) {
             AtArray* ocioChromaticities = AiArrayAllocate(8, 1, AI_TYPE_FLOAT);
@@ -252,8 +259,9 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
             GetMessageQueue()->LogMsg(L"[sitoa] OCIO Chromaticities could not be parsed. It needs to be 8 values separated by spaces. Unparsable: '" + CString(ocioChromaticitiesString) + L"'", siWarningMsg);
          }
       }
-      CNodeSetter::SetPointer(in_optionsNode, "color_manager", ocioNode);
    }
+   CNodeSetter::SetPointer(in_optionsNode, "color_manager", ocioNode);
+
    return true;
 }
 
@@ -383,9 +391,10 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
    // vars to hold if and how to create AOVs for noice
    // it's a string because it can be added in two ways.
    // recognised values are "add", "add_rename" and "exist"
-   CString noiceDA = L"add";
-   CString noiceN  = L"add";
-   CString noiceZ  = L"add";
+   CString noiceDA  = L"add";
+   CString noiceDAN = L"add";
+   CString noiceN   = L"add";
+   CString noiceZ   = L"add";
 
    unsigned int activeBuffer = 0;
    for (LONG i = 0; i<nbBuffers; i++)
@@ -462,12 +471,13 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
             {
                bool tiled = GetRenderOptions()->m_output_exr_tiled;
                CNodeSetter::SetBoolean(driverNode, "half_precision",      thisFb.IsHalfFloat());
-               CNodeSetter::SetBoolean(driverNode, "tiled",               tiled);            
+               CNodeSetter::SetBoolean(driverNode, "tiled",               tiled);
                CNodeSetter::SetString (driverNode, "compression",         GetRenderOptions()->m_output_exr_compression.GetAsciiString());
-               CNodeSetter::SetBoolean(driverNode, "preserve_layer_name", GetRenderOptions()->m_output_exr_preserve_layer_name);            
+               CNodeSetter::SetBoolean(driverNode, "preserve_layer_name", GetRenderOptions()->m_output_exr_preserve_layer_name);
+               CNodeSetter::SetBoolean(driverNode, "multipart",           GetRenderOptions()->m_output_exr_multipart);
                if (!tiled) // autocrop allowed only for scanline
                   CNodeSetter::SetBoolean(driverNode, "autocrop", GetRenderOptions()->m_output_exr_autocrop);
-               else //append mode only for tile mode
+               else if (!GetRenderOptions()->m_output_exr_multipart)//append mode only for tile mode without multipart
                   CNodeSetter::SetBoolean(driverNode, "append", GetRenderOptions()->m_output_exr_append);
 
                ExportExrMetadata(driverNode);
@@ -513,22 +523,8 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
             deepExrLayersDrivers.push_back(CDeepExrLayersDrivers(masterFb.m_fullName, thisFb.m_layerName, thisFb.m_driverBitDepth));
       }
 
-      // if layerName ends with "_denoise", we add a denoise filter named after the layer and then add the output
-      if (CStringUtilities().EndsWith(thisFb.m_layerName, L"_denoise"))
-      {
-         // OptiX denoise needs a separete filter for each AOV, so we create them here instad of in LoadFilters()
-         CString optixFilterName = L"sitoa_" + thisFb.m_layerName + L"_optix_filter";
-         AtNode* optixFilterNode = AiNode("denoise_optix_filter");
-         if (!optixFilterNode)
-         {
-            GetMessageQueue()->LogMsg(L"[sitoa] Couldn't create denoise_optix_filter for layer " + thisFb.m_layerName, siErrorMsg);
-            continue;
-         }
-         CNodeUtilities().SetName(optixFilterNode, optixFilterName.GetAsciiString());
-         AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + optixFilterName + L" " + masterFb.m_fullName).GetAsciiString());
-      }
       // Adding to outputs. masterFb differs from thisFb if they are both exr and share the same filename
-      else if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
+      if (thisFb.m_layerDataType.IsEqualNoCase(L"RGB") || thisFb.m_layerDataType.IsEqualNoCase(L"RGBA"))
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + colorFilter + " " + masterFb.m_fullName).GetAsciiString());
       else
          AiArraySetStr(outputs, activeBuffer, CString(thisFb.m_layerName + L" " + thisFb.m_layerDataType + L" " + numericFilter + " " + masterFb.m_fullName).GetAsciiString());
@@ -538,6 +534,9 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       {
          if (thisFb.m_layerName == L"denoise_albedo")
             noiceDA = L"exist";
+
+         if (thisFb.m_layerName == L"denoise_albedo_noisy")
+            noiceDAN = L"exist";
 
          if (thisFb.m_layerName == L"N")
          {
@@ -566,8 +565,10 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       if (mainFb.m_driverName.IsEqualNoCase(L"driver_exr"))
       {
          // pre-calc number of additional framebuffers to add and resize output array
-         int nbNoiceBuffers = 4;
+         int nbNoiceBuffers = 5;
          if (noiceDA == L"exist")
+            nbNoiceBuffers -= 1;
+         if (noiceDAN == L"exist")
             nbNoiceBuffers -= 1;
          if (noiceN == L"exist")
             nbNoiceBuffers -= 1;
@@ -594,6 +595,11 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
          if (noiceDA != L"exist")
          {
             AiArraySetStr(outputs, activeBuffers+i, CString(L"denoise_albedo RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
+            i++;
+         }
+         if (noiceDAN != L"exist")
+         {
+            AiArraySetStr(outputs, activeBuffers+i, CString(L"denoise_albedo_noisy RGB " + colorFilter + L" " + mainFb.m_fullName).GetAsciiString());
             i++;
          }
          if (noiceN != L"exist")
@@ -746,6 +752,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_sss",          GetRenderOptions()->m_ignore_sss);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_dof",          GetRenderOptions()->m_ignore_dof);
    CNodeSetter::SetBoolean(in_optionsNode, "ignore_operators",    GetRenderOptions()->m_ignore_operators);
+   CNodeSetter::SetBoolean(in_optionsNode, "ignore_imagers",      GetRenderOptions()->m_ignore_imagers);
 
    // Error colors
    CNodeSetter::SetRGB(in_optionsNode, "error_color_bad_texture", GetRenderOptions()->m_error_color_bad_map.GetR(), 
@@ -763,6 +770,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    // Tiling
    int texture_autotile = GetRenderOptions()->m_enable_autotile ? GetRenderOptions()->m_texture_autotile : 0;
    CNodeSetter::SetInt(in_optionsNode, "texture_autotile", texture_autotile);
+   CNodeSetter::SetBoolean(in_optionsNode, "texture_use_existing_tx",  GetRenderOptions()->m_use_existing_tx_files);
 
    CNodeSetter::SetFloat(in_optionsNode, "texture_max_memory_MB", (float)GetRenderOptions()->m_texture_max_memory_MB);
 
@@ -808,7 +816,6 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetString(in_optionsNode, "render_device", GetRenderOptions()->m_render_device.GetAsciiString());
    CNodeSetter::SetString(in_optionsNode, "render_device_fallback", GetRenderOptions()->m_render_device_fallback.GetAsciiString());
    bool gpuRender = (GetRenderOptions()->m_render_device == L"GPU");
-   bool optixDenoiser = GetRenderOptions()->m_use_optix_on_main;
 
    if (gpuRender)
       CNodeSetter::SetInt(in_optionsNode, "gpu_max_texture_resolution", GetRenderOptions()->m_gpu_max_texture_resolution);
@@ -819,42 +826,39 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    if (gpuRender && Application().IsInteractive() && (renderType != L"Export"))
       CNodeSetter::SetBoolean(in_optionsNode, "enable_progressive_render", true);
 
-   // Only export GPU settings if we use a GPU for something;
-   if (gpuRender || optixDenoiser)
+   // Always export GPU settings since a imager could need it;
+   CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
+   CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
+
+   // Device Selection
+   bool autoDeviceSelect = true;
+   bool tryManualDeviceSelect = GetRenderOptions()->m_enable_manual_devices;
+   if (tryManualDeviceSelect)
    {
-      CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
-      CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
-
-      // Device Selection
-      bool autoDeviceSelect = true;
-      bool tryManualDeviceSelect = GetRenderOptions()->m_enable_manual_devices;
-      if (tryManualDeviceSelect)
+      CString manualDeviceSelectionString = GetRenderOptions()->m_manual_device_selection;
+      if (manualDeviceSelectionString != L"")
       {
-         CString manualDeviceSelectionString = GetRenderOptions()->m_manual_device_selection;
-         if (manualDeviceSelectionString != L"")
+         CStringArray manualDevices = manualDeviceSelectionString.Split(L";");
+         int numManualDevicesSelected = manualDevices.GetCount();
+         AtArray* selectedDevices = AiArrayAllocate(1, (uint8_t)numManualDevicesSelected, AI_TYPE_UINT);
+         for (LONG i=0; i<numManualDevicesSelected; i++)
          {
-            CStringArray manualDevices = manualDeviceSelectionString.Split(L";");
-            int numManualDevicesSelected = manualDevices.GetCount();
-            AtArray* selectedDevices = AiArrayAllocate(1, (uint8_t)numManualDevicesSelected, AI_TYPE_UINT);
-            for (LONG i=0; i<numManualDevicesSelected; i++)
-            {
-               AiArraySetUInt(selectedDevices, i, atoi(manualDevices[i].GetAsciiString()));
-               if (i+1 == numManualDevicesSelected)
-                  autoDeviceSelect = false;
-            }
-
-            if (!autoDeviceSelect)
-               AiDeviceSelect(AI_DEVICE_TYPE_GPU, selectedDevices);
-            else
-               GetMessageQueue()->LogMsg(L"[sitoa] Could not select manual rendering device. Automatic selection will be used.", siWarningMsg);
-            
-            AiArrayDestroy(selectedDevices);
+            AiArraySetUInt(selectedDevices, i, strtoul(manualDevices[i].GetAsciiString(), NULL, 10));
+            if (i+1 == numManualDevicesSelected)
+               autoDeviceSelect = false;
          }
-      }
 
-      if (autoDeviceSelect)
-         AiDeviceAutoSelect();
+         if (!autoDeviceSelect)
+            AiDeviceSelect(AI_DEVICE_TYPE_GPU, selectedDevices);
+         else
+            GetMessageQueue()->LogMsg(L"[sitoa] Could not select manual rendering device. Automatic selection will be used.", siWarningMsg);
+         
+         AiArrayDestroy(selectedDevices);
+      }
    }
+
+   if (autoDeviceSelect)
+      AiDeviceAutoSelect();
 
    // #680
    LoadUserOptions(in_optionsNode, in_arnoldOptions, in_frame);

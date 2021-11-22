@@ -144,6 +144,66 @@ softmax FLOAT 1
 linkable BOOL false
 
 ###########################################################################
+[node imager_denoiser_noice]
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr patch_radius]
+linkable BOOL false
+
+[attr search_radius]
+linkable BOOL false
+
+[attr tile_size]
+linkable BOOL false
+soft.inspectable BOOL false
+
+[attr variance]
+softmin FLOAT 0
+softmax FLOAT 1
+linkable BOOL false
+
+###########################################################################
+[node imager_denoiser_oidn]
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+###########################################################################
+[node imager_denoiser_optix]
+[attr input]
+soft.inspectable BOOL false
+
+[attr enable]
+linkable BOOL false
+
+[attr blend]
+min FLOAT 0
+max FLOAT 1
+linkable BOOL false
+
+[attr clamp]
+linkable BOOL false
+
+[attr clamp_min]
+softmin FLOAT 0
+softmax FLOAT 1
+linkable BOOL false
+
+[attr clamp_max]
+softmin FLOAT 0
+softmax FLOAT 1
+linkable BOOL false
+
+[attr use_feature_aovs]
+linkable BOOL false
+
+###########################################################################
 [node imager_exposure]
 
 [attr input]
@@ -159,6 +219,9 @@ linkable BOOL false
 
 ###########################################################################
 [node imager_lens_effects]
+soft.order STRING "enable layer_selection "
+"BeginGroup Vignetting vignetting EndGroup "
+"BeginGroup Bloom bloom_strength bloom_radius bloom_tint bloom_threshold EndGroup "
 
 [attr input]
 soft.inspectable BOOL false
@@ -171,12 +234,36 @@ softmin FLOAT 0
 softmax FLOAT 100
 linkable BOOL false
 
+[attr bloom_threshold]
+soft.label STRING "Threshold"
+softmin FLOAT 0
+softmax FLOAT 10
+linkable BOOL false
+
+[attr bloom_tint]
+soft.label STRING "Tint"
+linkable BOOL false
+
+[attr bloom_radius]
+soft.label STRING "Radius"
+min FLOAT 1
+softmin FLOAT 1
+softmax FLOAT 12
+linkable BOOL false
+
+[attr bloom_strength]
+soft.label STRING "Strength"
+softmin FLOAT 0
+softmax FLOAT 10
+linkable BOOL false
+
 ###########################################################################
 [node imager_tonemap]
-soft.order STRING "enable layer_selection mode "
+soft.order STRING "enable layer_selection "
+"BeginGroup Main mode preserve_saturation gamma mix EndGroup "
 "BeginGroup Filmic filmic_toe_strength filmic_toe_length filmic_shoulder_strength filmic_shoulder_length filmic_shoulder_angle EndGroup "
 "BeginGroup Reinhard reinhard_highlights reinhard_shadows EndGroup "
-"preserve_saturation gamma"
+"BeginGroup LUT lut_filename lut_working_color_space EndGroup "
 
 [attr input]
 soft.inspectable BOOL false
@@ -205,7 +292,7 @@ linkable BOOL false
 [attr filmic_shoulder_length]
 soft.label STRING "Shoulder Length"
 min FLOAT 0
-max FLOAT 1
+softmax FLOAT 3
 linkable BOOL false
 
 [attr filmic_shoulder_angle]
@@ -226,12 +313,23 @@ min FLOAT 0
 max FLOAT 1
 linkable BOOL false
 
+[attr lut_filename]
+soft.label STRING "LUT Filename"
+
+[attr lut_working_color_space]
+soft.label STRING "Process Color Space"
+
 [attr preserve_saturation]
 linkable BOOL false
 
 [attr gamma]
 min FLOAT 0
 softmax FLOAT 5
+linkable BOOL false
+
+[attr mix]
+min FLOAT 0
+max FLOAT 1
 linkable BOOL false
 
 ###########################################################################

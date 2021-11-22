@@ -45,7 +45,6 @@ soft.inspectable BOOL false
 
 [attr samples]
 desc STRING "Controls the number of rays that will be fired to compute the ray hits/total ratio. Increasing the number of samples will reduce noise and give a better quality result."
-linkable BOOL false
 min INT 0
 softmin INT 0
 softmax INT 10
@@ -201,7 +200,6 @@ min     INT 1
 max     INT 100
 softmin INT 1 
 softmax INT 64 
-linkable BOOL false
 
 [attr eccentricity]
 desc STRING "This control alters the directional bias, or anisotropy, of the scattering. A value of zero (the default) gives isotropic scattering (the light is scattered evenly in all directions, giving a uniform effect). Positive values bias the scattering effect forwards, in the direction of the light, while negative values bias the scattering backwards, toward the light."
@@ -611,7 +609,6 @@ softmax FLOAT 10
 
 [attr uvset]
 desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
-linkable BOOL false
 soft.label STRING "UV Set"
 
 ##############################################################################
@@ -1332,28 +1329,21 @@ desc STRING "Specifies which color space the texture is assumed to be in. "
 
 [attr filename]
 desc STRING "The path of the current location of the file texture map. The full path name must be used."
-linkable BOOL false
 soft.type STRING "bitmap"
 
 [attr filter]
 desc STRING "Texel interpolation method used to filter the rendered image file. Cubic is slower but smoother, closest is faster but looks blocky when magnified."
 
 [attr mipmap_bias]
-linkable BOOL false
 desc STRING "Offsets the Mip-Map level from which a texture is sampled. Negative value indicates a larger Mip-Map level (bigger texture) resulting in sharper texture lookups; a positive value indicates a smaller Mip-Map level (smaller texture) which will produce a blurrier result."
 softmin INT -5
 softmax INT  5
 
 [attr multiply]
 desc STRING "Multiplies the image by a constant. Useful for quickly adding a small amount of brightness."
-linkable BOOL false
-softmin FLOAT 0
-softmax FLOAT 2
 
 [attr offset]
 desc STRING "Adds a constant to the image. Useful for quickly lifting the black level."
-softmin FLOAT 0
-softmax FLOAT 2
 
 [attr single_channel]
 desc STRING "Use only a single channel of the texture. The values on the channels other than the first is undefined."
@@ -1418,7 +1408,6 @@ soft.label STRING "Custom UVs"
 
 [attr uvset]
 desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
-linkable BOOL false
 soft.label STRING "UV Set"
 
 [attr ignore_missing_textures]
@@ -2058,7 +2047,6 @@ soft.order STRING "shader1 shader2 mode mix add_transparency"
 
 [attr mode]
 desc STRING "The mixing mode."
-linkable BOOL false
 
 [attr mix]
 desc STRING "The mixing weight."
@@ -2092,12 +2080,10 @@ soft.order STRING "max_displace time0 time1 raw"
 
 [attr raw]
 desc STRING "The vector won't be normalized."
-linkable BOOL false
 soft.label STRING "Do Not Normalize"
 
 [attr max_displace]
 desc STRING "When greater than 0, this is the maximum amount of screen-space motion. The motion vector encoded in the RG components is then normalized to this value. This is better when writing to 8 or 16-bit formats like JPEG, TIFF etc. On the other hand, when this value is less than or equal to zero, magnitude encoding is used instead: RG holds the unit direction vector, and B holds the magnitude. This is better when writing to floating point formats (EXR etc)."
-linkable BOOL false
 softmin FLOAT 0
 softmax FLOAT 1
 soft.label STRING "Displacement"
@@ -2105,14 +2091,12 @@ soft.disable_when STRING "{ raw == 1 }"
 
 [attr time0]
 desc STRING "Sample time for shutter start."
-linkable BOOL false
 softmin FLOAT 0
 softmax FLOAT 1
 soft.label STRING "Shutter Start"
 
 [attr time1]
 desc STRING "Sample time for shutter end."
-linkable BOOL false
 softmin FLOAT 0
 softmax FLOAT 1
 soft.label STRING "Shutter End"
@@ -2322,63 +2306,52 @@ soft.order STRING "turbidity ground_albedo use_degrees azimuth elevation sun_dir
 "BeginGroup Orientation X Y Z EndGroup"
 
 [attr use_degrees]
-linkable BOOL false
 soft.label STRING "Use Azimuth / Elevation"
 desc STRING "Switch between Azimuth/Elevation mode and Direction for defining the sun position. "
 
 [attr azimuth]
 desc STRING "Sun azimuth angle, between 0 and 360 degrees."
-linkable BOOL false
 soft.disable_when STRING "{ use_degrees == 0 }"
 min FLOAT 0
 max FLOAT 360
 
 [attr elevation]
 desc STRING "Sun elevation angle, between 0 and 90 degrees."
-linkable BOOL false
 soft.disable_when STRING "{ use_degrees == 0 }"
 min FLOAT 0
 max FLOAT 90
 
 [attr sun_direction]
-linkable BOOL false
 soft.disable_when STRING "{ use_degrees == 1 }"
 
 [attr turbidity]
 desc STRING "The overall aerosol content (dust, moisture, ice, fog) of the air."
-linkable BOOL false
 min FLOAT 1
 softmin FLOAT 1
 softmax FLOAT 10
 
 [attr ground_lbedo]
 desc STRING "The amount of light reflected from the planet surface back into the atmosphere."
-linkable BOOL false
 
 [attr enable_sun]
 desc STRING "Enables/disables the visibility of the sun."
-linkable BOOL false
 
 [attr intensity]
 desc STRING "Scalar multiplier for the sky radiance."
-linkable BOOL false
 min     FLOAT 0
 softmin FLOAT 0.1
 softmax FLOAT 10
 
 [attr sky_tint]
 desc STRING "Color that tints the sky color."
-linkable BOOL false
 
 [attr sun_tint]
 desc STRING "Color that tints the sun color."
-linkable BOOL false
 soft.disable_when STRING "{ enable_sun == 0 }"
 
 [attr sun_size]
 desc STRING "Size of the visible sun disk. It is possible to change the size of the sun for artistic reasons. "
 "However, 0.51 is the solid angle (degrees) of the sun, as seen from the earth."
-linkable BOOL false
 soft.disable_when STRING "{ enable_sun == 0 }"
 min     FLOAT 0
 softmin FLOAT 0.1
@@ -2386,17 +2359,14 @@ softmax FLOAT 5
 
 [attr X]
 desc STRING "Reference X axis."
-linkable BOOL false
 soft.label STRING "X Axis"
 
 [attr Y]
 desc STRING "Reference Y axis."
-linkable BOOL false
 soft.label STRING "Y Axis"
 
 [attr Z]
 desc STRING "Reference Z axis."
-linkable BOOL false
 soft.label STRING "Z Axis"
 
 ##############################################################################
@@ -4173,15 +4143,12 @@ soft.category STRING "Utility"
 
 [attr color_mode]
 desc STRING "The mode used to color the mesh. You can either choose a flat color as specified by the color setting, or the output color can be chosen to represent various things such as the geometry normal, the shading normal, a wireframe view, etc."
-linkable BOOL false
 
 [attr shade_mode]
 desc STRING "The mode used to color the mesh. You can either choose a flat color as specified by the color setting, or the output color can be chosen to represent various things such as the geometry normal, the shading normal, a wireframe view, etc."
-linkable BOOL false
 
 [attr overlay_mode]
 desc STRING "The mode used to color the mesh. You can either choose a flat color as specified by the color setting, or the output color can be chosen to represent various things such as the geometry normal, the shading normal, a wireframe view, etc."
-linkable BOOL false
 
 [attr color]
 desc STRING "Sets the color of the shader when the Color Mode is set to color."
@@ -4220,7 +4187,6 @@ soft.label STRING "Rotation Units"
 
 [attr uvset]
 desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
-linkable BOOL false
 soft.label STRING "UV Set"
 
 [attr coverage]
