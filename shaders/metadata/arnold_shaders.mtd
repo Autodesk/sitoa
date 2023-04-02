@@ -3329,7 +3329,7 @@ soft.order STRING "BeginGroup Density density density_channel EndGroup "
 "BeginGroup Transparency transparent transparent_depth transparent_channel EndGroup "
 "BeginGroup Emission emission_mode emission emission_color emission_channel EndGroup "
 "BeginGroup Blackbody temperature temperature_channel blackbody_kelvin blackbody_intensity EndGroup "
-"BeginGroup Advanced displacement interpolation EndGroup"
+"BeginGroup Advanced interpolation EndGroup"
 
 [attr density]
 desc STRING "The density of the volume, with low density resulting in thin volumes and high density "
