@@ -3987,11 +3987,20 @@ softmax FLOAT 5
 ##############################################################################
 [node triplanar]
 soft.category STRING "Texture"
-soft.order STRING "BeginGroup Main input coord_space pref_name blend EndGroup "
-"BeginGroup Transform scale rotate offset EndGroup "
+soft.order STRING "BeginGroup Main input input_per_axis input_Y input_Z EndGroup "
+"BeginGroup Transform scale rotate offset coord_space pref_name blend flip_on_opposite_direction EndGroup "
 "BeginGroup Cell cell cell_rotate cell_blend EndGroup"
 
 [attr input]
+desc STRING "The image to be looked up by the computed projection."
+
+[attr input_per_axis]
+desc STRING "Option to use different textures for each axis. If set to true input will be used on faces facing primarily the xaxis, input_y on faces facing primarily the yaxis, input_z on faces facing primarily the zaxis."
+
+[attr input_Y]
+desc STRING "The image to be looked up by the computed projection."
+
+[attr input_Z]
 desc STRING "The image to be looked up by the computed projection."
 
 [attr scale]
@@ -4011,11 +4020,13 @@ soft.label STRING "Coordinate Space"
 desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
 soft.disable_when STRING "{ coord_space != Pref }"
 
-
 [attr blend]
 desc STRING "Blending factor at the seems."
 min FLOAT 0
 max FLOAT 1
+
+[attr flip_on_opposite_direction]
+desc STRING "Used to control the behavior of the shader on faces facing the corresponding negative axis, if set to true a vertical symmetry transformation is applied to the texture on faces facing the opposite direction."
 
 [attr cell]
 desc STRING "Enable Voronoi cellular projection."
