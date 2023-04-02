@@ -3327,8 +3327,8 @@ soft.category STRING "Volume"
 soft.order STRING "BeginGroup Density density density_channel EndGroup "
 "BeginGroup Scattering scatter scatter_color scatter_color_channel scatter_anisotropy scatter_secondary_anisotropy_mix scatter_secondary_anisotropy EndGroup "
 "BeginGroup Transparency transparent transparent_depth transparent_channel EndGroup "
-"BeginGroup Emission emission_mode emission emission_color emission_channel EndGroup "
 "BeginGroup Blackbody temperature temperature_channel blackbody_kelvin blackbody_intensity EndGroup "
+"BeginGroup Emission emission_mode emission_scaling emission emission_color emission_channel EndGroup "
 "BeginGroup Advanced interpolation EndGroup"
 
 [attr density]
@@ -3404,6 +3404,9 @@ desc STRING "none: emit no light. "
 "density: emit light using the density channel, modulated by an optional emission channel. "
 "blackbody: emit color and intensity based on temperature, for rendering fire and explosions."
 soft.label STRING "Mode"
+
+[attr emission_scaling]
+desc STRING "This controls how volume emission is scaled by the properties of the emitting medium."
 
 [attr emission]
 desc STRING "Rate at which the volume emits light."
