@@ -485,10 +485,14 @@ def make_patch_adlm(target, source, env):
 
 def patch_adlm(wg_bin_path, env):
    new_adlmint_last_char = '2'  # ONLY ONE CHARACTER
+   size = 0
 
    if system.os() == 'windows':
       adclmhub_name = find_adclmhub(wg_bin_path, 'AdClmHub_')
-      if adclmhub_name == 'AdClmHub_2.0.0.dll':
+      if adclmhub_name == 'AdClmHub_3.1.1.dll':
+         size = 498696
+         seek_pos = 0x57F6C
+      elif adclmhub_name == 'AdClmHub_2.0.0.dll':
          size = 524128
          seek_pos = 367692
       elif adclmhub_name == 'AdClmHub_1.1.1.dll':
@@ -536,7 +540,7 @@ def patch_adlm(wg_bin_path, env):
       with open(adclmhub_path, 'r+b') as f:
          f.seek(seek_pos)
          letter = f.read(1)
-         if letter == 't':
+         if letter != new_adlmint_last_char:
             print 'Patching {} ...'.format(adclmhub_name)
             f.seek(seek_pos)
             f.write(new_adlmint_last_char)
