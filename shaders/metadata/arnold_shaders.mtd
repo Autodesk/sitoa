@@ -3335,7 +3335,6 @@ soft.order STRING "BeginGroup Density density density_channel EndGroup "
 desc STRING "The density of the volume, with low density resulting in thin volumes and high density "
 "in thick volumes. It acts as a multiplier on the density channel"
 min FLOAT 0.0
-softmin FLOAT 0
 softmax FLOAT 100
 
 [attr density_channel]
@@ -3390,7 +3389,6 @@ desc STRING "Additional control over the density of the volume, "
 "to control the depth into the volume at which the transparent color is realized."
 soft.label STRING "Depth"
 min     FLOAT 0
-softmin FLOAT 0
 softmax FLOAT 100
 
 [attr transparent_channel]
@@ -3412,7 +3410,6 @@ desc STRING "This controls how volume emission is scaled by the properties of th
 desc STRING "Rate at which the volume emits light."
 soft.label STRING "Intensity"
 min FLOAT 0
-softmin FLOAT 0
 softmax FLOAT 10
 
 [attr emission_color]
@@ -3428,7 +3425,6 @@ soft.label STRING "Channel"
 [attr temperature]
 desc STRING "If a blackbody channel is used, this acts as a multiplier for the blackbody temperature."
 min FLOAT 0
-softmin FLOAT 0
 softmax FLOAT 1
 
 [attr temperature_channel]
@@ -3439,14 +3435,13 @@ soft.label STRING "Channel"
 desc STRING "Multiplier for the temperature from the temperature volume channel."
 soft.label STRING "Kelvin"
 min FLOAT 0
-softmin FLOAT 0
-softmax FLOAT 12000
+softmax FLOAT 20000
 
 [attr blackbody_intensity]
-desc STRING " Intensity of the blackbody emission."
+desc STRING "Intensity of the blackbody emission."
 soft.label STRING "Intensity"
 min FLOAT 0
-max FLOAT 1
+softmax FLOAT 1
 
 [attr blackbody_contrast]
 desc STRING "The blackbody_contrast parameter (non-physically) reduces the brightness difference "
