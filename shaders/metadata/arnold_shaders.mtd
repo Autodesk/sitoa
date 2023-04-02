@@ -3325,7 +3325,7 @@ soft.label STRING "ID 8"
 [node standard_volume]
 soft.category STRING "Volume"
 soft.order STRING "BeginGroup Density density density_channel EndGroup "
-"BeginGroup Scattering scatter scatter_color scatter_color_channel scatter_anisotropy EndGroup "
+"BeginGroup Scattering scatter scatter_color scatter_color_channel scatter_anisotropy scatter_secondary_anisotropy_mix scatter_secondary_anisotropy EndGroup "
 "BeginGroup Transparency transparent transparent_depth transparent_channel EndGroup "
 "BeginGroup Emission emission_mode emission emission_color emission_channel EndGroup "
 "BeginGroup Blackbody temperature temperature_channel blackbody_kelvin blackbody_intensity EndGroup "
@@ -3363,6 +3363,20 @@ desc STRING "The directional bias, or anisotropy, of the scattering. "
 "in the direction of the light, while negative values bias the scattering backwards, "
 "toward the light."
 soft.label STRING "Anisotropy"
+min FLOAT -1.0
+max FLOAT 1.0
+
+[attr scatter_secondary_anisotropy_mix]
+desc STRING "The anisotropy for the optional secondary Henyey-Greenstein phase function lobe, "
+"which is blended linearly with the primary lobe (controlled by the scatter_anisotropy parameter). "
+"This allows the phase function to include both forward and back-scattering lobes, which can improve the realism of cloud renderings."
+soft.label STRING "Secondary Mix"
+
+[attr scatter_secondary_anisotropy]
+desc STRING "The anisotropy for the optional secondary Henyey-Greenstein phase function lobe, "
+"which is blended linearly with the primary lobe (controlled by the scatter_anisotropy parameter). "
+"This allows the phase function to include both forward and back-scattering lobes, which can improve realism of cloud renderings."
+soft.label STRING "Secondary Anisotropy"
 min FLOAT -1.0
 max FLOAT 1.0
 
