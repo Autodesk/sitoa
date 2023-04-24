@@ -257,7 +257,7 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
    LONG nbParameters = in_paramsArray.GetCount();
 
    // in_filterParameters by now is always false except in the case of ice strands
-   bool isPoints(false), isPointsDisk(false), isMesh(false);
+   bool isPoints(false), isPointsDisk(false), isThick(false), isMesh(false);
    bool isCurve = AiNodeIs(in_node, ATSTRING::curves); // is it a curves node ?
 
    if (in_filterParameters)
@@ -270,6 +270,12 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
       {
          const char* mode = AiNodeGetStr(in_node, "mode");
          isPointsDisk = strcmp(mode, "disk") == 0; // is it a points node in disk node ?
+      }
+
+      if (isCurve)
+      {
+         const char* mode = AiNodeGetStr(in_node, "mode");
+         isThick = strcmp(mode, "thick") == 0;
       }
    }
 
@@ -304,9 +310,9 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
                continue;
          }
 
-         // min_pixel_width is allowed only for curves and disk points
+         // min_pixel_width is allowed only for ribbon curves and disk points
          if (!strcmp(charParamName, "min_pixel_width"))
-            if ((!isCurve) && (!isPointsDisk))
+            if (!(isCurve && !isThick) && !isPointsDisk)
                continue;
 
          // don't export the curve mode parameter if this is not a curve

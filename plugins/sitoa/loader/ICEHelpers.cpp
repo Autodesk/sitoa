@@ -3889,8 +3889,9 @@ bool CIceObjectStrand::SetNodeData()
    AiNodeSetArray(m_node, "num_points",      m_num_points);
    AiNodeSetArray(m_node, "points",          m_points);
    AiNodeSetArray(m_node, "radius",          m_radius);
-   CNodeSetter::SetString(m_node, "mode",            m_mode.c_str());
-   CNodeSetter::SetFloat(m_node, "min_pixel_width", m_minPixelWidth);
+   CNodeSetter::SetString(m_node, "mode",    m_mode.c_str());
+   if (strcmp(m_mode.c_str(), "thick") != 0)
+      CNodeSetter::SetFloat(m_node, "min_pixel_width", m_minPixelWidth);
    if (m_orientations && AiArrayGetNumElements(m_orientations))
       AiNodeSetArray(m_node, "orientations",    m_orientations);
    

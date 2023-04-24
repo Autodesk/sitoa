@@ -1283,9 +1283,6 @@ function arnold_parameters_adaptive_subdivision_OnChanged()
 
 function arnold_parameters_mode_OnChanged() 
 {
-   if (PPG.mode.Value=="thick")
-      PPG.min_pixel_width.Value = 0;
-      
    PPG.min_pixel_width.Enable(PPG.mode.Value=="ribbon" || PPG.mode.Value=="oriented");
 }
 
