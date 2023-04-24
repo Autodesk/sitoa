@@ -173,6 +173,7 @@ public:
    bool  m_texture_accept_untiled;
    bool  m_enable_autotile;
    int   m_texture_autotile;
+   bool  m_texture_auto_generate_tx;
    bool  m_use_existing_tx_files;
    int   m_texture_max_memory_MB;
    int   m_texture_max_open_files;
@@ -372,6 +373,7 @@ public:
       m_texture_accept_untiled(true),
       m_enable_autotile(false),
       m_texture_autotile(64),
+      m_texture_auto_generate_tx(true),
       m_use_existing_tx_files(true),
       m_texture_max_memory_MB(4096),
       m_texture_max_open_files(100),
