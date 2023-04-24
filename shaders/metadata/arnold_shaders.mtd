@@ -582,12 +582,12 @@ softmax FLOAT 10
 
 [attr u_offset]
 desc STRING "Offset along the U direction."
-softmin FLOAT 0
+softmin FLOAT -1
 softmax FLOAT 1
 
 [attr v_offset]
 desc STRING "Offset along the V direction."
-softmin FLOAT 0
+softmin FLOAT -1
 softmax FLOAT 1
 
 [attr contrast]
@@ -598,14 +598,12 @@ max FLOAT 1
 [attr filter_strength]
 desc STRING "Filtering strength."
 min FLOAT 0
-softmin FLOAT 0
 softmax FLOAT 10
 
 [attr filter_offset]
 desc STRING "Filtering offset."
-min FLOAT 0
-softmin FLOAT 0
-softmax FLOAT 10
+softmin FLOAT -1
+softmax FLOAT 1
 
 [attr uvset]
 desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
