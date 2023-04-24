@@ -382,6 +382,8 @@ function AddHelpSubMenu(in_menu)
    item = in_menu.AddCallbackItem("Licensing Home",  "OnHelpMenu");
    item = in_menu.AddCallbackItem("Licensing",       "OnHelpMenu");
    item = in_menu.AddSeparatorItem();
+   item = in_menu.AddCallbackItem("ADP Settings",    "OnHelpMenu");
+   item = in_menu.AddSeparatorItem();
    item = in_menu.AddCallbackItem("Legal Notice",    "OnHelpMenu");
    item = in_menu.AddCallbackItem("About SItoA",     "OnHelpMenu");
 }
@@ -415,6 +417,9 @@ function OnHelpMenu(in_ctxt)
          break;
       case "Licensing":
          Licensing();
+         return;
+      case "ADP Settings":
+         SITOA_ADPSettings();
          return;
       case "Legal Notice":
          LegalNotice();
