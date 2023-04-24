@@ -770,6 +770,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    // Tiling
    int texture_autotile = GetRenderOptions()->m_enable_autotile ? GetRenderOptions()->m_texture_autotile : 0;
    CNodeSetter::SetInt(in_optionsNode, "texture_autotile", texture_autotile);
+   CNodeSetter::SetBoolean(in_optionsNode, "texture_auto_generate_tx",  GetRenderOptions()->m_texture_auto_generate_tx);
    CNodeSetter::SetBoolean(in_optionsNode, "texture_use_existing_tx",  GetRenderOptions()->m_use_existing_tx_files);
 
    CNodeSetter::SetFloat(in_optionsNode, "texture_max_memory_MB", (float)GetRenderOptions()->m_texture_max_memory_MB);

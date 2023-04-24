@@ -837,9 +837,12 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
          continue;
 
       // skip the shaders shipping in sitoa_shaders, that implement the factory Softimage shaders 
-      if (shader_def.m_so_name == L"sitoa_shaders.dll" || shader_def.m_so_name == L"sitoa_shaders.so")
+      if (shader_def.m_so_name == L"sitoa_shaders.dll" || shader_def.m_so_name == L"sitoa_shaders.so" ||
+         (CStringUtilities().StartsWith(shader_def.m_so_name, "sib_") && CStringUtilities().EndsWith(shader_def.m_so_name, ".oso")))
+      {
          if (!shader_def.m_is_passthrough_closure) // only exception is the closure connector
             continue;
+      }
       // skip the core camera nodes, already exposed by the camera options property
       if (shader_def.m_so_name == L"core" && shader_def.m_is_camera_node)
           continue;

@@ -88,6 +88,8 @@ SITOA_CALLBACK XSILoadPlugin(PluginRegistrar& in_reg)
    in_reg.RegisterCommand (L"SITOA_ShowMac", L"SITOA_ShowMac");
    // pitreg runner
    in_reg.RegisterCommand (L"SITOA_PitReg", L"SITOA_PitReg");
+   // ADP settings
+   in_reg.RegisterCommand (L"SITOA_ADPSettings", L"SITOA_ADPSettings");
 
    ///////////////// Rendering options, preferences, engine /////////////////
    in_reg.RegisterProperty(L"Arnold Render Options");   // Render options
@@ -109,8 +111,14 @@ SITOA_CALLBACK XSILoadPlugin(PluginRegistrar& in_reg)
       in_reg.RegisterEvent(L"SITOA_OnValueChange",     siOnValueChange);
       in_reg.RegisterEvent(L"SITOA_ShaderDefEvent",    siOnStartup);
    }
-   else // the shader def event does not work in batch mode
+   else
+   {  // the shader def event does not work in batch mode
       GetRenderInstance()->ShaderDefSet().Load(plugin_origin_path);
+
+      // Make sure ADP window never pops up and that error reporting is disabled.
+      AiADPDisableDialogWindow();
+      AiErrorReportingSetEnabled(false);
+   }
 
    // Events to manage scene versioning (#1013)
    in_reg.RegisterEvent(L"SITOA_OnBeginSceneSave",   siOnBeginSceneSave);

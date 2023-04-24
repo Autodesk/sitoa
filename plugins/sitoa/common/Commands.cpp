@@ -514,6 +514,21 @@ SITOA_CALLBACK SITOA_ShowMac_Execute(CRef& in_ctxt)
 }
 
 
+SITOA_CALLBACK SITOA_ADPSettings_Init(CRef& in_ctxt)
+{
+	Context ctxt(in_ctxt);
+	Command oCmd = ctxt.GetSource();
+	oCmd.EnableReturnValue(false);
+   oCmd.SetFlag(siNoLogging, true);
+	return CStatus::OK;
+}
+
+SITOA_CALLBACK SITOA_ADPSettings_Execute(CRef& in_ctxt)
+{
+   Context ctxt(in_ctxt);
+   AiADPDisplayDialogWindow();
+   return CStatus::OK;
+}
 
 
 // Run pitreg
