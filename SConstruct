@@ -303,7 +303,7 @@ if system.os() == 'windows':
                                        duplicate = 0,
                                        exports   = 'env')
    
-   [SITOA_SHADERS, SITOA_SHADERS_PRJ] = env.SConscript(os.path.join('shaders', 'src', 'SConscript'),
+   [SITOA_SHADERS, SITOA_SHADERS_PRJ, SITOA_OSL_SHADERS] = env.SConscript(os.path.join('shaders', 'src', 'SConscript'),
                                                        variant_dir = os.path.join(BUILD_BASE_DIR, 'shaders'),
                                                        duplicate = 0,
                                                        exports   = 'env')
@@ -338,7 +338,7 @@ else:
                           duplicate = 0,
                           exports   = 'env')
 
-   SITOA_SHADERS = env.SConscript(os.path.join('shaders', 'src', 'SConscript'),
+   [SITOA_SHADERS, SITOA_OSL_SHADERS] = env.SConscript(os.path.join('shaders', 'src', 'SConscript'),
                                   variant_dir = os.path.join(BUILD_BASE_DIR, 'shaders'),
                                   duplicate = 0,
                                   exports   = 'env')
@@ -397,6 +397,7 @@ else:
 PACKAGE_FILES = [
 [os.path.join(plugin_binary_path, 'sitoa', DLLS),                          os.path.join(addon_path, bin_path)],
 [os.path.join(plugin_binary_path, 'shaders', DLLS),                        os.path.join(addon_path, bin_path)],
+[os.path.join(plugin_binary_path, 'shaders', 'osl', '*.oso'),              os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'ArnoldLicenseManager%s' % get_executable_extension()), os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'kick%s' % get_executable_extension()),     os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'maketx%s' % get_executable_extension()),   os.path.join(addon_path, bin_path)],
@@ -568,7 +569,8 @@ PATCH = env.Patch('patch', SITOA)
 ################################
 
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [str(SITOA[0]),
-                                                                   str(SITOA_SHADERS[0])])
+                                                                   str(SITOA_SHADERS[0]),
+                                                                   SITOA_OSL_SHADERS])
 
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join(ARNOLD_BINARIES, '*'))])
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..', 'ocio'), [glob.glob(os.path.join(ARNOLD_OCIO, '*'))])
@@ -608,6 +610,7 @@ top_level_alias(env, 'testsuite', TESTSUITE)
 env.AlwaysBuild(PACKAGE)
 env.AlwaysBuild('install')
 
+env.Depends(SITOA_SHADERS, SITOA_OSL_SHADERS)
 env.Depends(PACKAGE, SITOA)
 env.Depends(PACKAGE, SITOA_SHADERS)
 env.Depends(DEPLOY, PACKAGE)

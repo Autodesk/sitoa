@@ -5,6 +5,47 @@ import system
 from build_tools import find_files_recursive
 
 import os
+import shutil
+import subprocess
+
+
+def build_osl(target, source, env):
+   for t, s in zip(target, source):
+      target_file = str(t)
+      source_file = str(s)
+      target_dir = os.path.dirname(target_file)
+      copy_path = os.path.join(target_dir, os.path.basename(source_file))
+
+      if not os.path.isdir(target_dir):
+         os.makedirs(target_dir)
+
+      #print 'Copying {} to {}'.format(source_file, copy_path)
+      shutil.copy2(source_file, copy_path)
+
+      cmd = [
+         'oslc',
+         '-v',
+         '-I{}'.format(os.path.normpath(os.path.join(env['ARNOLD_HOME'], 'osl', 'include'))),
+         '-o', target_file,
+         copy_path
+      ]
+
+      #print 'Building {}'.format(source_file)
+      print subprocess.list2cmdline(cmd)
+      subprocess.call(cmd, shell=True)
+
+      os.remove(copy_path)
+
+
+def osl_emitter(target, source, env):
+   target = []
+
+   for s in source:
+      target.append(File(os.path.join('osl_shaders', os.path.splitext(os.path.basename(str(s)))[0] + '.oso')))
+
+   return target, source
+
+
 
 # import build env
 Import('env')
@@ -14,12 +55,19 @@ local_env = env.Clone()
 src_base_dir  = os.path.join(local_env['ROOT_DIR'], 'shaders', 'src')
 source_files  = find_files_recursive(src_base_dir, ['.c', '.cpp'])
 include_files = find_files_recursive(src_base_dir, ['.h'])
-   
+
+osl_files = find_files_recursive(src_base_dir, ['.osl'])
+
 local_env.Append(CPPPATH = ['.'])
 local_env.Append(LIBS = Split('ai'))
 
 # make shared or static library
 SITOA_SHADERS = local_env.SharedLibrary('sitoa_shaders', source_files, SHLIBPREFIX='')
+
+# Build OSL shaders
+osl_builder = Builder(action=build_osl, emitter=osl_emitter)
+local_env.Append(BUILDERS = {'OSL': osl_builder})
+SITOA_OSL_SHADERS = local_env.OSL(osl_files)
 
 if system.os() == 'windows':
    SITOA_SHADERS_PRJ = local_env.MSVSProject(target = 'sitoa_shaders' + env['MSVS']['PROJECTSUFFIX'],
@@ -39,12 +87,12 @@ if system.os() == 'windows':
    
    local_env.AlwaysBuild(SITOA_SHADERS_PRJ)
    
-   Return('SITOA_SHADERS SITOA_SHADERS_PRJ')
+   Return('SITOA_SHADERS SITOA_SHADERS_PRJ SITOA_OSL_SHADERS')
 elif system.os() == 'darwin':
    local_env.Append(CCFLAGS = Split('-fvisibility=hidden')) # hide symbols by default
    #local_env.Append(LINKFLAGS = Split('-Wl,-rpath="\\$$ORIGIN" -z origin'))
-   Return('SITOA_SHADERS')
+   Return('SITOA_SHADERS SITOA_OSL_SHADERS')
 else:
    local_env.Append(CCFLAGS = Split('-fvisibility=hidden')) # hide symbols by default
    #local_env.Append(LINKFLAGS = Split('-Wl,-rpath="\\$$ORIGIN" -z origin'))
-   Return('SITOA_SHADERS')
+   Return('SITOA_SHADERS SITOA_OSL_SHADERS')
