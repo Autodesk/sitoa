@@ -41,7 +41,7 @@ def osl_emitter(target, source, env):
    target = []
 
    for s in source:
-      target.append(File(os.path.join('osl_shaders', os.path.splitext(os.path.basename(str(s)))[0] + '.oso')))
+      target.append(File(os.path.join('osl', os.path.splitext(os.path.basename(str(s)))[0] + '.oso')))
 
    return target, source
 
