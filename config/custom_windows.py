@@ -9,7 +9,7 @@ VS_HOME             = r'C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC'
 WINDOWS_KIT         = r'C:/Program Files (x86)/Windows Kits/10'
 
 XSISDK_ROOT         = r'C:/Program Files/Autodesk/Softimage 2015 SP2/XSISDK'
-ARNOLD_HOME         = r'C:/SolidAngle/Arnold-7.0.0.0-windows'
+ARNOLD_HOME         = r'C:/SolidAngle/Arnold-7.1.4.0-windows'
 
 TARGET_WORKGROUP_PATH  = r'./dist/Softimage_2015/Addons/SItoA'
 
