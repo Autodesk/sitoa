@@ -15,10 +15,19 @@
 [attr enable]
 linkable BOOL false
 
+[attr selection]
+linkable BOOL false
+
+[attr collection]
+linkable BOOL false
+
 ###########################################################################
 [node disable]
 
 [attr enable]
+linkable BOOL false
+
+[attr selection]
 linkable BOOL false
 
 [attr mode]
@@ -40,6 +49,18 @@ linkable BOOL false
 [node materialx]
 
 [attr enable]
+linkable BOOL false
+
+[attr selection]
+linkable BOOL false
+
+[attr filename]
+linkable BOOL false
+
+[attr look]
+linkable BOOL false
+
+[attr assign_type]
 linkable BOOL false
 
 [attr assign_materials]
@@ -72,6 +93,9 @@ linkable BOOL false
 [attr enable]
 linkable BOOL false
 
+[attr selection]
+linkable BOOL false
+
 [attr translate]
 linkable BOOL false
 
@@ -81,11 +105,36 @@ linkable BOOL false
 [attr scale]
 linkable BOOL false
 
+[attr matrix]
+linkable BOOL false
+
+[attr transform_order]
+linkable BOOL false
+
+[attr rotate_order]
+linkable BOOL false
+
+[attr mode]
+linkable BOOL false
+
 ###########################################################################
 [node string_replace]
 
 [attr enable]
 linkable BOOL false
+
+[attr selection]
+linkable BOOL false
+
+[attr match]
+linkable BOOL false
+
+[attr replace]
+linkable BOOL false
+
+[attr os]
+linkable BOOL false
+soft.label STRING "OS"
 
 ###########################################################################
 [node switch_operator]
