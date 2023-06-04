@@ -718,7 +718,6 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    if (!GetRenderOptions()->m_lock_sampling_noise)
       CNodeSetter::SetInt(in_optionsNode, "AA_seed", (int)in_frame);
 
-   CNodeSetter::SetBoolean(in_optionsNode, "sss_use_autobump", GetRenderOptions()->m_sss_use_autobump);
    CNodeSetter::SetBoolean(in_optionsNode, "dielectric_priorities", GetRenderOptions()->m_dielectric_priorities);
    CNodeSetter::SetFloat(in_optionsNode, "indirect_specular_blur", GetRenderOptions()->m_indirect_specular_blur);
 

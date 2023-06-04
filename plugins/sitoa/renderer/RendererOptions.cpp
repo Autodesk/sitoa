@@ -144,7 +144,6 @@ void CRenderOptions::Read(const Property &in_cp)
 
    // advanced
    m_lock_sampling_noise     = (bool)ParAcc_GetValue(in_cp, L"lock_sampling_noise", DBL_MAX);
-   m_sss_use_autobump        = (bool)ParAcc_GetValue(in_cp, L"sss_use_autobump", DBL_MAX);
    m_dielectric_priorities   = (bool)ParAcc_GetValue(in_cp, L"dielectric_priorities", DBL_MAX);
    m_indirect_specular_blur  = (float)ParAcc_GetValue(in_cp, L"indirect_specular_blur", DBL_MAX);
 
@@ -446,7 +445,6 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
 
    // advanced
    cpset.AddParameter(L"lock_sampling_noise",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"sss_use_autobump",        CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"dielectric_priorities",   CValue::siBool,   siPersistable, L"", L"", true,  CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"indirect_specular_blur",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 1.0f, 0.0f, 2.0f, 0.0f, 100.0f, p);
 
@@ -930,7 +928,6 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
 
    layout.AddGroup(L"Advanced");
       layout.AddItem(L"lock_sampling_noise",  L"Lock Sampling Pattern");
-      layout.AddItem(L"sss_use_autobump",  L"Use Autobump in SSS");
       layout.AddItem(L"dielectric_priorities",  L"Nested Dielectrics");
       item = layout.AddItem(L"indirect_specular_blur",  L"Indirect Specular Blur");
       item.PutAttribute(siUILabelPercentage, 70);
