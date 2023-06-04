@@ -1148,6 +1148,30 @@ desc STRING "When a trace set is exclusive, rays are traced against all "
 desc STRING "Sample curvature from the object being shaded only."
 
 ##############################################################################
+[node distance]
+soft.category STRING "Utility"
+
+[attr samples]
+desc STRING "Input to be divided."
+min INT 1
+softmax INT 128
+
+[attr distance]
+desc STRING "Input to divide by."
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr near_color]
+desc STRING "The color of the shading resulting from the nearest sampled surface being in contact with the shading point."
+
+[attr far_color]
+desc STRING "The color of the shading resulting from the nearest sampled surface being at a ‘distance’ or greater distance from the shading point."
+
+[attr trace_set]
+
+[attr inclusive]
+
+##############################################################################
 [node divide]
 soft.category STRING "Math"
 
