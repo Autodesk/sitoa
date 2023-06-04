@@ -4206,9 +4206,9 @@ desc STRING "If linked, the normal to be used."
 ##############################################################################
 [node uv_transform]
 soft.category STRING "Utility"
-soft.order STRING "BeginGroup Main passthrough unit uvset EndGroup "
+soft.order STRING "BeginGroup Main passthrough unit uvset wset EndGroup "
 "BeginGroup Frame scale_frame translate_frame rotate_frame pivot_frame wrap_frame_u wrap_frame_v wrap_frame_color coverage EndGroup "
-"BeginGroup Transform repeat offset rotate pivot noise mirror_u mirror_v flip_u flip_v swap_uv stagger EndGroup"
+"BeginGroup Transform repeat offset rotate pivot noise mirror_u mirror_v flip_u flip_v swap_uv stagger uvw_matrix EndGroup"
 
 [attr passthrough]
 desc STRING "The input shader network whose UV will be transformed by this shader before evaluation."
@@ -4220,6 +4220,14 @@ soft.label STRING "Rotation Units"
 [attr uvset]
 desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
 soft.label STRING "UV Set"
+
+[attr wset]
+desc STRING "User parameter name on mesh that W data will be read from."
+soft.label STRING "W Set"
+
+[attr uvcoords]
+desc STRING "When linked to a shader, the values returned by that shader override the uv coordinates. Note that this will affect efficiency because it prevents Arnold from using the correct filtering."
+soft.inspectable BOOL false
 
 [attr coverage]
 desc STRING "The frame coverage along U and V."
@@ -4285,6 +4293,9 @@ soft.label STRING "Swap U & V"
 
 [attr stagger]
 desc STRING "Stagger every other texture row repetition by 0.5 in the V direction, for example for a brick wall texture."
+
+[attr uvw_matrix]
+desc STRING "Transform matrix for UVW transforms."
 
 ##############################################################################
 [node vector_map]
