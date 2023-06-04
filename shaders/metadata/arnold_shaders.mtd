@@ -2300,7 +2300,7 @@ soft.inspectable BOOL false
 ##############################################################################
 [node physical_sky]
 soft.category STRING "Environment"
-soft.order STRING "turbidity ground_albedo use_degrees azimuth elevation sun_direction enable_sun sun_size sun_tint sky_tint intensity "
+soft.order STRING "turbidity ground_albedo use_degrees azimuth elevation sun_direction enable_sun enable_sky sun_size sun_tint sky_tint intensity "
 "BeginGroup Orientation X Y Z EndGroup"
 
 [attr use_degrees]
@@ -2333,6 +2333,9 @@ desc STRING "The amount of light reflected from the planet surface back into the
 
 [attr enable_sun]
 desc STRING "Enables/disables the visibility of the sun."
+
+[attr enable_sky]
+desc STRING "Enables/disables the visibility of the sky."
 
 [attr intensity]
 desc STRING "Scalar multiplier for the sky radiance."
