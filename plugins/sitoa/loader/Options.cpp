@@ -705,6 +705,10 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetInt(in_optionsNode, "AA_samples_max",               GetRenderOptions()->m_AA_samples_max);
    CNodeSetter::SetFloat(in_optionsNode, "AA_adaptive_threshold",      GetRenderOptions()->m_AA_adaptive_threshold);
 
+   // global light sampling
+   if (GetRenderOptions()->m_use_global_light_sampling)
+      CNodeSetter::SetInt(in_optionsNode, "light_samples", GetRenderOptions()->m_light_samples);
+
    // Use sample clamp?
    if (GetRenderOptions()->m_use_sample_clamp)
    {

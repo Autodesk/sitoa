@@ -119,6 +119,10 @@ public:
    int     m_AA_samples_max;
    float   m_AA_adaptive_threshold;
 
+   // lights
+   bool    m_use_global_light_sampling;
+   int     m_light_samples;
+
    // clamping
    bool    m_use_sample_clamp;
    bool    m_use_sample_clamp_AOVs;
@@ -317,6 +321,10 @@ public:
       m_enable_adaptive_sampling(false),
       m_AA_samples_max(8),
       m_AA_adaptive_threshold(0.05f),
+
+      // lights
+      m_use_global_light_sampling(false),
+      m_light_samples(4),
 
       // clamping
       m_use_sample_clamp(false),
