@@ -1035,7 +1035,7 @@ bool CRenderInstance::InterruptRenderSignal()
    bool interrupt;
    {
       std::lock_guard<AtMutex> guard(m_interruptRenderBarrier);
-      bool interrupt = m_interruptRender;
+      interrupt = m_interruptRender;
    }
    return interrupt;
 }
