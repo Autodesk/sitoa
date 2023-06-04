@@ -374,11 +374,13 @@ void LoadArnoldParameters(AtNode* in_node, CParameterRefArray &in_paramsArray, d
 
       // Skip Autobump Visibility. We handle it later.
       if (!strcmp(charParamName, "autobump_camera") ||
+          !strcmp(charParamName, "autobump_shadow") ||
           !strcmp(charParamName, "autobump_diffuse_reflection") ||
           !strcmp(charParamName, "autobump_specular_reflection") ||
           !strcmp(charParamName, "autobump_diffuse_transmission") ||
           !strcmp(charParamName, "autobump_specular_transmission") ||
-          !strcmp(charParamName, "autobump_volume_scatter"))
+          !strcmp(charParamName, "autobump_volume_scatter") ||
+          !strcmp(charParamName, "autobump_subsurface"))
          continue;
 
       // As XSI Custom Parameter, colors are defined as individual parameters 
@@ -434,18 +436,22 @@ uint8_t GetAutobumpVisibility(CParameterRefArray &in_paramsArray, double in_fram
       autobump_visibility = AI_RAY_UNDEFINED;
 
       bool camera                = (bool)in_paramsArray.GetValue(L"autobump_camera", in_frame);
+      bool shadow                = (bool)in_paramsArray.GetValue(L"autobump_shadow", in_frame);
       bool diffuse_reflection    = (bool)in_paramsArray.GetValue(L"autobump_diffuse_reflection", in_frame);
       bool specular_reflection   = (bool)in_paramsArray.GetValue(L"autobump_specular_reflection", in_frame);
       bool diffuse_transmission  = (bool)in_paramsArray.GetValue(L"autobump_diffuse_transmission", in_frame);
       bool specular_transmission = (bool)in_paramsArray.GetValue(L"autobump_specular_transmission", in_frame);
       bool volume                = (bool)in_paramsArray.GetValue(L"autobump_volume", in_frame);
+      bool subsurface            = (bool)in_paramsArray.GetValue(L"autobump_subsurface", in_frame);
 
       if (camera)                autobump_visibility += AI_RAY_CAMERA;
+      if (shadow)                autobump_visibility += AI_RAY_SHADOW;
       if (diffuse_reflection)    autobump_visibility += AI_RAY_DIFFUSE_REFLECT;
       if (specular_reflection)   autobump_visibility += AI_RAY_SPECULAR_REFLECT;
       if (diffuse_transmission)  autobump_visibility += AI_RAY_DIFFUSE_TRANSMIT;
       if (specular_transmission) autobump_visibility += AI_RAY_SPECULAR_TRANSMIT;
       if (volume)                autobump_visibility += AI_RAY_VOLUME;
+      if (subsurface)            autobump_visibility += AI_RAY_SUBSURFACE;
    }
 
    return autobump_visibility;
