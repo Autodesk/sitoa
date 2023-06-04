@@ -42,7 +42,7 @@ bool CMessageQueue::IsMainThreadId()
 //
 void CMessageQueue::LogMsg(CString in_message, siSeverityType in_severity)
 {
-   AiCritSecEnter(&m_cs);
+   std::lock_guard<AtMutex> guard(m_cs);
 
    CMessage message(in_message, in_severity);
    // #1787: xsibatch does not trigger the timer event, although properly registered. 
@@ -51,8 +51,6 @@ void CMessageQueue::LogMsg(CString in_message, siSeverityType in_severity)
       m_messages.push_back(message);
    else
       message.Log();
-
-   AiCritSecLeave(&m_cs);
 }
 
 
@@ -60,38 +58,18 @@ void CMessageQueue::LogMsg(CString in_message, siSeverityType in_severity)
 //
 void CMessageQueue::Log()
 {
-   AiCritSecEnter(&m_cs);
+   std::lock_guard<AtMutex> guard(m_cs);
    vector <CMessage>::iterator it;
    for (it = m_messages.begin(); it != m_messages.end(); it++)
       it->Log();
    m_messages.clear();
-   AiCritSecLeave(&m_cs);
 }
 
 
-AtCritSec CRenderMessages::m_CriticalSection;
-bool CRenderMessages::m_Initialized = false;
+AtMutex CRenderMessages::m_CriticalSection;
 unsigned int CRenderMessages::m_LogLevel = eSItoALogLevel_Warnings;
 bool CRenderMessages::m_console = false;
 bool CRenderMessages::m_file = false;
-
-
-void CRenderMessages::Initialize()
-{
-   if (!m_Initialized)
-      AiCritSecInit(&m_CriticalSection);
-
-   m_Initialized = true;
-}
-
-
-void CRenderMessages::Destroy()
-{
-   if (m_Initialized)
-      AiCritSecClose(&m_CriticalSection);
-
-   m_Initialized = false;
-}
 
 
 // Initialize the render messages flags
@@ -112,11 +90,8 @@ void CRenderMessages::SetLogLevel(unsigned int in_logLevel, bool in_console, boo
 //
 void CRenderMessages::LogCallback(int in_mask, int in_severity, const char* in_msg, int in_tab)
 {
-   if (!m_Initialized)
-      return;
-
    // Critical section, multiple render threads can call this method
-   AiCritSecEnter(&m_CriticalSection);
+   std::lock_guard<AtMutex> guard(m_CriticalSection);
    CString message(in_msg);
    CString file_message(in_msg);
 
@@ -159,6 +134,5 @@ void CRenderMessages::LogCallback(int in_mask, int in_severity, const char* in_m
    if (m_file && GetRenderInstance()->m_logFile.is_open()) // log into file
       GetRenderInstance()->m_logFile << file_message.GetAsciiString() << "\n";
 
-   AiCritSecLeave(&m_CriticalSection);
 }
 

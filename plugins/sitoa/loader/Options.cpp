@@ -172,7 +172,7 @@ void LoadPlayControlData(AtNode* in_optionsNode, double in_frame)
 bool LoadFilters()
 {
    CString filterType = GetRenderOptions()->m_output_filter;
-   AtNode* filterNode = AiNode(CString(filterType + L"_filter").GetAsciiString());
+   AtNode* filterNode = AiNode(NULL, CString(filterType + L"_filter").GetAsciiString());
    if (!filterNode)
       return false;
 
@@ -183,7 +183,7 @@ bool LoadFilters()
       CNodeSetter::SetFloat(filterNode, "width", GetRenderOptions()->m_output_filter_width);
 
    // also add a closest (aliased) filter for aovs (#1028)
-   AtNode* closestFilterNode = AiNode("closest_filter");
+   AtNode* closestFilterNode = AiNode(NULL, "closest_filter");
    if (!closestFilterNode)
       return false;
 
@@ -194,7 +194,7 @@ bool LoadFilters()
    if (GetRenderOptions()->m_output_denoising_aovs && !(filterType.IsEqualNoCase(L"variance") || filterType.IsEqualNoCase(L"contour")))
    {
       // create a variance filter
-      AtNode* varianceFilterNode = AiNode("variance_filter");
+      AtNode* varianceFilterNode = AiNode(NULL, "variance_filter");
       if (!varianceFilterNode)
          return false;
       CNodeUtilities().SetName(varianceFilterNode, "sitoa_variance_filter");
@@ -221,7 +221,7 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
    AtNode* ocioNode;
    if (colorManager == L"color_manager_ocio")
    {
-      ocioNode = AiNode("color_manager_ocio");
+      ocioNode = AiNode(NULL, "color_manager_ocio");
       if (!ocioNode)
          return false;
       CNodeUtilities().SetName(ocioNode, "sitoa_color_manager_ocio");
@@ -229,7 +229,7 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
       CNodeSetter::SetString(ocioNode, "config", GetRenderOptions()->m_ocio_config.GetAsciiString());
    }
    else {
-      ocioNode = AiNodeLookUpByName("ai_default_color_manager_ocio");
+      ocioNode = AiNodeLookUpByName(NULL, "ai_default_color_manager_ocio");
       if (!ocioNode)
          return false;
    }
@@ -312,7 +312,7 @@ void SetDeepExrLayers(vector <CDeepExrLayersDrivers> &in_deepExrLayersDrivers)
    vector <CDeepExrLayersDrivers>::iterator it;
    for (it=in_deepExrLayersDrivers.begin(); it!=in_deepExrLayersDrivers.end(); it++)
    {
-      AtNode *driver = AiNodeLookUpByName(it->m_driverName.GetAsciiString());
+      AtNode *driver = AiNodeLookUpByName(NULL, it->m_driverName.GetAsciiString());
       if (!driver)
          continue;
       // layers for this driver
@@ -431,8 +431,8 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       {
          fbVector.push_back(thisFb);
 
-         AtNode* driverNode = in_flythrough ? AiNodeLookUpByName(thisFb.m_fullName.GetAsciiString()) : 
-                                              AiNode(thisFb.m_driverName.GetAsciiString());;
+         AtNode* driverNode = in_flythrough ? AiNodeLookUpByName(NULL, thisFb.m_fullName.GetAsciiString()) : 
+                                              AiNode(NULL, thisFb.m_driverName.GetAsciiString());;
 
          if (driverNode)
          {
@@ -831,6 +831,9 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
    CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
 
+   // get render session
+   AtRenderSession *renderSession = AiRenderSession(NULL);
+
    // Device Selection
    bool autoDeviceSelect = true;
    bool tryManualDeviceSelect = GetRenderOptions()->m_enable_manual_devices;
@@ -850,7 +853,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
          }
 
          if (!autoDeviceSelect)
-            AiDeviceSelect(AI_DEVICE_TYPE_GPU, selectedDevices);
+            AiDeviceSelect(renderSession, AI_DEVICE_TYPE_GPU, selectedDevices);
          else
             GetMessageQueue()->LogMsg(L"[sitoa] Could not select manual rendering device. Automatic selection will be used.", siWarningMsg);
          
@@ -859,7 +862,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    }
 
    if (autoDeviceSelect)
-      AiDeviceAutoSelect();
+      AiDeviceAutoSelect(renderSession);
 
    // #680
    LoadUserOptions(in_optionsNode, in_arnoldOptions, in_frame);
@@ -877,7 +880,7 @@ CStatus LoadOptions(const Property& in_arnoldOptions, double in_frame, bool in_f
    // Get Active Pass
    Pass pass(Application().GetActiveProject().GetActiveScene().GetActivePass());
 
-   AtNode *optionsNode = AiUniverseGetOptions();
+   AtNode *optionsNode = AiUniverseGetOptions(NULL);
 
    // load rendering options
    LoadOptionsParameters(optionsNode, in_arnoldOptions, in_frame);
@@ -915,7 +918,7 @@ CStatus PostLoadOptions(const Property &in_optionsNode, double in_frame)
 {
    if (GetRenderOptions()->m_use_dicing_camera)
    {
-      AtNode *options = AiUniverseGetOptions();
+      AtNode *options = AiUniverseGetOptions(NULL);
 
       Camera xsiCamera(GetRenderOptions()->m_dicing_camera); 
       if (xsiCamera.IsValid()) 

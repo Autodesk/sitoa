@@ -82,7 +82,7 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
          {
             if (rotationAngles.EpsilonEquals(CVector3(0.0, 90.0, 0.0), AI_EPSILON))
             {
-               AtBBox bbox = AiUniverseGetSceneBounds();
+               AtBBox bbox = AiUniverseGetSceneBounds(NULL);
                matrix[3][0] = bbox.max.x + 1.0f;
             }
          }
@@ -90,7 +90,7 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
          {
             if (rotationAngles.EpsilonEquals(CVector3(-90.0, 0.0, 0.0), AI_EPSILON))
             {
-               AtBBox bbox = AiUniverseGetSceneBounds();
+               AtBBox bbox = AiUniverseGetSceneBounds(NULL);
                matrix[3][1] = bbox.max.y + 1.0f;
             }
          }
@@ -98,7 +98,7 @@ CStatus LoadCameraParameters(AtNode* in_cameraNode, const Camera &in_xsiCamera, 
          {
             if (rotationAngles.EpsilonEquals(CVector3(0.0, 0.0, 0.0), AI_EPSILON))
             {
-               AtBBox bbox = AiUniverseGetSceneBounds();
+               AtBBox bbox = AiUniverseGetSceneBounds(NULL);
                matrix[3][2] = bbox.max.z + 1.0f;
             }
          }

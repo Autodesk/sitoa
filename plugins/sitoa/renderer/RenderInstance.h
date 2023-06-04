@@ -245,11 +245,11 @@ private:
    Pass              m_pass;
 
    bool              m_interruptRender;
-   AtCritSec         m_interruptRenderBarrier;
-   AtCritSec         m_destroySceneBarrier;
+   AtMutex           m_interruptRenderBarrier;
+   AtMutex           m_destroySceneBarrier;
 
    eRenderStatus     m_renderStatus;
-   AtCritSec         m_renderStatusBarrier;
+   AtMutex           m_renderStatusBarrier;
 
    Property          m_renderOptionsProperty;
    double            m_frame;

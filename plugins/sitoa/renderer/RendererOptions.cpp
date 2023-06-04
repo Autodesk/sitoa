@@ -1650,9 +1650,9 @@ void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
             ocioNode = AiNode(ocioUniverse, "color_manager_ocio");
       }
       else {
-         AiBegin();
+         AiBegin(GetSessionMode());
          if (ocioManager)
-            ocioNode = AiNode("color_manager_ocio");
+            ocioNode = AiNode(NULL, "color_manager_ocio");
       }
 
       if (ocioManager)

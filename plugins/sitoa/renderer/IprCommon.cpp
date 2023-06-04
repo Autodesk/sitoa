@@ -689,7 +689,7 @@ void UpdateIsolateSelection(const CRefArray &in_visibleObjects, double in_frame)
 
    // Let's iterate over the Arnold nodes, and retrieve the Softimage object that originated it.
    // This is possible due to the good naming convention we established a few versions ago
-   AtNodeIterator *iter = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
+   AtNodeIterator *iter = AiUniverseGetNodeIterator(NULL, AI_NODE_SHAPE);
    while (!AiNodeIteratorFinished(iter))
    {
       AtNode *node = AiNodeIteratorGetNext(iter);

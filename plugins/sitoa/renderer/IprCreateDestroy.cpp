@@ -35,7 +35,7 @@ void CIprCreateDestroy::DestroyLight(CValue in_value, double in_frame)
 {
    CString nodeName = CStringUtilities().MakeSItoAName(in_value, in_frame, L"", false);
 
-   AtNode* node = AiNodeLookUpByName(nodeName.GetAsciiString());
+   AtNode* node = AiNodeLookUpByName(NULL, nodeName.GetAsciiString());
    if (!node)
       return;
 
@@ -151,7 +151,7 @@ void CIprCreateDestroy::DestroyInstancedLights(vector <AtNode*> &in_nodes, doubl
 //
 void CIprCreateDestroy::ResetMeshLightsObject(AtNode *in_meshNode)
 {
-   AtNodeIterator *iter = AiUniverseGetNodeIterator(AI_NODE_LIGHT);
+   AtNodeIterator *iter = AiUniverseGetNodeIterator(NULL, AI_NODE_LIGHT);
    while (!AiNodeIteratorFinished(iter))
    {
       AtNode *lightNode = AiNodeIteratorGetNext(iter);

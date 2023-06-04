@@ -191,7 +191,7 @@ vector <AtNode*> CNodeUtilities::GetInstancesOf(CString &in_name)
    vector <AtNode*> result;
    CString masterName = L" " + in_name;
 
-   AtNodeIterator *iter = AiUniverseGetNodeIterator(AI_NODE_SHAPE);
+   AtNodeIterator *iter = AiUniverseGetNodeIterator(NULL, AI_NODE_SHAPE);
    while (!AiNodeIteratorFinished(iter))
    {
       AtNode *node = AiNodeIteratorGetNext(iter);
@@ -1393,10 +1393,10 @@ void SetLogSettings(const CString& in_renderType, double in_frame)
    CRenderMessages::SetLogLevel(logLevel, enableConsole, enableFile);
 
    if ((!enableFile) && (!enableConsole)) // all logs off
-      AiMsgSetConsoleFlags(AI_LOG_NONE);
+      AiMsgSetConsoleFlags(NULL, AI_LOG_NONE);
    else
    {
-      AiMsgSetConsoleFlags(verbosity);
+      AiMsgSetConsoleFlags(NULL, verbosity);
       AiMsgSetMaxWarnings(maxWarnings);
       AiMsgSetCallback(CRenderMessages::LogCallback); // all the messages go through the cb
    }

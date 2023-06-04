@@ -224,7 +224,7 @@ CStatus LoadSingleInstance(Model &in_instanceModel, double in_frame)
          }
          else
          {
-            AtNode* ginstanceNode = AiNode("ginstance"); 
+            AtNode* ginstanceNode = AiNode(NULL, "ginstance"); 
             if (ginstanceNode)
             {
                // An object instance is going to be created, and pushed into memberVector

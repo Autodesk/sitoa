@@ -33,7 +33,7 @@ CStatus LoadPassOperator(double in_frame)
    outputStackRef.Set(pass.GetFullName() + L".OutputShaderStack");
    ShaderArrayParameter arrayParam = ShaderArrayParameter(outputStackRef);
 
-   AtNode* options = AiUniverseGetOptions();
+   AtNode* options = AiUniverseGetOptions(NULL);
 
    if (arrayParam.GetCount() > 0)
    {

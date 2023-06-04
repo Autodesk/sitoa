@@ -256,7 +256,7 @@ bool SetImagerNode(AtNode* in_rootImagerNode)
    driverNames.Add(L"xsi_driver");
    for (LONG i=0; i<driverNames.GetCount(); i++)
    {
-      AtNode* driverNode = AiNodeLookUpByName(driverNames[i].GetAsciiString());
+      AtNode* driverNode = AiNodeLookUpByName(NULL, driverNames[i].GetAsciiString());
       if (driverNode)
       {
          status = CNodeSetter::SetPointer(driverNode, "input", in_rootImagerNode);

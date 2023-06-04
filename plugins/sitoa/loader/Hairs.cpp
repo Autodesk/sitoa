@@ -294,11 +294,11 @@ CStatus LoadSingleHair(const X3DObject &in_xsiObj, double in_frame)
          CString chunkNodeName = CStringUtilities().MakeSItoAName((SIObject)in_xsiObj, in_frame, L"", false) + 
                                  L"." + CValue((LONG)nChunk).GetAsText();
 
-         AtNode* curvesNode = AiNodeLookUpByName(chunkNodeName.GetAsciiString());
+         AtNode* curvesNode = AiNodeLookUpByName(NULL, chunkNodeName.GetAsciiString());
 
          if (!curvesNode)
          {
-            curvesNode = AiNode("curves");
+            curvesNode = AiNode(NULL, "curves");
             memberVector.push_back(curvesNode);
          }
        

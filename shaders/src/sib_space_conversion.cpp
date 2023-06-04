@@ -86,7 +86,7 @@ shader_evaluate
       case TO_WORLD:
          break;
       case TO_CAMERA:
-         AiWorldToCameraMatrix(AiUniverseGetCamera(), sg->time, matrix);  
+         AiWorldToCameraMatrix(AiUniverseGetCamera(NULL), sg->time, matrix);  
          break;
       case TO_OBJECT:
          matrix = sg->Minv;
@@ -94,7 +94,7 @@ shader_evaluate
       case FROM_WORLD:
          break;
       case FROM_CAMERA:
-         AiCameraToWorldMatrix(AiUniverseGetCamera(), sg->time, matrix);
+         AiCameraToWorldMatrix(AiUniverseGetCamera(NULL), sg->time, matrix);
          break;
       case FROM_OBJECT:
          matrix = sg->M;

@@ -1428,7 +1428,7 @@ bool CIceObjectBase::CreateNode()
       return false;
    }
 
-   m_node = AiNode(m_type);
+   m_node = AiNode(NULL, m_type);
    if (!m_node)
       return false;
 
@@ -4562,7 +4562,7 @@ bool CIceObjectInstance::LoadInstance(Model in_modelMaster, X3DObject in_objMast
 CIceObjectBaseShape CIceObjectInstance::LoadProcedural(X3DObject &in_xsiObj, double in_frame, CString in_proceduralPath)
 {
    CIceObjectBaseShape shape;
-   shape.m_node = AiNode("procedural");
+   shape.m_node = AiNode(NULL, "procedural");
    shape.m_isProcedural = true;
 
    CNodeSetter::SetString(shape.m_node, "filename", in_proceduralPath.GetAsciiString());
