@@ -276,6 +276,14 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
             GetMessageQueue()->LogMsg(L"[sitoa] " + in_shader_name + L"." + m_name + " has unknown node type override: " + m_node_type, siWarningMsg);
       }
    }
+   // override for set_transform operator
+   // the matrix is not an array, but can instead take motion samples
+   else if (in_shader_name == L"set_transform" && m_name == L"matrix")
+   {
+      paramIsArray = false;
+      m_type = AI_TYPE_MATRIX;
+   }
+
    else if (paramType == AI_TYPE_CLOSURE)
       customNodeType = L"closure";
 
@@ -334,6 +342,9 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
          case AI_TYPE_MATRIX:
          {
             AtMatrix* m = m_default.pMTX();
+            if (in_shader_name == L"set_transform" && m_name == L"matrix")
+                  m = new AtMatrix(AiArrayGetMtx(m_default.ARRAY(), 0));
+            
             container.GetParamDefByName(L"_00").SetDefaultValue((*m)[0][0]);
             container.GetParamDefByName(L"_01").SetDefaultValue((*m)[0][1]);
             container.GetParamDefByName(L"_02").SetDefaultValue((*m)[0][2]);

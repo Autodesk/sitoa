@@ -183,16 +183,41 @@ CStatus LoadParameterValue(AtNode *in_node, const CString &in_entryName, const C
       }
       case AI_TYPE_MATRIX:
       {
-         AtMatrix m;
-         // Softimage >= 2011 gives us a matrix
-         for (unsigned int i =0; i < (unsigned int)paramsArray.GetCount(); ++i)
-            m[i/4][i%4] = (float)Parameter(paramsArray[i]).GetValue(in_frame);;
+         // special case for the matrix parameter on set_transform operator that can take several motion samples
+         if (in_entryName == L"set_transform" && in_paramName == L"matrix")
+         {
+            CDoubleArray transfKeys, defKeys;
+            CSceneUtilities::GetMotionBlurData(in_param.GetRef(), transfKeys, defKeys, in_frame);
+            LONG nbTransfKeys = transfKeys.GetCount();
 
-         if (arrayElement == -1)
-            CNodeSetter::SetMatrix(in_node, aiParamName, m);
+            AtArray* mtxs = AiArrayAllocate(1, (uint8_t)nbTransfKeys, AI_TYPE_MATRIX);  
+
+            AtMatrix m;
+
+            for (LONG ikey=0; ikey<nbTransfKeys; ikey++)
+            {
+               double frame = transfKeys[ikey];
+
+               for (unsigned int i =0; i < (unsigned int)paramsArray.GetCount(); ++i)
+                  m[i/4][i%4] = (float)Parameter(paramsArray[i]).GetValue(frame);;
+               AiArraySetMtx(mtxs, ikey, m);
+            }
+            AiNodeSetArray(in_node, aiParamName, mtxs);
+         }
+         //any other case
          else
-            AiArraySetMtx(AiNodeGetArray(in_node, aiParamName), arrayElement, m);
-         break;
+         {
+            AtMatrix m;
+            // Softimage >= 2011 gives us a matrix
+            for (unsigned int i =0; i < (unsigned int)paramsArray.GetCount(); ++i)
+               m[i/4][i%4] = (float)Parameter(paramsArray[i]).GetValue(in_frame);;
+
+            if (arrayElement == -1)
+               CNodeSetter::SetMatrix(in_node, aiParamName, m);
+            else
+               AiArraySetMtx(AiNodeGetArray(in_node, aiParamName), arrayElement, m);
+            break;
+         }
       }
 
       case AI_TYPE_VECTOR2:
