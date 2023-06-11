@@ -166,7 +166,7 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
    ShaderParamDefOptions defOptions = ShaderParamDefOptions(Application().GetFactory().CreateShaderParamDefOptions());
 
    bool texturable = true;
-   bool animatable = ! (m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE || m_type == AI_TYPE_MATRIX || 
+   bool animatable = ! (m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE || 
                         m_type == AI_TYPE_ENUM || m_type == AI_TYPE_CLOSURE);
    bool inspectable = m_has_inspectable ? m_inspectable : true;
 
