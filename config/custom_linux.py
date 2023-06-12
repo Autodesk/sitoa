@@ -6,7 +6,7 @@
 SHCXX       = r'/usr/bin/gcc-4.2.4/bin/gcc-4.2.4'
 
 XSISDK_ROOT = r'/usr/Softimage/Softimage_2015/XSISDK'
-ARNOLD_HOME = r'/usr/SolidAngle/Arnold-7.1.4.0/linux'
+ARNOLD_HOME = r'/usr/SolidAngle/Arnold-7.2.2.0/linux'
 
 TARGET_WORKGROUP_PATH = './dist/Softimage_2015/Addons/SItoA'
 
