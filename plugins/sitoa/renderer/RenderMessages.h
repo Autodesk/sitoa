@@ -56,17 +56,15 @@ class CMessageQueue
 private:
    // LONG              m_mainThreadId;
    vector <CMessage> m_messages;
-   AtCritSec         m_cs;
+   AtMutex           m_cs;
 
 public:
    CMessageQueue()
    {
-      AiCritSecInit(&m_cs);
    }
 
    ~CMessageQueue()
    {
-      AiCritSecClose(&m_cs);
    }
 
    // void PutMainThreadId(LONG in_id);
@@ -88,16 +86,12 @@ enum eSItoALogLevel
 class CRenderMessages
 {
 public: 
-   static void Initialize();
-   static void Destroy();
    static void SetLogLevel(unsigned int in_logLevel, bool in_console, bool in_file);
    static void LogCallback(int in_mask, int in_severity, const char* in_msg, int in_tab);
 
 private:
-   static AtCritSec m_CriticalSection;
-   static bool m_Initialized;
+   static AtMutex m_CriticalSection;
    // SItoA Log Level 
    static unsigned int m_LogLevel;
    static bool m_console, m_file;
 };
-

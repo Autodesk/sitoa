@@ -796,6 +796,7 @@ private:
    AtArray* m_radius;
    AtArray* m_orientations;
    AtString m_mode; // thick...
+   AtString m_basis;
    float    m_minPixelWidth;
    int      m_nbPoints; // total number of points of the strand object, NOT of the Arnold node
 
@@ -807,6 +808,7 @@ public:
       m_radius = NULL;
       m_orientations = NULL;
       m_mode = AtString("thick");
+      m_basis = AtString("catmull-rom");
       m_minPixelWidth = 0.0f;
       m_nbPoints = 0;
    }
@@ -816,7 +818,7 @@ public:
    }
 
    CIceObjectStrand(const CIceObjectStrand &in_arg) : 
-      CIceObjectBase(in_arg), CHair(in_arg), m_mode(in_arg.m_mode), m_minPixelWidth(in_arg.m_minPixelWidth), m_nbPoints(in_arg.m_nbPoints)
+      CIceObjectBase(in_arg), CHair(in_arg), m_mode(in_arg.m_mode), m_basis(in_arg.m_basis), m_minPixelWidth(in_arg.m_minPixelWidth), m_nbPoints(in_arg.m_nbPoints)
    {
       m_num_points   = in_arg.m_num_points   ? AiArrayCopy(in_arg.m_num_points)   : NULL;
       m_points       = in_arg.m_points       ? AiArrayCopy(in_arg.m_points)       : NULL;

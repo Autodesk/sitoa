@@ -46,7 +46,7 @@ CStatus LoadCameras(double in_frame)
    Camera renderCamera = GetRenderInstance()->GetRenderCamera();
    AtNode *cameraNode = GetRenderInstance()->NodeMap().GetExportedNode(renderCamera, in_frame); 
    if (cameraNode)
-      CNodeSetter::SetPointer(AiUniverseGetOptions(), "camera", cameraNode);
+      CNodeSetter::SetPointer(AiUniverseGetOptions(NULL), "camera", cameraNode);
 
    return status;
 }
@@ -88,11 +88,11 @@ CStatus LoadSingleCamera(const Camera &in_xsiCamera, double in_frame)
    if (cameraType == L"custom_camera")
       cameraType = L"persp_camera"; // default back to perspective
 
-   AtNode* cameraNode = AiNode(cameraType.GetAsciiString());
+   AtNode* cameraNode = AiNode(NULL, cameraType.GetAsciiString());
    if (isCustom && (!cameraNode)) // in case the type is custom but the node could not be loaded
    {
       cameraType = L"persp_camera";
-      cameraNode = AiNode(cameraType.GetAsciiString());
+      cameraNode = AiNode(NULL, cameraType.GetAsciiString());
       isCustom = false;
    }
 

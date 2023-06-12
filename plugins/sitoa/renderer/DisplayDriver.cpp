@@ -36,7 +36,7 @@ void CDisplayDriverData::Init(const AtBBox2 &in_display_window, const AtBBox2 &i
                 m_display_window.maxx != m_data_window.maxx || m_display_window.maxy != m_data_window.maxy;
 
    // get parameters necessary for progressive progress bar
-   AtNode* options = AiUniverseGetOptions();
+   AtNode* options = AiUniverseGetOptions(NULL);
    bool progressive = AiNodeGetBool(options, "enable_progressive_render");
    int aaSamples = AiNodeGetInt(options, "AA_samples");
    bool adaptiveSampling = AiNodeGetBool(options, "enable_adaptive_sampling");
@@ -334,7 +334,7 @@ void DisplayDriver::CreateDisplayDriver()
    {
       AiNodeEntryInstall(AI_NODE_DRIVER, AI_TYPE_NONE, "display_driver", NULL, (AtNodeMethods*) display_driver_mtd, AI_VERSION);
    
-      driver = AiNode("display_driver");
+      driver = AiNode(NULL, "display_driver");
       CNodeUtilities().SetName(driver, "xsi_driver");
    }
 }
@@ -347,7 +347,7 @@ void DisplayDriver::UpdateDisplayDriver(RendererContext& in_rendererContext, uns
    m_displayArea = in_displayArea;     
    m_renderHeight = (int)m_renderContext.GetAttribute(L"ImageHeight");
 
-   AtNode* options = AiUniverseGetOptions();   
+   AtNode* options = AiUniverseGetOptions(NULL);
    AtArray *outputs, *new_outputs;
 
    CString displayDriver;

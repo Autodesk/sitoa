@@ -150,7 +150,7 @@ node_update
    {
       UserData ud;
       // *it is the object for which the shader has parameters with instance values
-      AtNode *object = AiNodeLookUpByName(it->c_str());
+      AtNode *object = AiNodeLookUpByName(NULL, it->c_str());
       // #1388: use the old-fashion tspace_id shader parameter for curves.
       if (object && AiNodeIs(object, AtString("curves")))
          attr = "tspace_id";

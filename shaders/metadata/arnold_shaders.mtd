@@ -582,12 +582,12 @@ softmax FLOAT 10
 
 [attr u_offset]
 desc STRING "Offset along the U direction."
-softmin FLOAT 0
+softmin FLOAT -1
 softmax FLOAT 1
 
 [attr v_offset]
 desc STRING "Offset along the V direction."
-softmin FLOAT 0
+softmin FLOAT -1
 softmax FLOAT 1
 
 [attr contrast]
@@ -598,14 +598,12 @@ max FLOAT 1
 [attr filter_strength]
 desc STRING "Filtering strength."
 min FLOAT 0
-softmin FLOAT 0
 softmax FLOAT 10
 
 [attr filter_offset]
 desc STRING "Filtering offset."
-min FLOAT 0
-softmin FLOAT 0
-softmax FLOAT 10
+softmin FLOAT -1
+softmax FLOAT 1
 
 [attr uvset]
 desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
@@ -1148,6 +1146,30 @@ desc STRING "When a trace set is exclusive, rays are traced against all "
 
 [attr self_only]
 desc STRING "Sample curvature from the object being shaded only."
+
+##############################################################################
+[node distance]
+soft.category STRING "Utility"
+
+[attr samples]
+desc STRING "Input to be divided."
+min INT 1
+softmax INT 128
+
+[attr distance]
+desc STRING "Input to divide by."
+softmin FLOAT 0
+softmax FLOAT 10
+
+[attr near_color]
+desc STRING "The color of the shading resulting from the nearest sampled surface being in contact with the shading point."
+
+[attr far_color]
+desc STRING "The color of the shading resulting from the nearest sampled surface being at a ‘distance’ or greater distance from the shading point."
+
+[attr trace_set]
+
+[attr inclusive]
 
 ##############################################################################
 [node divide]
@@ -2302,7 +2324,7 @@ soft.inspectable BOOL false
 ##############################################################################
 [node physical_sky]
 soft.category STRING "Environment"
-soft.order STRING "turbidity ground_albedo use_degrees azimuth elevation sun_direction enable_sun sun_size sun_tint sky_tint intensity "
+soft.order STRING "turbidity ground_albedo use_degrees azimuth elevation sun_direction enable_sun enable_sky sun_size sun_tint sky_tint intensity "
 "BeginGroup Orientation X Y Z EndGroup"
 
 [attr use_degrees]
@@ -2335,6 +2357,9 @@ desc STRING "The amount of light reflected from the planet surface back into the
 
 [attr enable_sun]
 desc STRING "Enables/disables the visibility of the sun."
+
+[attr enable_sky]
+desc STRING "Enables/disables the visibility of the sky."
 
 [attr intensity]
 desc STRING "Scalar multiplier for the sky radiance."
@@ -3325,17 +3350,16 @@ soft.label STRING "ID 8"
 [node standard_volume]
 soft.category STRING "Volume"
 soft.order STRING "BeginGroup Density density density_channel EndGroup "
-"BeginGroup Scattering scatter scatter_color scatter_color_channel scatter_anisotropy EndGroup "
+"BeginGroup Scattering scatter scatter_color scatter_color_channel scatter_anisotropy scatter_secondary_anisotropy_mix scatter_secondary_anisotropy EndGroup "
 "BeginGroup Transparency transparent transparent_depth transparent_channel EndGroup "
-"BeginGroup Emission emission_mode emission emission_color emission_channel EndGroup "
-"BeginGroup Blackbody temperature temperature_channel blackbody_kelvin blackbody_intensity EndGroup "
-"BeginGroup Advanced displacement interpolation EndGroup"
+"BeginGroup Emission emission_mode emission_scaling emission emission_color emission_channel EndGroup "
+"BeginGroup Blackbody temperature temperature_channel blackbody_kelvin blackbody_intensity blackbody_contrast EndGroup "
+"BeginGroup Advanced interpolation EndGroup"
 
 [attr density]
 desc STRING "The density of the volume, with low density resulting in thin volumes and high density "
 "in thick volumes. It acts as a multiplier on the density channel"
 min FLOAT 0.0
-softmin FLOAT 0
 softmax FLOAT 100
 
 [attr density_channel]
@@ -3366,6 +3390,20 @@ soft.label STRING "Anisotropy"
 min FLOAT -1.0
 max FLOAT 1.0
 
+[attr scatter_secondary_anisotropy_mix]
+desc STRING "The anisotropy for the optional secondary Henyey-Greenstein phase function lobe, "
+"which is blended linearly with the primary lobe (controlled by the scatter_anisotropy parameter). "
+"This allows the phase function to include both forward and back-scattering lobes, which can improve the realism of cloud renderings."
+soft.label STRING "Secondary Mix"
+
+[attr scatter_secondary_anisotropy]
+desc STRING "The anisotropy for the optional secondary Henyey-Greenstein phase function lobe, "
+"which is blended linearly with the primary lobe (controlled by the scatter_anisotropy parameter). "
+"This allows the phase function to include both forward and back-scattering lobes, which can improve realism of cloud renderings."
+soft.label STRING "Secondary Anisotropy"
+min FLOAT -1.0
+max FLOAT 1.0
+
 [attr transparent]
 desc STRING "Additional control over the density of the volume, "
 "to tint the color of volume shadows and objects seen through the volume."
@@ -3376,7 +3414,6 @@ desc STRING "Additional control over the density of the volume, "
 "to control the depth into the volume at which the transparent color is realized."
 soft.label STRING "Depth"
 min     FLOAT 0
-softmin FLOAT 0
 softmax FLOAT 100
 
 [attr transparent_channel]
@@ -3391,11 +3428,13 @@ desc STRING "none: emit no light. "
 "blackbody: emit color and intensity based on temperature, for rendering fire and explosions."
 soft.label STRING "Mode"
 
+[attr emission_scaling]
+desc STRING "This controls how volume emission is scaled by the properties of the emitting medium."
+
 [attr emission]
 desc STRING "Rate at which the volume emits light."
 soft.label STRING "Intensity"
 min FLOAT 0
-softmin FLOAT 0
 softmax FLOAT 10
 
 [attr emission_color]
@@ -3411,7 +3450,6 @@ soft.label STRING "Channel"
 [attr temperature]
 desc STRING "If a blackbody channel is used, this acts as a multiplier for the blackbody temperature."
 min FLOAT 0
-softmin FLOAT 0
 softmax FLOAT 1
 
 [attr temperature_channel]
@@ -3422,14 +3460,21 @@ soft.label STRING "Channel"
 desc STRING "Multiplier for the temperature from the temperature volume channel."
 soft.label STRING "Kelvin"
 min FLOAT 0
-softmin FLOAT 0
-softmax FLOAT 12000
+softmax FLOAT 20000
 
 [attr blackbody_intensity]
-desc STRING " Intensity of the blackbody emission."
+desc STRING "Intensity of the blackbody emission."
 soft.label STRING "Intensity"
 min FLOAT 0
-max FLOAT 1
+softmax FLOAT 1
+
+[attr blackbody_contrast]
+desc STRING "The blackbody_contrast parameter (non-physically) reduces the brightness difference "
+"between parts of the volume at different temperatures, which can be useful for artistic purposes. "
+"This tends to bring out the blackbody colors more vividly (though note that only value 1 is physically correct)."
+soft.label STRING "Contrast"
+min FLOAT 0
+softmax FLOAT 1
 
 [attr displacement]
 desc STRING "Connect a noise texture or other shaders here to displace the volume, similar to displacement on surfaces."
@@ -3987,11 +4032,20 @@ softmax FLOAT 5
 ##############################################################################
 [node triplanar]
 soft.category STRING "Texture"
-soft.order STRING "BeginGroup Main input coord_space pref_name blend EndGroup "
-"BeginGroup Transform scale rotate offset EndGroup "
+soft.order STRING "BeginGroup Main input input_per_axis input_Y input_Z EndGroup "
+"BeginGroup Transform scale rotate offset coord_space pref_name blend flip_on_opposite_direction EndGroup "
 "BeginGroup Cell cell cell_rotate cell_blend EndGroup"
 
 [attr input]
+desc STRING "The image to be looked up by the computed projection."
+
+[attr input_per_axis]
+desc STRING "Option to use different textures for each axis. If set to true input will be used on faces facing primarily the xaxis, input_y on faces facing primarily the yaxis, input_z on faces facing primarily the zaxis."
+
+[attr input_Y]
+desc STRING "The image to be looked up by the computed projection."
+
+[attr input_Z]
 desc STRING "The image to be looked up by the computed projection."
 
 [attr scale]
@@ -4011,11 +4065,13 @@ soft.label STRING "Coordinate Space"
 desc STRING "Specify the name of the reference position user-data array. Previously, the name was hard-coded as Pref, which is still the default."
 soft.disable_when STRING "{ coord_space != Pref }"
 
-
 [attr blend]
 desc STRING "Blending factor at the seems."
 min FLOAT 0
 max FLOAT 1
+
+[attr flip_on_opposite_direction]
+desc STRING "Used to control the behavior of the shader on faces facing the corresponding negative axis, if set to true a vertical symmetry transformation is applied to the texture on faces facing the opposite direction."
 
 [attr cell]
 desc STRING "Enable Voronoi cellular projection."
@@ -4174,9 +4230,9 @@ desc STRING "If linked, the normal to be used."
 ##############################################################################
 [node uv_transform]
 soft.category STRING "Utility"
-soft.order STRING "BeginGroup Main passthrough unit uvset EndGroup "
+soft.order STRING "BeginGroup Main passthrough unit uvset wset EndGroup "
 "BeginGroup Frame scale_frame translate_frame rotate_frame pivot_frame wrap_frame_u wrap_frame_v wrap_frame_color coverage EndGroup "
-"BeginGroup Transform repeat offset rotate pivot noise mirror_u mirror_v flip_u flip_v swap_uv stagger EndGroup"
+"BeginGroup Transform repeat offset rotate pivot noise mirror_u mirror_v flip_u flip_v swap_uv stagger uvw_matrix EndGroup"
 
 [attr passthrough]
 desc STRING "The input shader network whose UV will be transformed by this shader before evaluation."
@@ -4188,6 +4244,14 @@ soft.label STRING "Rotation Units"
 [attr uvset]
 desc STRING "An alternate UV set. If left blank, the standard uv attribute will be used. Secondary UV set in MAXtoA are named uv_2, uv_3, and so on."
 soft.label STRING "UV Set"
+
+[attr wset]
+desc STRING "User parameter name on mesh that W data will be read from."
+soft.label STRING "W Set"
+
+[attr uvcoords]
+desc STRING "When linked to a shader, the values returned by that shader override the uv coordinates. Note that this will affect efficiency because it prevents Arnold from using the correct filtering."
+soft.inspectable BOOL false
 
 [attr coverage]
 desc STRING "The frame coverage along U and V."
@@ -4253,6 +4317,9 @@ soft.label STRING "Swap U & V"
 
 [attr stagger]
 desc STRING "Stagger every other texture row repetition by 0.5 in the V direction, for example for a brick wall texture."
+
+[attr uvw_matrix]
+desc STRING "Transform matrix for UVW transforms."
 
 ##############################################################################
 [node vector_map]

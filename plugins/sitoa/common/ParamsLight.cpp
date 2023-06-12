@@ -111,7 +111,7 @@ CStatus LoadLightParameters(AtNode* in_lightNode, const Light &in_xsiLight, cons
       afterBranch.Fill(in_lightNode, "color");
       // if the two branches are different, then we must flush the backgroud cache for #1631
       if (!(beforeBranch == afterBranch))
-         AiUniverseCacheFlush(AI_CACHE_BACKGROUND);
+         AiUniverseCacheFlush(NULL, AI_CACHE_BACKGROUND);
    }
 
    // Github #86 - If light is render invisible in interactive mode we will disable the light instead of dynamically destroying the light node.

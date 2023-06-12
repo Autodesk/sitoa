@@ -183,7 +183,7 @@ bool CMesh::Create(const X3DObject &in_xsiObj, double in_frame)
    if (m_nbPolygons == 0)
       return false;
 
-   m_node = AiNode("polymesh");
+   m_node = AiNode(NULL, "polymesh");
    CString name = CStringUtilities().MakeSItoAName(m_xsiObj, in_frame, L"", false);
    CNodeUtilities().SetName(m_node, name);
    CNodeSetter::SetInt(m_node, "id", CObjectUtilities().GetId(m_xsiObj));

@@ -172,7 +172,7 @@ void LoadPlayControlData(AtNode* in_optionsNode, double in_frame)
 bool LoadFilters()
 {
    CString filterType = GetRenderOptions()->m_output_filter;
-   AtNode* filterNode = AiNode(CString(filterType + L"_filter").GetAsciiString());
+   AtNode* filterNode = AiNode(NULL, CString(filterType + L"_filter").GetAsciiString());
    if (!filterNode)
       return false;
 
@@ -183,7 +183,7 @@ bool LoadFilters()
       CNodeSetter::SetFloat(filterNode, "width", GetRenderOptions()->m_output_filter_width);
 
    // also add a closest (aliased) filter for aovs (#1028)
-   AtNode* closestFilterNode = AiNode("closest_filter");
+   AtNode* closestFilterNode = AiNode(NULL, "closest_filter");
    if (!closestFilterNode)
       return false;
 
@@ -194,7 +194,7 @@ bool LoadFilters()
    if (GetRenderOptions()->m_output_denoising_aovs && !(filterType.IsEqualNoCase(L"variance") || filterType.IsEqualNoCase(L"contour")))
    {
       // create a variance filter
-      AtNode* varianceFilterNode = AiNode("variance_filter");
+      AtNode* varianceFilterNode = AiNode(NULL, "variance_filter");
       if (!varianceFilterNode)
          return false;
       CNodeUtilities().SetName(varianceFilterNode, "sitoa_variance_filter");
@@ -221,7 +221,7 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
    AtNode* ocioNode;
    if (colorManager == L"color_manager_ocio")
    {
-      ocioNode = AiNode("color_manager_ocio");
+      ocioNode = AiNode(NULL, "color_manager_ocio");
       if (!ocioNode)
          return false;
       CNodeUtilities().SetName(ocioNode, "sitoa_color_manager_ocio");
@@ -229,7 +229,7 @@ bool LoadColorManager(AtNode* in_optionsNode, double in_frame)
       CNodeSetter::SetString(ocioNode, "config", GetRenderOptions()->m_ocio_config.GetAsciiString());
    }
    else {
-      ocioNode = AiNodeLookUpByName("ai_default_color_manager_ocio");
+      ocioNode = AiNodeLookUpByName(NULL, "ai_default_color_manager_ocio");
       if (!ocioNode)
          return false;
    }
@@ -312,7 +312,7 @@ void SetDeepExrLayers(vector <CDeepExrLayersDrivers> &in_deepExrLayersDrivers)
    vector <CDeepExrLayersDrivers>::iterator it;
    for (it=in_deepExrLayersDrivers.begin(); it!=in_deepExrLayersDrivers.end(); it++)
    {
-      AtNode *driver = AiNodeLookUpByName(it->m_driverName.GetAsciiString());
+      AtNode *driver = AiNodeLookUpByName(NULL, it->m_driverName.GetAsciiString());
       if (!driver)
          continue;
       // layers for this driver
@@ -431,8 +431,8 @@ bool LoadDrivers(AtNode *in_optionsNode, Pass &in_pass, double in_frame, bool in
       {
          fbVector.push_back(thisFb);
 
-         AtNode* driverNode = in_flythrough ? AiNodeLookUpByName(thisFb.m_fullName.GetAsciiString()) : 
-                                              AiNode(thisFb.m_driverName.GetAsciiString());;
+         AtNode* driverNode = in_flythrough ? AiNodeLookUpByName(NULL, thisFb.m_fullName.GetAsciiString()) : 
+                                              AiNode(NULL, thisFb.m_driverName.GetAsciiString());;
 
          if (driverNode)
          {
@@ -705,6 +705,10 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetInt(in_optionsNode, "AA_samples_max",               GetRenderOptions()->m_AA_samples_max);
    CNodeSetter::SetFloat(in_optionsNode, "AA_adaptive_threshold",      GetRenderOptions()->m_AA_adaptive_threshold);
 
+   // global light sampling
+   if (GetRenderOptions()->m_use_global_light_sampling)
+      CNodeSetter::SetInt(in_optionsNode, "light_samples", GetRenderOptions()->m_light_samples);
+
    // Use sample clamp?
    if (GetRenderOptions()->m_use_sample_clamp)
    {
@@ -718,7 +722,6 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    if (!GetRenderOptions()->m_lock_sampling_noise)
       CNodeSetter::SetInt(in_optionsNode, "AA_seed", (int)in_frame);
 
-   CNodeSetter::SetBoolean(in_optionsNode, "sss_use_autobump", GetRenderOptions()->m_sss_use_autobump);
    CNodeSetter::SetBoolean(in_optionsNode, "dielectric_priorities", GetRenderOptions()->m_dielectric_priorities);
    CNodeSetter::SetFloat(in_optionsNode, "indirect_specular_blur", GetRenderOptions()->m_indirect_specular_blur);
 
@@ -770,6 +773,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    // Tiling
    int texture_autotile = GetRenderOptions()->m_enable_autotile ? GetRenderOptions()->m_texture_autotile : 0;
    CNodeSetter::SetInt(in_optionsNode, "texture_autotile", texture_autotile);
+   CNodeSetter::SetBoolean(in_optionsNode, "texture_auto_generate_tx",  GetRenderOptions()->m_texture_auto_generate_tx);
    CNodeSetter::SetBoolean(in_optionsNode, "texture_use_existing_tx",  GetRenderOptions()->m_use_existing_tx_files);
 
    CNodeSetter::SetFloat(in_optionsNode, "texture_max_memory_MB", (float)GetRenderOptions()->m_texture_max_memory_MB);
@@ -830,6 +834,9 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    CNodeSetter::SetString(in_optionsNode, "gpu_default_names", GetRenderOptions()->m_gpu_default_names.GetAsciiString());
    CNodeSetter::SetInt(in_optionsNode, "gpu_default_min_memory_MB", GetRenderOptions()->m_gpu_default_min_memory_MB);
 
+   // get render session
+   AtRenderSession *renderSession = AiRenderSession(NULL);
+
    // Device Selection
    bool autoDeviceSelect = true;
    bool tryManualDeviceSelect = GetRenderOptions()->m_enable_manual_devices;
@@ -849,7 +856,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
          }
 
          if (!autoDeviceSelect)
-            AiDeviceSelect(AI_DEVICE_TYPE_GPU, selectedDevices);
+            AiDeviceSelect(renderSession, AI_DEVICE_TYPE_GPU, selectedDevices);
          else
             GetMessageQueue()->LogMsg(L"[sitoa] Could not select manual rendering device. Automatic selection will be used.", siWarningMsg);
          
@@ -858,7 +865,7 @@ void LoadOptionsParameters(AtNode* in_optionsNode, const Property &in_arnoldOpti
    }
 
    if (autoDeviceSelect)
-      AiDeviceAutoSelect();
+      AiDeviceAutoSelect(renderSession);
 
    // #680
    LoadUserOptions(in_optionsNode, in_arnoldOptions, in_frame);
@@ -876,7 +883,7 @@ CStatus LoadOptions(const Property& in_arnoldOptions, double in_frame, bool in_f
    // Get Active Pass
    Pass pass(Application().GetActiveProject().GetActiveScene().GetActivePass());
 
-   AtNode *optionsNode = AiUniverseGetOptions();
+   AtNode *optionsNode = AiUniverseGetOptions(NULL);
 
    // load rendering options
    LoadOptionsParameters(optionsNode, in_arnoldOptions, in_frame);
@@ -914,7 +921,7 @@ CStatus PostLoadOptions(const Property &in_optionsNode, double in_frame)
 {
    if (GetRenderOptions()->m_use_dicing_camera)
    {
-      AtNode *options = AiUniverseGetOptions();
+      AtNode *options = AiUniverseGetOptions(NULL);
 
       Camera xsiCamera(GetRenderOptions()->m_dicing_camera); 
       if (xsiCamera.IsValid()) 

@@ -156,17 +156,11 @@ CRenderInstance::CRenderInstance()
   m_flythrough_frame(FRAME_NOT_INITIALIZED_VALUE),
   m_renderStatus(eRenderStatus_Uninitialized)
 {
-   AiCritSecInit(&m_interruptRenderBarrier);
-   AiCritSecInit(&m_destroySceneBarrier);
-   AiCritSecInit(&m_renderStatusBarrier);
 }
 
 
 CRenderInstance::~CRenderInstance()
 {
-   AiCritSecClose(&m_interruptRenderBarrier);
-   AiCritSecClose(&m_destroySceneBarrier);
-   AiCritSecClose(&m_renderStatusBarrier);
 }
 
 
@@ -186,7 +180,7 @@ unsigned int CRenderInstance::UpdateRenderRegion(unsigned int in_width, unsigned
 {   
    unsigned int displayArea = 0;
 
-   AtNode *optionsNode = AiUniverseGetOptions();
+   AtNode *optionsNode = AiUniverseGetOptions(NULL);
    
    // Check if there is a crop area defined. If the offset is 0,0 and the crop 
    // width/height is the same as the image width/height, then no cropping should take
@@ -222,7 +216,7 @@ int CRenderInstance::RenderProgressiveScene(int displayArea)
    bool dither = GetRenderOptions()->m_dither;
    int bucket_size = GetRenderOptions()->m_bucket_size;
 
-   int verbosity = AiMsgGetConsoleFlags(); // current log level
+   int verbosity = AiMsgGetConsoleFlags(NULL); // current log level
 
    set <int> aa_steps;
 
@@ -241,7 +235,7 @@ int CRenderInstance::RenderProgressiveScene(int displayArea)
 #endif
    int progressiveBucketSize = AiMax(((int)sqrt(displayArea / (numCores*2))), bucket_size);
 
-   AtNode* options = AiUniverseGetOptions();
+   AtNode* options = AiUniverseGetOptions(NULL);
 
    // set a larger bucket size if we render progressive (or GPU), Github #67
    if (AiNodeGetBool(options, "enable_progressive_render"))
@@ -277,10 +271,10 @@ int CRenderInstance::RenderProgressiveScene(int displayArea)
          // restore adaptive sampling again on final aa pass
          CNodeSetter::SetBoolean(options, "enable_adaptive_sampling", GetRenderOptions()->m_enable_adaptive_sampling);
          m_displayDriver.SetDisplayDithering(dither);
-         AiMsgSetConsoleFlags(verbosity);
+         AiMsgSetConsoleFlags(NULL, verbosity);
       }
       else if (verbosity > VERBOSITY::warnings)
-         AiMsgSetConsoleFlags(VERBOSITY::warnings);
+         AiMsgSetConsoleFlags(NULL, VERBOSITY::warnings);
       
       CNodeSetter::SetInt(options, "AA_samples", *aa_it);    
       // Data for Progress Bar (resetting values for progressive)
@@ -300,7 +294,7 @@ int CRenderInstance::RenderProgressiveScene(int displayArea)
       }
    }
 
-   AiMsgSetConsoleFlags(verbosity); // restore log level
+   AiMsgSetConsoleFlags(NULL, verbosity); // restore log level
    GetRenderInstance()->CloseLogFile();
 
    return render_result;
@@ -682,8 +676,8 @@ CStatus CRenderInstance::UpdateScene(const CRef &in_ref, eUpdateType in_updateTy
       }
       case eUpdateType_RenderOptionsTexture:
       {
-         AiUniverseCacheFlush(AI_CACHE_TEXTURE);
-         LoadOptionsParameters(AiUniverseGetOptions(), Property(in_ref), m_frame);
+         AiUniverseCacheFlush(NULL, AI_CACHE_TEXTURE);
+         LoadOptionsParameters(AiUniverseGetOptions(NULL), Property(in_ref), m_frame);
          break;
       }
       case eUpdateType_ShapeKinematics: 
@@ -722,17 +716,19 @@ CStatus CRenderInstance::UpdateScene(const CRef &in_ref, eUpdateType in_updateTy
 //
 void CRenderInstance::DestroyScene(bool in_flushTextures)
 {   
-   AiCritSecEnter(&m_destroySceneBarrier);
+   std::lock_guard<AtMutex> guard(m_destroySceneBarrier);
    if (AiArnoldIsActive())
    {
       AiMsgDebug("[sitoa] Destroying Scene");
+
+      AtRenderSession *renderSession = AiRenderSession(NULL);
 
       SetInterruptRenderSignal(true);
 
       while (RenderStatus() == eRenderStatus_Started)
       {
-         if (AiRendering())
-            AiRenderAbort();
+         if (AiRenderGetStatus(renderSession) == AI_RENDER_STATUS_RENDERING)
+            AiRenderAbort(renderSession);
 
          CTimeUtilities().SleepMilliseconds(100);
       }
@@ -762,33 +758,31 @@ void CRenderInstance::DestroyScene(bool in_flushTextures)
    m_uniqueIdGenerator.Reset();
    // reset the flythrough frame
    m_flythrough_frame = FRAME_NOT_INITIALIZED_VALUE;
-
-   AiCritSecLeave(&m_destroySceneBarrier);
 }
 
 
 void CRenderInstance::InterruptRender()
 {   
-   AiCritSecEnter(&m_destroySceneBarrier);
+   std::lock_guard<AtMutex> guard(m_destroySceneBarrier);
    if (AiArnoldIsActive())
    {
       AiMsgDebug("[sitoa] Interrupting Render");
 
+      AtRenderSession *renderSession = AiRenderSession(NULL);
+
       SetInterruptRenderSignal(true);
-      AiRenderInterrupt();
+      AiRenderInterrupt(renderSession);
       SetInterruptRenderSignal(false);
    }
 
    CloseLogFile();
-
-   AiCritSecLeave(&m_destroySceneBarrier);
 }
 
 
 void CRenderInstance::FlushTextures()
 {
    GetMessageQueue()->LogMsg(L"[sitoa] Flushing Textures from memory.");
-   AiUniverseCacheFlush(AI_CACHE_TEXTURE);
+   AiUniverseCacheFlush(NULL, AI_CACHE_TEXTURE);
 }
 
 
@@ -878,7 +872,7 @@ CStatus CRenderInstance::OnObjectRemoved(CRef& in_ctxt)
    {
       CString objectName = removedObjects[i].GetAsText();
       CString nodeName = CStringUtilities().MakeSItoAName(removedObjects[i], m_frame, L"", false);
-      AtNode* node = AiNodeLookUpByName(nodeName.GetAsciiString());
+      AtNode* node = AiNodeLookUpByName(NULL, nodeName.GetAsciiString());
       
       if (!node)
          continue;
@@ -906,7 +900,7 @@ CStatus CRenderInstance::OnObjectRemoved(CRef& in_ctxt)
 
       // GetMessageQueue()->LogMsg(L"Removing " + objectName);
       CString nodeName = CStringUtilities().MakeSItoAName(removedObjects[i], m_frame, L"", false);
-      AtNode* node = AiNodeLookUpByName(nodeName.GetAsciiString());
+      AtNode* node = AiNodeLookUpByName(NULL, nodeName.GetAsciiString());
       
       if (node)
       {         
@@ -932,7 +926,7 @@ CStatus CRenderInstance::OnObjectRemoved(CRef& in_ctxt)
    {
       // collect the lights under instanced models
       vector < AtNode* > lightNodes, shapeNodes;
-      AtNodeIterator *iter = AiUniverseGetNodeIterator(AI_NODE_LIGHT);
+      AtNodeIterator *iter = AiUniverseGetNodeIterator(NULL, AI_NODE_LIGHT);
       while (!AiNodeIteratorFinished(iter))
       {
          AtNode *node = AiNodeIteratorGetNext(iter);
@@ -1038,42 +1032,45 @@ DisplayDriver* CRenderInstance::GetDisplayDriver()
 
 bool CRenderInstance::InterruptRenderSignal()
 {
-   AiCritSecEnter(&m_interruptRenderBarrier);
-   bool interrupt = m_interruptRender;
-   AiCritSecLeave(&m_interruptRenderBarrier);
+   bool interrupt;
+   {
+      std::lock_guard<AtMutex> guard(m_interruptRenderBarrier);
+      interrupt = m_interruptRender;
+   }
    return interrupt;
 }
 
 
 void CRenderInstance::SetInterruptRenderSignal(bool in_value)
 {
-   AiCritSecEnter(&m_interruptRenderBarrier);
+   std::lock_guard<AtMutex> guard(m_interruptRenderBarrier);
    m_interruptRender = in_value;
-   AiCritSecLeave(&m_interruptRenderBarrier);
 }
 
 
 eRenderStatus CRenderInstance::RenderStatus()
 {
-   AiCritSecEnter(&m_renderStatusBarrier);
-   eRenderStatus renderStatus = m_renderStatus;
-   AiCritSecLeave(&m_renderStatusBarrier);
+   eRenderStatus renderStatus;
+   {
+      std::lock_guard<AtMutex> guard(m_renderStatusBarrier);
+      renderStatus = m_renderStatus;
+   }
    return renderStatus;
 }
 
 
 void CRenderInstance::SetRenderStatus(const eRenderStatus in_status)
 {
-   AiCritSecEnter(&m_renderStatusBarrier);
+   std::lock_guard<AtMutex> guard(m_renderStatusBarrier);
    m_renderStatus = in_status;
-   AiCritSecLeave(&m_renderStatusBarrier);
 }
 
 
 int CRenderInstance::DoRender(const AtRenderMode in_mode)
 {
    SetRenderStatus(eRenderStatus_Started);
-   int result = AiRender(in_mode);
+   AtRenderSession *renderSession = AiRenderSession(NULL);
+   int result = AiRender(renderSession, in_mode);
    SetRenderStatus(eRenderStatus_Finished);
    return result;
 }
@@ -1278,11 +1275,11 @@ CStatus CRenderInstance::ProcessPass()
       if (enableDisplayDriver)
       {
          // destroy and rebuild the display driver node
-         AtNode *driver = AiNodeLookUpByName("xsi_driver");
+         AtNode *driver = AiNodeLookUpByName(NULL, "xsi_driver");
          if (driver)
          {
             AiNodeDestroy(driver);
-            driver = AiNode("display_driver");
+            driver = AiNode(NULL, "display_driver");
             if (driver)
                CNodeUtilities().SetName(driver, "xsi_driver");
          }
@@ -1324,7 +1321,7 @@ CStatus CRenderInstance::ProcessPass()
          for (LONG i=0; i<driverNames.GetCount(); i++)
          {
             bool keepFile(false);
-            AtNode* driverNode = AiNodeLookUpByName(driverNames[i].GetAsciiString());
+            AtNode* driverNode = AiNodeLookUpByName(NULL, driverNames[i].GetAsciiString());
             if (!driverNode)
                continue;
 
@@ -1503,7 +1500,7 @@ CStatus CRenderInstance::ProcessRegion()
 
       // We have to update Render Options with the given by the process callback
       // Perhaps we are rendering from another viewport with other render settings
-      LoadOptionsParameters(AiUniverseGetOptions(), m_renderOptionsProperty, m_frame);
+      LoadOptionsParameters(AiUniverseGetOptions(NULL), m_renderOptionsProperty, m_frame);
 
       // Fix to resolve an XSI Bug that doesn't send accumulative changes of shader stacks updates
       // when autorefresh is off and we do a manual refresh.
@@ -1570,8 +1567,6 @@ CStatus CRenderInstance::ProcessRegion()
 // called by ArnoldRender_Process only
 CStatus CRenderInstance::InitializeRender(CRef &in_ctxt)
 {
-   CRenderMessages::Initialize();   
-   
    m_renderContext.ResetObject();
    m_renderContext = RendererContext(in_ctxt);
 

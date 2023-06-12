@@ -224,7 +224,7 @@ CStatus LoadSingleProcedural(const X3DObject &in_xsiObj, double in_frame, CRefAr
    }
 
    // Create the procedural node
-   AtNode* procNode = AiNode("procedural");
+   AtNode* procNode = AiNode(NULL, "procedural");
 
    if (!procNode)
       return CStatus::OK; // not really ok...

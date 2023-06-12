@@ -1428,7 +1428,7 @@ bool CIceObjectBase::CreateNode()
       return false;
    }
 
-   m_node = AiNode(m_type);
+   m_node = AiNode(NULL, m_type);
    if (!m_node)
       return false;
 
@@ -3885,14 +3885,18 @@ bool CIceObjectStrand::SetNodeData()
    if (!m_node)
       return false;
    CIceObjectBase::SetNodeData();
-   CNodeSetter::SetString(m_node, "basis",           "catmull-rom");
+   CNodeSetter::SetString(m_node, "basis",   m_basis.c_str());
    AiNodeSetArray(m_node, "num_points",      m_num_points);
    AiNodeSetArray(m_node, "points",          m_points);
    AiNodeSetArray(m_node, "radius",          m_radius);
-   CNodeSetter::SetString(m_node, "mode",            m_mode.c_str());
-   CNodeSetter::SetFloat(m_node, "min_pixel_width", m_minPixelWidth);
+   CNodeSetter::SetString(m_node, "mode",    m_mode.c_str());
+   if (strcmp(m_mode.c_str(), "thick") != 0)
+      CNodeSetter::SetFloat(m_node, "min_pixel_width", m_minPixelWidth);
    if (m_orientations && AiArrayGetNumElements(m_orientations))
       AiNodeSetArray(m_node, "orientations",    m_orientations);
+   
+   if (!strcmp(m_basis.c_str(), "b-spline") || !strcmp(m_basis.c_str(), "catmull-rom"))
+      CNodeSetter::SetString(m_node, "wrap_mode", "pinned");
    return true;
 }
 
@@ -3909,6 +3913,8 @@ bool CIceObjectStrand::MakeCurve(CustomProperty in_arnoldParameters, double in_f
    // set the mode, else the defaults stands
    if (in_arnoldParameters.IsValid())
    {
+      if (ParAcc_Valid(in_arnoldParameters, L"basis"))
+         m_basis = AtString(((CString)ParAcc_GetValue(in_arnoldParameters, L"basis", in_frame)).GetAsciiString());
       m_mode = AtString(((CString)ParAcc_GetValue(in_arnoldParameters, L"mode", in_frame)).GetAsciiString());
       m_minPixelWidth = (float)ParAcc_GetValue(in_arnoldParameters, L"min_pixel_width", in_frame);
    }
@@ -3920,7 +3926,7 @@ bool CIceObjectStrand::MakeCurve(CustomProperty in_arnoldParameters, double in_f
    bool exportOrientation(false); // #1249
    for (int i=0; i<nbStrands; i++) // slow
    {
-      AiArraySetUInt(m_num_points, i, (int)m_strands[i].m_points.size()+2); // +2 for the 2 extra points needed at root and tip
+      AiArraySetUInt(m_num_points, i, (int)m_strands[i].m_points.size());
       m_nbPoints+= (int)m_strands[i].m_points.size(); // computing here the total number of points
       // test the orientation existance only on the first strand
       if (i==0 && m_mode == AtString("oriented") && (int)m_strands[0].m_orientation.size() > 0)
@@ -3928,10 +3934,10 @@ bool CIceObjectStrand::MakeCurve(CustomProperty in_arnoldParameters, double in_f
    }
 
    // allocate the arrays
-   m_points = AiArrayAllocate(m_nbPoints + 2*nbStrands, (uint8_t)nbKeys, AI_TYPE_VECTOR);
+   m_points = AiArrayAllocate(m_nbPoints, (uint8_t)nbKeys, AI_TYPE_VECTOR);
    m_radius = AiArrayAllocate(m_nbPoints, 1, AI_TYPE_FLOAT);
    if (exportOrientation)
-      m_orientations = AiArrayAllocate(m_nbPoints + 2*nbStrands, (uint8_t)nbKeys, AI_TYPE_VECTOR);
+      m_orientations = AiArrayAllocate(m_nbPoints, (uint8_t)nbKeys, AI_TYPE_VECTOR);
       
    CVector3f v3, vel, vel0;
    AtVector  p0, p;
@@ -3952,11 +3958,6 @@ bool CIceObjectStrand::MakeCurve(CustomProperty in_arnoldParameters, double in_f
          {
             AiArraySetVec(m_points, pointIndex, p0);
             pointIndex++;
-            if (j==0 || j==(int)s->m_points.size()-1) // clone first and last points
-            {
-               AiArraySetVec(m_points, pointIndex, p0);
-               pointIndex++;
-            }
          }
          else
          {
@@ -3970,16 +3971,6 @@ bool CIceObjectStrand::MakeCurve(CustomProperty in_arnoldParameters, double in_f
                   CUtilities().SetArrayValue(m_points, p, pointIndex, iKey);
                }
                pointIndex++;
-               if (j==0 || j==(int)s->m_points.size()-1) // clone first and last points
-               {
-                  for (int iKey = 0; iKey < nbKeys; iKey++)
-                  {
-                     s->GetMbPoint(&v3, j, iKey);
-                     CUtilities().S2A(v3, p);
-                     CUtilities().SetArrayValue(m_points, p, pointIndex, iKey);
-                  }
-                  pointIndex++;
-               }
             }
             else
             {
@@ -3994,19 +3985,6 @@ bool CIceObjectStrand::MakeCurve(CustomProperty in_arnoldParameters, double in_f
                   CUtilities().SetArrayValue(m_points, p, pointIndex, iKey);
                }
                pointIndex++;
-               if (j==0 || j==(int)s->m_points.size()-1) // clone first and last points
-               {
-                  for (int iKey = 0; iKey < nbKeys; iKey++)
-                  {
-                     scaleFactor = in_secondsPerFrame * (float)in_defKeys[iKey];
-                     vel.Scale(scaleFactor, vel0);
-                     p.x = p0.x + vel.GetX();
-                     p.y = p0.y + vel.GetY();
-                     p.z = p0.z + vel.GetZ();
-                     CUtilities().SetArrayValue(m_points, p, pointIndex, iKey);
-                  }
-                  pointIndex++;
-               }
             }
          }
 
@@ -4030,12 +4008,6 @@ bool CIceObjectStrand::MakeCurve(CustomProperty in_arnoldParameters, double in_f
                CUtilities().SetArrayValue(m_orientations, v, orientationIndex, iKey);
 
             orientationIndex++;
-            if (j==0 || j==(int)s->m_points.size()-1) // clone first and last point also for the orientation array
-            {
-               for (int iKey = 0; iKey < nbKeys; iKey++)
-                  CUtilities().SetArrayValue(m_orientations, v, orientationIndex, iKey);
-               orientationIndex++;
-            }
          }
       }
    }
@@ -4590,7 +4562,7 @@ bool CIceObjectInstance::LoadInstance(Model in_modelMaster, X3DObject in_objMast
 CIceObjectBaseShape CIceObjectInstance::LoadProcedural(X3DObject &in_xsiObj, double in_frame, CString in_proceduralPath)
 {
    CIceObjectBaseShape shape;
-   shape.m_node = AiNode("procedural");
+   shape.m_node = AiNode(NULL, "procedural");
    shape.m_isProcedural = true;
 
    CNodeSetter::SetString(shape.m_node, "filename", in_proceduralPath.GetAsciiString());

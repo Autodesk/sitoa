@@ -284,7 +284,7 @@ void UpdatePassShaderStack(const Pass &in_pass, double in_frame)
    CRef envParamRef;
    envParamRef.Set(in_pass.GetFullName() + L".EnvironmentShaderStack.Item");
    Parameter passParam(envParamRef);
-   AtNode* options = AiUniverseGetOptions();
+   AtNode* options = AiUniverseGetOptions(NULL);
 
    Shader backgroundShader = GetConnectedShader(passParam);
    if (backgroundShader.IsValid())

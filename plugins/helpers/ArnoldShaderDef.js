@@ -56,6 +56,7 @@ function XSILoadPlugin( in_reg )
    in_reg.RegisterShader("cross", 1, 0);
    in_reg.RegisterShader("cryptomatte", 1, 0);
    in_reg.RegisterShader("curvature", 1, 0);
+   in_reg.RegisterShader("distance", 1, 0);
    in_reg.RegisterShader("divide", 1, 0);
    in_reg.RegisterShader("dot", 1, 0);
    in_reg.RegisterShader("exp", 1, 0);
@@ -244,6 +245,8 @@ function Arnold_cryptomatte_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_cryptomatte_1_0_Define(in_ctxt) { return true; }
 function Arnold_curvature_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_curvature_1_0_Define(in_ctxt) { return true; }
+function Arnold_distance_1_0_DefineInfo(in_ctxt) { return true; }
+function Arnold_distance_1_0_Define(in_ctxt) { return true; }
 function Arnold_divide_1_0_DefineInfo(in_ctxt) { return true; }
 function Arnold_divide_1_0_Define(in_ctxt) { return true; }
 function Arnold_dot_1_0_DefineInfo(in_ctxt) { return true; }

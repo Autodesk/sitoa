@@ -65,7 +65,7 @@ CStatus LoadSingleVolume(const X3DObject &in_xsiObj, double in_frame, CRefArray 
    if (!ParAcc_GetValue(Property(volumeProperties.GetItem(L"Visibility")), L"rendvis", in_frame))
       return CStatus::OK;
 
-   AtNode* volume = AiNode("volume");
+   AtNode* volume = AiNode(NULL, "volume");
 
    if (!volume)
       return CStatus::OK; // not really ok...

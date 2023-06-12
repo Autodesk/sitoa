@@ -128,6 +128,10 @@ void CRenderOptions::Read(const Property &in_cp)
    m_AA_samples_max           = (int)ParAcc_GetValue(in_cp,   L"AA_samples_max",           DBL_MAX);
    m_AA_adaptive_threshold    = (float)ParAcc_GetValue(in_cp, L"AA_adaptive_threshold",    DBL_MAX);
 
+   // lights
+   m_use_global_light_sampling = (bool)ParAcc_GetValue(in_cp, L"use_global_light_sampling", DBL_MAX);
+   m_light_samples             = (int)ParAcc_GetValue(in_cp, L"light_samples", DBL_MAX);
+
    // clamping
    m_use_sample_clamp        = (bool) ParAcc_GetValue(in_cp, L"use_sample_clamp",        DBL_MAX);
    m_use_sample_clamp_AOVs   = (bool) ParAcc_GetValue(in_cp, L"use_sample_clamp_AOVs",   DBL_MAX);
@@ -144,7 +148,6 @@ void CRenderOptions::Read(const Property &in_cp)
 
    // advanced
    m_lock_sampling_noise     = (bool)ParAcc_GetValue(in_cp, L"lock_sampling_noise", DBL_MAX);
-   m_sss_use_autobump        = (bool)ParAcc_GetValue(in_cp, L"sss_use_autobump", DBL_MAX);
    m_dielectric_priorities   = (bool)ParAcc_GetValue(in_cp, L"dielectric_priorities", DBL_MAX);
    m_indirect_specular_blur  = (float)ParAcc_GetValue(in_cp, L"indirect_specular_blur", DBL_MAX);
 
@@ -179,15 +182,16 @@ void CRenderOptions::Read(const Property &in_cp)
    m_low_light_threshold = (float)ParAcc_GetValue(in_cp, L"low_light_threshold", DBL_MAX);
 
    // textures
-   m_texture_accept_unmipped = (bool)ParAcc_GetValue(in_cp,  L"texture_accept_unmipped", DBL_MAX);
-   m_texture_automip         = (bool)ParAcc_GetValue(in_cp,  L"texture_automip",         DBL_MAX);
-   m_texture_filter          = (int)ParAcc_GetValue(in_cp,   L"texture_filter",          DBL_MAX);
-   m_texture_accept_untiled  = (bool)ParAcc_GetValue(in_cp,  L"texture_accept_untiled",  DBL_MAX);
-   m_enable_autotile         = (bool)ParAcc_GetValue(in_cp,  L"enable_autotile",         DBL_MAX);
-   m_texture_autotile        = (int)ParAcc_GetValue(in_cp,   L"texture_autotile",        DBL_MAX);
-   m_use_existing_tx_files   = (bool)ParAcc_GetValue(in_cp,  L"use_existing_tx_files",   DBL_MAX);
-   m_texture_max_memory_MB   = (int)ParAcc_GetValue(in_cp,   L"texture_max_memory_MB",   DBL_MAX);
-   m_texture_max_open_files  = (int)ParAcc_GetValue(in_cp,   L"texture_max_open_files",  DBL_MAX);
+   m_texture_accept_unmipped  = (bool)ParAcc_GetValue(in_cp,  L"texture_accept_unmipped",  DBL_MAX);
+   m_texture_automip          = (bool)ParAcc_GetValue(in_cp,  L"texture_automip",          DBL_MAX);
+   m_texture_filter           = (int)ParAcc_GetValue(in_cp,   L"texture_filter",           DBL_MAX);
+   m_texture_accept_untiled   = (bool)ParAcc_GetValue(in_cp,  L"texture_accept_untiled",   DBL_MAX);
+   m_enable_autotile          = (bool)ParAcc_GetValue(in_cp,  L"enable_autotile",          DBL_MAX);
+   m_texture_autotile         = (int)ParAcc_GetValue(in_cp,   L"texture_autotile",         DBL_MAX);
+   m_texture_auto_generate_tx = (bool)ParAcc_GetValue(in_cp,  L"texture_auto_generate_tx", DBL_MAX);
+   m_use_existing_tx_files    = (bool)ParAcc_GetValue(in_cp,  L"use_existing_tx_files",    DBL_MAX);
+   m_texture_max_memory_MB    = (int)ParAcc_GetValue(in_cp,   L"texture_max_memory_MB",    DBL_MAX);
+   m_texture_max_open_files   = (int)ParAcc_GetValue(in_cp,   L"texture_max_open_files",   DBL_MAX);
 
    // color managers
    m_color_manager              = ParAcc_GetValue(in_cp, L"color_manager",              DBL_MAX).GetAsText();
@@ -431,6 +435,10 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"AA_samples_max",           CValue::siInt4,   siPersistable, L"", L"", 20, -3, 1000, 0, 50, p);
    cpset.AddParameter(L"AA_adaptive_threshold",    CValue::siDouble, siPersistable, L"", L"", 0.015f, 0.0f, 1.0f, 0.0f, 0.1f, p);
 
+   // lights
+   cpset.AddParameter(L"use_global_light_sampling", CValue::siBool, siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"light_samples",             CValue::siInt4, siPersistable, L"", L"", 4, 0, 100, 0, 10, p);
+
    // clamping
    cpset.AddParameter(L"use_sample_clamp",        CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"use_sample_clamp_AOVs",   CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
@@ -445,7 +453,6 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
 
    // advanced
    cpset.AddParameter(L"lock_sampling_noise",     CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"sss_use_autobump",        CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"dielectric_priorities",   CValue::siBool,   siPersistable, L"", L"", true,  CValue(), CValue(), CValue(), CValue(), p);
    cpset.AddParameter(L"indirect_specular_blur",  CValue::siDouble, siPersistable | siAnimatable, L"", L"", 1.0f, 0.0f, 2.0f, 0.0f, 100.0f, p);
 
@@ -477,15 +484,16 @@ SITOA_CALLBACK CommonRenderOptions_Define(CRef& in_ctxt)
    cpset.AddParameter(L"low_light_threshold",         CValue::siDouble, siPersistable, L"", L"", 0.001, 0, 10000, 0.001, 0.1, p);
 
    // textures
-   cpset.AddParameter(L"texture_accept_unmipped", CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"texture_automip",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"texture_filter",          CValue::siInt4,   siPersistable, L"", L"", AI_TEXTURE_SMART_BICUBIC, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"texture_accept_untiled",  CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"enable_autotile",         CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"texture_autotile",        CValue::siInt4,   siPersistable, L"", L"", 64, 16, 1024, 16, 512, p);
-   cpset.AddParameter(L"use_existing_tx_files",   CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
-   cpset.AddParameter(L"texture_max_memory_MB",   CValue::siInt4,   siPersistable, L"", L"", 4096, 128, CValue(), 2048, 8192, p);
-   cpset.AddParameter(L"texture_max_open_files",  CValue::siInt4,   siPersistable, L"", L"", 0, 0, 10000, 0, 2000, p);
+   cpset.AddParameter(L"texture_accept_unmipped",  CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"texture_automip",          CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"texture_filter",           CValue::siInt4,   siPersistable, L"", L"", AI_TEXTURE_SMART_BICUBIC, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"texture_accept_untiled",   CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"enable_autotile",          CValue::siBool,   siPersistable, L"", L"", false, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"texture_autotile",         CValue::siInt4,   siPersistable, L"", L"", 64, 16, 1024, 16, 512, p);
+   cpset.AddParameter(L"texture_auto_generate_tx", CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"use_existing_tx_files",    CValue::siBool,   siPersistable, L"", L"", true, CValue(), CValue(), CValue(), CValue(), p);
+   cpset.AddParameter(L"texture_max_memory_MB",    CValue::siInt4,   siPersistable, L"", L"", 4096, 128, CValue(), 2048, 8192, p);
+   cpset.AddParameter(L"texture_max_open_files",   CValue::siInt4,   siPersistable, L"", L"", 0, 0, 10000, 0, 2000, p);
 
    // color managers
    cpset.AddParameter(L"color_manager",              CValue::siString, siPersistable, L"", L"", L"", CValue(), CValue(), CValue(), CValue(), p);
@@ -896,6 +904,12 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUILabelPercentage, 100);
    layout.EndGroup();
 
+   layout.AddGroup(L"Lights", true, 0);
+      layout.AddItem(L"use_global_light_sampling", L"Global Light Sampling");
+      item = layout.AddItem(L"light_samples",       L"Light Samples");
+      item.PutAttribute(siUILabelPercentage, 100);
+   layout.EndGroup();
+
    layout.AddGroup(L"Clamping", true, 0);
       layout.AddRow();
          layout.AddItem(L"use_sample_clamp",     L"Clamp Sample Values");
@@ -928,7 +942,6 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
 
    layout.AddGroup(L"Advanced");
       layout.AddItem(L"lock_sampling_noise",  L"Lock Sampling Pattern");
-      layout.AddItem(L"sss_use_autobump",  L"Use Autobump in SSS");
       layout.AddItem(L"dielectric_priorities",  L"Nested Dielectrics");
       item = layout.AddItem(L"indirect_specular_blur",  L"Indirect Specular Blur");
       item.PutAttribute(siUILabelPercentage, 70);
@@ -1024,6 +1037,7 @@ SITOA_CALLBACK CommonRenderOptions_DefineLayout(CRef& in_ctxt)
       item.PutAttribute(siUILabelMinPixels, 100);
       item.PutAttribute(siUILabelPercentage, 90);
       layout.EndRow();
+      layout.AddItem(L"texture_auto_generate_tx", L"Auto-generate .tx Textures");
       layout.AddItem(L"use_existing_tx_files", L"Use Existing .tx Textures");
    layout.EndGroup();
    layout.AddGroup(L"Caching", true, 0);
@@ -1381,6 +1395,7 @@ SITOA_CALLBACK CommonRenderOptions_PPGEvent(const CRef& in_ctxt)
          MotionBlurTabLogic(cpset);
 
       else if (paramName == L"enable_adaptive_sampling" ||
+               paramName == L"use_global_light_sampling" ||
                paramName == L"use_sample_clamp" ||
                paramName == L"output_filter")
          SamplingTabLogic(cpset);
@@ -1483,6 +1498,10 @@ void SamplingTabLogic(CustomProperty &in_cp)
                       filter.IsEqualNoCase(L"contour") || filter.IsEqualNoCase(L"sinc");
 
    ParAcc_GetParameter(in_cp, L"output_filter_width").PutCapabilityFlag(siReadOnly, !enableWidth);
+
+   // lights
+   bool use_global_light_sampling = (bool)ParAcc_GetValue(in_cp, L"use_global_light_sampling", DBL_MAX);
+   ParAcc_GetParameter(in_cp, L"light_samples").PutCapabilityFlag(siReadOnly, !use_global_light_sampling);
 
    // sample clamp
    bool clamp = (bool)ParAcc_GetValue(in_cp, L"use_sample_clamp", DBL_MAX);
@@ -1647,9 +1666,9 @@ void ColorManagersTabLogic(CustomProperty &in_cp, PPGEventContext &in_ctxt)
             ocioNode = AiNode(ocioUniverse, "color_manager_ocio");
       }
       else {
-         AiBegin();
+         AiBegin(GetSessionMode());
          if (ocioManager)
-            ocioNode = AiNode("color_manager_ocio");
+            ocioNode = AiNode(NULL, "color_manager_ocio");
       }
 
       if (ocioManager)

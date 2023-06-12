@@ -531,6 +531,7 @@ function AddParamsShape(in_prop)
 function AddParamsCurve(in_prop, strands)
 {
    in_prop.AddParameter2("mode", siString, "ribbon", null, null, null, null, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("basis", siString, "catmull-rom", null, null, null, null, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("min_pixel_width", siFloat, 0.25, 0, 2, 0, 2, 0, siPersistable|siAnimatable);
 }
 
@@ -545,11 +546,13 @@ function AddParamsSubdivision(in_prop, strands)
 
    in_prop.AddParameter2("disp_autobump",                  siBool, 1, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("autobump_camera",                siBool, 1, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("autobump_shadow",                siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("autobump_diffuse_reflection",    siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("autobump_specular_reflection",   siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("autobump_diffuse_transmission",  siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("autobump_specular_transmission", siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
    in_prop.AddParameter2("autobump_volume_scattering",     siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
+   in_prop.AddParameter2("autobump_subsurface",            siBool, 0, 0, 1, 0, 1, 0, siPersistable|siAnimatable);
 
    in_prop.AddParameter2("adaptive_subdivision",   siBool,   0,        0,       1,      0,    1,    0, siPersistable|siAnimatable);
    in_prop.AddParameter2("subdiv_adaptive_metric", siString, "auto",   null,    null,   null, null, 0, siPersistable|siAnimatable);   
@@ -739,11 +742,13 @@ function arnold_parameters_DefineLayout(io_Context)
       item = xsiLayout.AddItem("disp_autobump", "Autobump");
       xsiLayout.AddGroup("Autobump Visibility", true);
          item = xsiLayout.AddItem("autobump_camera", "Camera (primary)");
+         item = xsiLayout.AddItem("autobump_shadow", "Shadow");
          item = xsiLayout.AddItem("autobump_diffuse_reflection", "Diffuse Reflection");
          item = xsiLayout.AddItem("autobump_specular_reflection", "Specular Reflection");
          item = xsiLayout.AddItem("autobump_diffuse_transmission", "Diffuse Transmission");
          item = xsiLayout.AddItem("autobump_specular_transmission", "Specular Transmission");
          item = xsiLayout.AddItem("autobump_volume_scattering", "Volume Scattering");
+         item = xsiLayout.AddItem("autobump_subsurface", "Subsurface Scattering");
       xsiLayout.EndGroup();
    xsiLayout.EndGroup();
    xsiLayout.AddGroup("Subdivision", true);
@@ -781,7 +786,8 @@ function arnold_parameters_DefineLayout(io_Context)
    {
       xsiLayout.AddGroup("Arnold Curves Parameters", true, 50);
          xsiLayout.AddItem("min_pixel_width", "Min. Pixel Width");
-         xsiLayout.AddEnumControl( "mode", Array( "Ribbon", "ribbon", "Thick", "thick", "Oriented Ribbon (ICE Strands)", "oriented"), "Mode", siControlCombo);
+         xsiLayout.AddEnumControl("mode", Array("Ribbon", "ribbon", "Thick", "thick", "Oriented Ribbon (ICE Strands)", "oriented"), "Mode", siControlCombo);
+         xsiLayout.AddEnumControl("basis", Array("B-Spline", "b-spline", "Catmull-Rom (ICE Strands)", "catmull-rom", "Linear", "linear"), "Basis", siControlCombo);
       xsiLayout.EndGroup();
    }
    catch(exception)
@@ -1259,11 +1265,13 @@ function arnold_parameters_disp_autobump_OnChanged()
    if (oCustomProperty.Parameters("autobump_camera") != null)
    {
       PPG.autobump_camera.Enable(autobump_on);
+      PPG.autobump_shadow.Enable(autobump_on);
       PPG.autobump_diffuse_reflection.Enable(autobump_on);
       PPG.autobump_specular_reflection.Enable(autobump_on);
       PPG.autobump_diffuse_transmission.Enable(autobump_on);
       PPG.autobump_specular_transmission.Enable(autobump_on);
       PPG.autobump_volume_scattering.Enable(autobump_on);
+      PPG.autobump_subsurface.Enable(autobump_on);
    }
 }
 
@@ -1281,9 +1289,6 @@ function arnold_parameters_adaptive_subdivision_OnChanged()
 
 function arnold_parameters_mode_OnChanged() 
 {
-   if (PPG.mode.Value=="thick")
-      PPG.min_pixel_width.Value = 0;
-      
    PPG.min_pixel_width.Enable(PPG.mode.Value=="ribbon" || PPG.mode.Value=="oriented");
 }
 

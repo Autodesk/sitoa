@@ -86,6 +86,6 @@ void UpdateCamera(double in_frame)
       cameraNode = GetRenderInstance()->NodeMap().GetExportedNode(xsiCamera, frame);
    }  
 
-   CNodeSetter::SetPointer(AiUniverseGetOptions(), "camera", cameraNode);
+   CNodeSetter::SetPointer(AiUniverseGetOptions(NULL), "camera", cameraNode);
 }
 

@@ -166,7 +166,7 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
    ShaderParamDefOptions defOptions = ShaderParamDefOptions(Application().GetFactory().CreateShaderParamDefOptions());
 
    bool texturable = true;
-   bool animatable = ! (m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE || m_type == AI_TYPE_MATRIX || 
+   bool animatable = ! (m_type == AI_TYPE_STRING || m_type == AI_TYPE_NODE || 
                         m_type == AI_TYPE_ENUM || m_type == AI_TYPE_CLOSURE);
    bool inspectable = m_has_inspectable ? m_inspectable : true;
 
@@ -276,6 +276,14 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
             GetMessageQueue()->LogMsg(L"[sitoa] " + in_shader_name + L"." + m_name + " has unknown node type override: " + m_node_type, siWarningMsg);
       }
    }
+   // override for set_transform operator
+   // the matrix is not an array, but can instead take motion samples
+   else if (in_shader_name == L"set_transform" && m_name == L"matrix")
+   {
+      paramIsArray = false;
+      m_type = AI_TYPE_MATRIX;
+   }
+
    else if (paramType == AI_TYPE_CLOSURE)
       customNodeType = L"closure";
 
@@ -334,6 +342,9 @@ void CShaderDefParameter::Define(ShaderParamDefContainer &in_paramDef, const CSt
          case AI_TYPE_MATRIX:
          {
             AtMatrix* m = m_default.pMTX();
+            if (in_shader_name == L"set_transform" && m_name == L"matrix")
+                  m = new AtMatrix(AiArrayGetMtx(m_default.ARRAY(), 0));
+            
             container.GetParamDefByName(L"_00").SetDefaultValue((*m)[0][0]);
             container.GetParamDefByName(L"_01").SetDefaultValue((*m)[0][1]);
             container.GetParamDefByName(L"_02").SetDefaultValue((*m)[0][2]);
@@ -837,9 +848,12 @@ void CShaderDefSet::Load(const CString &in_plugin_origin_path)
          continue;
 
       // skip the shaders shipping in sitoa_shaders, that implement the factory Softimage shaders 
-      if (shader_def.m_so_name == L"sitoa_shaders.dll" || shader_def.m_so_name == L"sitoa_shaders.so")
+      if (shader_def.m_so_name == L"sitoa_shaders.dll" || shader_def.m_so_name == L"sitoa_shaders.so" ||
+         (CStringUtilities().StartsWith(shader_def.m_so_name, "sib_") && CStringUtilities().EndsWith(shader_def.m_so_name, ".oso")))
+      {
          if (!shader_def.m_is_passthrough_closure) // only exception is the closure connector
             continue;
+      }
       // skip the core camera nodes, already exposed by the camera options property
       if (shader_def.m_so_name == L"core" && shader_def.m_is_camera_node)
           continue;

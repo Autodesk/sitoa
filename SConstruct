@@ -303,7 +303,7 @@ if system.os() == 'windows':
                                        duplicate = 0,
                                        exports   = 'env')
    
-   [SITOA_SHADERS, SITOA_SHADERS_PRJ] = env.SConscript(os.path.join('shaders', 'src', 'SConscript'),
+   [SITOA_SHADERS, SITOA_SHADERS_PRJ, SITOA_OSL_SHADERS] = env.SConscript(os.path.join('shaders', 'src', 'SConscript'),
                                                        variant_dir = os.path.join(BUILD_BASE_DIR, 'shaders'),
                                                        duplicate = 0,
                                                        exports   = 'env')
@@ -338,7 +338,7 @@ else:
                           duplicate = 0,
                           exports   = 'env')
 
-   SITOA_SHADERS = env.SConscript(os.path.join('shaders', 'src', 'SConscript'),
+   [SITOA_SHADERS, SITOA_OSL_SHADERS] = env.SConscript(os.path.join('shaders', 'src', 'SConscript'),
                                   variant_dir = os.path.join(BUILD_BASE_DIR, 'shaders'),
                                   duplicate = 0,
                                   exports   = 'env')
@@ -397,6 +397,9 @@ else:
 PACKAGE_FILES = [
 [os.path.join(plugin_binary_path, 'sitoa', DLLS),                          os.path.join(addon_path, bin_path)],
 [os.path.join(plugin_binary_path, 'shaders', DLLS),                        os.path.join(addon_path, bin_path)],
+[os.path.join(plugin_binary_path, 'shaders', 'osl', '*.oso'),              os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, 'ADPClientService%s' % get_executable_extension()), os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, 'AdpSDKUtil%s' % get_executable_extension()), os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'ArnoldLicenseManager%s' % get_executable_extension()), os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'kick%s' % get_executable_extension()),     os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, 'maketx%s' % get_executable_extension()),   os.path.join(addon_path, bin_path)],
@@ -408,6 +411,7 @@ PACKAGE_FILES = [
 [os.path.join(ARNOLD_BINARIES, '*%s.*' % get_library_extension()),         os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*.pit'),                                   os.path.join(addon_path, bin_path)],
 [os.path.join(ARNOLD_BINARIES, '*.png'),                                   os.path.join(addon_path, bin_path)],
+[os.path.join(ARNOLD_BINARIES, 'senddmp'),                                 os.path.join(addon_path, bin_path, 'senddmp')],
 [ARNOLD_OCIO,                                                              os.path.join(addon_path, bin_path, '..', 'ocio')],
 [ARNOLD_PLUGINS,                                                           os.path.join(addon_path, bin_path, '..', 'plugins')],
 [os.path.join('plugins', 'helpers', '*.js'),                               os.path.join(addon_path, plugins_path)],
@@ -485,10 +489,14 @@ def make_patch_adlm(target, source, env):
 
 def patch_adlm(wg_bin_path, env):
    new_adlmint_last_char = '2'  # ONLY ONE CHARACTER
+   size = 0
 
    if system.os() == 'windows':
       adclmhub_name = find_adclmhub(wg_bin_path, 'AdClmHub_')
-      if adclmhub_name == 'AdClmHub_2.0.0.dll':
+      if adclmhub_name == 'AdClmHub_3.1.1.dll':
+         size = 498696
+         seek_pos = 0x57F6C
+      elif adclmhub_name == 'AdClmHub_2.0.0.dll':
          size = 524128
          seek_pos = 367692
       elif adclmhub_name == 'AdClmHub_1.1.1.dll':
@@ -536,7 +544,7 @@ def patch_adlm(wg_bin_path, env):
       with open(adclmhub_path, 'r+b') as f:
          f.seek(seek_pos)
          letter = f.read(1)
-         if letter == 't':
+         if letter != new_adlmint_last_char:
             print 'Patching {} ...'.format(adclmhub_name)
             f.seek(seek_pos)
             f.write(new_adlmint_last_char)
@@ -564,7 +572,8 @@ PATCH = env.Patch('patch', SITOA)
 ################################
 
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [str(SITOA[0]),
-                                                                   str(SITOA_SHADERS[0])])
+                                                                   str(SITOA_SHADERS[0]),
+                                                                   SITOA_OSL_SHADERS])
 
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path), [glob.glob(os.path.join(ARNOLD_BINARIES, '*'))])
 env.Install(os.path.join(env['TARGET_WORKGROUP_PATH'], bin_path, '..', 'ocio'), [glob.glob(os.path.join(ARNOLD_OCIO, '*'))])
@@ -604,6 +613,7 @@ top_level_alias(env, 'testsuite', TESTSUITE)
 env.AlwaysBuild(PACKAGE)
 env.AlwaysBuild('install')
 
+env.Depends(SITOA_SHADERS, SITOA_OSL_SHADERS)
 env.Depends(PACKAGE, SITOA)
 env.Depends(PACKAGE, SITOA_SHADERS)
 env.Depends(DEPLOY, PACKAGE)
